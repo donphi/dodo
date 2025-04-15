@@ -7,6 +7,10 @@ MISSION DESIGNATION: ADVANCED WEB APPLICATION DEPLOYMENT
 
 MISSION BRIEFING:
 
+ABSOLUTE COHESION DIRECTIVE:
+
+All agent messages and custom instructions must be meticulously aligned, with no rule or directive permitted to be out of scope or in conflict with any other agent's rules. This cohesion is mandatory and overrides all other considerations. Any deviation or contradiction is strictly prohibited.
+
 **AGENT COUNT PARAMETERS:**
 
 Before proceeding, specify the number of main agents (maximum 5) and TDD agents (maximum 4) for this operation. These limits must be strictly enforced throughout the agent battalion design and referenced in all relevant instructions.
@@ -28,80 +32,188 @@ You are hereby ORDERED to recruit and deploy a specialized battalion of AI agent
     ### 1.1 Project Overview
     * **Project Description**: [SELECT ONE OR CUSTOMIZE]
       * Modern web application with responsive UI and data visualization capabilities <!-- For customer-facing dashboards -->
-
+      * Enterprise-grade API service with comprehensive documentation <!-- For multi-client backend services -->
+      * Retrieval-Augmented Generation (RAG) system for domain-specific knowledge <!-- For specialized AI assistants -->
+      * Real-time data processing pipeline with visualization dashboard <!-- For immediate monitoring systems -->
+      * Mobile-first progressive web application with offline capabilities <!-- For unreliable connectivity environments -->
+      * Microservices architecture for scalable backend operations <!-- For independently scalable components -->
     * **Project Domain**: [SELECT ONE OR CUSTOMIZE]
+      * E-commerce <!-- Online shopping platforms -->
       * Healthcare/Biomedical <!-- Patient/medical systems -->
+      * Finance/Banking <!-- Financial transaction systems -->
+      * Education/E-learning <!-- Learning management platforms -->
+      * Enterprise Resource Planning <!-- Business management systems -->
+      * Content Management <!-- Digital content publishing -->
+      * Social Media/Community <!-- User interaction platforms -->
+      * Data Analytics/Business Intelligence <!-- Business intelligence tools -->
 
     ### 1.2 Frontend Technologies
     * **Frontend Framework**: [SELECT ONE OR CUSTOMIZE]
       * Next.js (v. latest stable) <!-- SSR/SSG for SEO-critical sites -->
-
+      * React (v. latest stable) <!-- Component-based SPAs -->
+      * Vue.js (v. latest stable) <!-- Progressive framework with easy learning curve -->
+      * Angular (v. latest stable) <!-- Full-featured MVC for enterprise apps -->
+      * Svelte (v. latest stable) <!-- Compile-time framework for performance -->
+      * None (Backend-only application) <!-- Backend-only applications -->
     * **UI Design System**: [SELECT ONE OR CUSTOMIZE]
       * Tailwind CSS <!-- Utility-first for custom designs -->
-
+      * Material UI <!-- Google's design language -->
+      * Chakra UI <!-- Accessible component library -->
+      * Bootstrap <!-- Rapid responsive development -->
+      * Ant Design <!-- Enterprise UI components -->
+      * Custom design system <!-- Unique brand requirements -->
     * **State Management**: [SELECT ONE OR CUSTOMIZE]
-
+      * Redux/Redux Toolkit <!-- For complex state logic -->
+      * Zustand <!-- Lightweight alternative -->
+      * MobX <!-- Reactive state management -->
+      * Context API <!-- Built-in React state -->
+      * Pinia/Vuex <!-- For Vue applications -->
+      * NgRx <!-- For Angular applications -->
     * **Data Visualization**: [SELECT ONE OR CUSTOMIZE]
       * Apache ECharts <!-- Comprehensive charting -->
-
+      * D3.js <!-- Custom visualization needs -->
+      * Chart.js <!-- Simple, flexible charts -->
+      * Plotly <!-- Scientific/interactive charts -->
+      * Recharts <!-- React-specific charts -->
+      * None <!-- No visualization needed -->
 
     ### 1.3 Backend Technologies
     * **Primary Language**: [SELECT ONE OR CUSTOMIZE]
       * TypeScript (strict mode enabled) <!-- Typed JS for large teams -->
-
+      * JavaScript (ES2022+) <!-- For rapid development -->
+      * Python (3.10+) <!-- Versatile, great for data/AI -->
+      * Go (1.20+) <!-- High-performance services -->
+      * Rust (latest stable) <!-- Memory-safe systems programming -->
+      * Java (17+) <!-- Enterprise stability -->
+      * C# (.NET 7+) <!-- Microsoft ecosystem integration -->
     * **Backend Framework**: [SELECT ONE OR CUSTOMIZE]
+      * Express.js <!-- Minimal Node.js framework -->
       * NestJS <!-- Enterprise TypeScript framework -->
-
+      * FastAPI <!-- High-performance Python APIs -->
+      * Django <!-- Full-featured Python framework -->
+      * Spring Boot <!-- Java microservices standard -->
+      * ASP.NET Core <!-- High-performance .NET -->
+      * Actix Web <!-- Ultra-fast Rust framework -->
+      * Gin <!-- Efficient Go web framework -->
+      * None (Serverless or static application) <!-- Serverless/static applications -->
     * **API Architecture**: [SELECT ONE OR CUSTOMIZE]
+      * REST <!-- Standard web API pattern -->
       * GraphQL <!-- Flexible data fetching -->
-      * Neo4j Aura
-
+      * gRPC <!-- High-performance microservices -->
+      * WebSockets <!-- Real-time communication -->
+      * Hybrid (combination of the above) <!-- Mixed approach for varied needs -->
 
     ### 1.4 Database & Storage
     * **Primary Database**: [SELECT ONE OR CUSTOMIZE]
+      * PostgreSQL <!-- Advanced relational DB -->
+      * MySQL/MariaDB <!-- Popular web DB -->
+      * MongoDB <!-- Flexible document DB -->
+      * DynamoDB <!-- AWS-managed scaling -->
+      * Firestore <!-- Real-time document DB -->
+      * SQLite <!-- Embedded lightweight DB -->
       * Supabase <!-- Firebase alternative -->
     * **Vector Database**: [SELECT IF APPLICABLE]
+      * Pinecone <!-- Managed vector search -->
+      * Weaviate <!-- Self-hosted semantic search -->
+      * Qdrant <!-- Filtered vector search -->
+      * FAISS <!-- High-performance vectors -->
+      * Milvus <!-- Large-scale vector DB -->
+      * Chroma <!-- Simple RAG integration -->
       * None <!-- No vector search needed -->
     * **Caching Layer**: [SELECT ONE OR CUSTOMIZE]
+      * Redis <!-- Versatile in-memory store -->
+      * Memcached <!-- Simple distributed caching -->
+      * Elasticsearch <!-- Search with caching -->
+      * CDN (Cloudflare/Akamai/Fastly) <!-- Global asset caching -->
       * None <!-- No caching needed -->
 
     ### 1.5 AI/ML Components
     * **LLM Provider**: [SELECT IF APPLICABLE]
+      * OpenAI API (GPT-4/3.5) <!-- State-of-the-art LLMs -->
+      * Anthropic API (Claude) <!-- Safety-focused models -->
+      * Cohere API <!-- Enterprise-grade LLMs -->
+      * Mistral AI <!-- Cost-effective models -->
+      * Ollama <!-- Local LLM deployment -->
+      * HuggingFace Inference API <!-- Diverse model access -->
       * None <!-- No LLM functionality -->
     * **Embedding Model**: [SELECT IF APPLICABLE]
+      * OpenAI Embeddings <!-- Strong general embeddings -->
+      * Cohere Embed <!-- Multilingual support -->
+      * NVIDIA NeMo Embedding API <!-- Domain-specific embeddings -->
+      * Sentence Transformers <!-- Open-source option -->
+      * BiomedCLIP/PubMedBERT <!-- Medical domain -->
       * None <!-- No embedding functionality -->
     * **ML Framework**: [SELECT IF APPLICABLE]
+      * TensorFlow/Keras <!-- Production-ready ML -->
+      * PyTorch <!-- Research-friendly framework -->
+      * scikit-learn <!-- Classical ML algorithms -->
+      * Hugging Face Transformers <!-- Pre-trained model ecosystem -->
       * None <!-- No custom ML development -->
 
     ### 1.6 DevOps & Infrastructure
     * **Containerization**: [SELECT ONE OR CUSTOMIZE]
       * Docker <!-- Standard container platform -->
-
+      * Kubernetes <!-- Coprompt_recruitment.mdntainer orchestration at scale -->
+      * Docker Compose <!-- Multi-container setups -->
+      * Podman <!-- Secure daemonless containers -->
+      * None (Traditional deployment) <!-- Traditional deployment -->
     * **CI/CD Pipeline**: [SELECT ONE OR CUSTOMIZE]
       * GitHub Actions <!-- GitHub-integrated automation -->
       * GitLab CI/CD <!-- GitLab-integrated pipelines -->
-
+      * Jenkins <!-- Customizable self-hosted CI/CD -->
+      * CircleCI <!-- Cloud-based parallel pipelines -->
+      * AWS CodePipeline <!-- AWS-native CI/CD -->
+      * Azure DevOps <!-- Microsoft ecosystem CI/CD -->
     * **Deployment Target**: [SELECT ONE OR CUSTOMIZE]
+      * AWS (ECS/EKS/Lambda) <!-- Comprehensive cloud services -->
+      * Azure (App Service/AKS/Functions) <!-- Microsoft-integrated cloud -->
+      * GCP (Cloud Run/GKE/Functions) <!-- Google's cloud platform -->
       * Vercel <!-- Optimized for Next.js/React -->
+      * Netlify <!-- JAMstack deployment -->
+      * Digital Ocean <!-- Simpler cloud provider -->
+      * Self-hosted (On-premises) <!-- On-premises control -->
+      * Docker Swarm <!-- Lightweight orchestration -->
 
     ### 1.7 Quality Assurance
     * **Testing Frameworks**: [SELECT APPLICABLE OPTIONS]
-
+      * Jest <!-- JS unit/integration testing -->
+      * React Testing Library <!-- Component testing -->
+      * Cypress <!-- End-to-end web testing -->
+      * Playwright <!-- Cross-browser testing -->
+      * Pytest <!-- Python test framework -->
+      * JUnit <!-- Java test framework -->
+      * NUnit <!-- .NET test framework -->
+      * Selenium <!-- Browser automation -->
     * **Code Quality Tools**: [SELECT APPLICABLE OPTIONS]
       * ESLint <!-- JS code linting -->
       * Prettier <!-- Code formatting -->
       * TypeScript Compiler <!-- Static type checking -->
-
+      * Black <!-- Python formatting -->
+      * Flake8 <!-- Python linting -->
+      * MyPy <!-- Python type checking -->
+      * SonarQube <!-- Multi-language analysis -->
+      * Husky <!-- Git hooks automation -->
     * **Performance Testing**: [SELECT IF APPLICABLE]
-
+      * Lighthouse <!-- Web performance metrics -->
+      * JMeter <!-- Load/stress testing -->
+      * k6 <!-- Developer-friendly load testing -->
       * None <!-- No performance testing needed -->
 
     ### 1.8 Monitoring & Observability
     * **Logging**: [SELECT ONE OR CUSTOMIZE]
-
+      * ELK Stack <!-- Comprehensive log management -->
+      * Datadog <!-- Unified monitoring platform -->
+      * New Relic <!-- Application performance focus -->
+      * Grafana/Loki <!-- Visualization-rich logging -->
+      * Sentry <!-- Real-time error tracking -->
+      * Loguru <!-- Python logging utility -->
+      * Winston <!-- Node.js logging library -->
       * None <!-- No centralized logging -->
     * **Metrics & Tracing**: [SELECT IF APPLICABLE]
-
+      * Prometheus <!-- Time-series metrics -->
+      * Grafana <!-- Metrics dashboarding -->
+      * Jaeger <!-- Distributed request tracing -->
+      * OpenTelemetry <!-- Standardized observability -->
       * None <!-- No metrics collection needed -->
 
 2.  **ARCHITECTURAL DIRECTIVES:**
@@ -451,7 +563,7 @@ As the Project Orchestrator for a **[Primary Language]**-based application using
 4. Prioritize tasks that affect the centralized configuration system to minimize integration conflicts
 5. Assign clear technology-specific success criteria for each subtask (e.g., "API endpoint returns correct data structure as defined in OpenAPI spec")
 6. Document cross-cutting concerns that span multiple technology domains (authentication, logging, error handling)
-```  ]                   // 2-space indent
+```
 
 `/.roo/rules-project-orchestrator/02_tdd_workflow_management.md`
 ```markdown
