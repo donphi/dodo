@@ -1,5 +1,6 @@
 import React from 'react';
 import { UnifiedLogin } from '../tempate_components/login/authentication_gateway';
+import Footer from '../tempate_components/hero_landing/footer';
 
 const LoginPage = () => {
   const handleOAuthLogin = (provider: string) => {
@@ -8,9 +9,12 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center transition-colors duration-300">
-      <UnifiedLogin onOAuthLogin={handleOAuthLogin} />
-    </div>
+    <>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center transition-colors duration-300">
+        <UnifiedLogin onOAuthLogin={handleOAuthLogin} />
+      </div>
+      <Footer />
+    </>
   );
 };
 

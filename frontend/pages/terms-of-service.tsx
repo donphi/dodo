@@ -191,7 +191,7 @@ const TermsOfServicePage: React.FC = () => {
     <div className="relative min-h-screen bg-white dark:bg-gray-900 flex flex-col">
       <BackButton />
       <main className="flex-1 flex flex-col items-center px-4 py-8">
-        <div className="w-full max-w-3xl">
+        <div className="w-full max-w-3xl mt-24">
           <p className="text-base/7 font-semibold text-indigo-600 dark:text-indigo-400">
             Dodo (DD) by Biobankly
           </p>

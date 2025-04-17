@@ -8,6 +8,7 @@ import { Dropdown } from './components/dropdown';
 import { MultiSelect } from './components/multi-select';
 import { RadioGroup } from './components/radio';
 import { Button } from './components/button';
+import Footer from '../hero_landing/footer';
 
 // Standard Registration Flow Steps
 const standardSteps = [
@@ -137,10 +138,13 @@ export function RegistrationFlow({ isOAuth = false, provider = null }: Registrat
   };
   
   return (
-    <PageContainer onBackClick={currentStep > 0 ? handlePrevious : handleBackToHome}>
-      <Breadcrumbs steps={steps} currentStep={currentStep} onStepBack={handlePrevious} />
-      {renderStep()}
-    </PageContainer>
+    <>
+      <PageContainer onBackClick={currentStep > 0 ? handlePrevious : handleBackToHome}>
+        <Breadcrumbs steps={steps} currentStep={currentStep} onStepBack={handlePrevious} />
+        {renderStep()}
+      </PageContainer>
+      <Footer />
+    </>
   );
 }
 
