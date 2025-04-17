@@ -23,18 +23,17 @@ export function Breadcrumbs({ steps, currentStep, onStepBack }: BreadcrumbsProps
   }
 
   return (
-    <nav aria-label="Progress" className="mb-8 relative w-full max-w-[95%] sm:max-w-[340px] mx-auto" style={{ maxWidth: '340px' }}>
+    <nav aria-label="Progress" className="mb-8 relative w-full max-w-[95%] sm:max-w-[400px] mx-auto">
       {/*
-        Breadcrumb width is set slightly narrower than text fields on onboarding_page_container
-        (sm:max-w-[440px] vs sm:max-w-[480px]) for visual hierarchy and alignment.
-        Circles reduced for improved proportionality.
+        Breadcrumbs use max-w-form (480px) on desktop and full width on mobile.
+        This ensures consistent responsive behavior with other form elements.
       */}
       {currentStep > 0 && onStepBack && (
         <div className="absolute left-0 top-1/2 -translate-y-1/2">
           <BackButton onClick={() => onStepBack(currentStep - 1)} />
         </div>
       )}
-      <ol role="list" className="flex items-center justify-center">
+      <ol role="list" className="flex items-center justify-center sm:max-w-full">
         {steps.map((step, stepIdx) => {
           let status;
           if (stepIdx < currentStep) status = 'complete';
@@ -42,7 +41,7 @@ export function Breadcrumbs({ steps, currentStep, onStepBack }: BreadcrumbsProps
           else status = 'upcoming';
 
           return (
-            <li key={step.name} className={classNames(stepIdx !== steps.length - 1 ? 'pr-8 sm:pr-20' : '', 'relative')}>
+            <li key={step.name} className={classNames(stepIdx !== steps.length - 1 ? 'pr-8 sm:pr-6' : '', 'relative')}>
               {status === 'complete' ? (
                 <>
                   <div aria-hidden="true" className="absolute inset-0 flex items-center">

@@ -35,7 +35,7 @@ export function LoginTemplate({
         </h2>
       </div>
 
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
+      <div className="mt-10 mx-auto w-full sm:max-w-form">
         <div className="bg-transparent dark:bg-transparent px-6 py-12 sm:px-12">
           {children}
 

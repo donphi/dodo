@@ -189,7 +189,7 @@ export function AccountStep({ onSubmit, formData = {}, onFormChange }: StepProps
   };
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 w-full">
       <TextInput
         id="fullName"
         label="Full Name"
@@ -374,7 +374,7 @@ export function ProfileStep({ onSubmit, provider = null, formData = {}, onFormCh
   };
   
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form onSubmit={onSubmit} className="space-y-6 w-full">
       {provider && (
         <div className="mb-6 rounded-md bg-indigo-50 p-4">
           <div className="flex">
@@ -446,7 +446,7 @@ export function AffiliationStep({ onSubmit, formData = {}, onFormChange }: StepP
   };
   
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form onSubmit={onSubmit} className="space-y-6 w-full">
       <TextInput
         id="institution"
         label="Institution/Company"
@@ -500,7 +500,7 @@ export function BiobankAccessStep({ onSubmit, formData = {}, onFormChange }: Ste
   };
   
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form onSubmit={onSubmit} className="space-y-6 w-full">
       <RadioGroup
         id="ukBiobank"
         label="Are you registered with UK Biobank?"
@@ -535,7 +535,7 @@ interface FinishStepProps {
 
 export function FinishStep({ formData, isOAuth = false, provider = null }: FinishStepProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full">
       <div className="rounded-md bg-green-50 p-4">
         <div className="flex">
           <div className="flex-shrink-0">

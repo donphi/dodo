@@ -91,3 +91,43 @@ The authentication system consists of these key components:
 - The `AuthenticationGateway` component uses the same `PageContainer` as the registration flow, ensuring consistent styling and proper background display.
 - OAuth authentication is handled through Supabase's built-in providers, which simplifies the integration.
 - The system maintains separate flows for standard and OAuth users while providing a unified visual experience.
+
+## Responsive Design and Width Management
+
+### Width Tokens
+
+The application uses centralized width tokens in the Tailwind configuration to ensure consistent sizing across components:
+
+```js
+// In tailwind.config.js
+maxWidth: {
+  'form': '480px',       // Default desktop width for forms
+  'breadcrumbs': '440px', // Width for breadcrumbs component
+},
+```
+
+These tokens should be used consistently across the application to maintain visual harmony and ensure that changes to component widths can be made in a single location.
+
+### Component Width Guidelines
+
+1. **Form Containers**: Use `sm:max-w-form` for form containers on desktop. On mobile, use `w-full` with appropriate padding.
+
+2. **Breadcrumbs**: Use `sm:max-w-breadcrumbs` for the breadcrumbs component on desktop. On mobile, use a percentage-based width like `max-w-[95%]` to ensure it doesn't extend to the edges of the screen.
+
+3. **Form Elements**: All form elements should use `w-full` to ensure they expand to fill their container.
+
+### Responsive Design Pattern
+
+The application follows a mobile-first approach:
+
+1. Default styles are applied for mobile devices
+2. `sm:` prefix is used for tablet and desktop styles (≥640px)
+3. `lg:` prefix is used for larger desktop styles (≥1024px)
+
+### Important Notes
+
+- **Breadcrumbs and Form Width Relationship**: The breadcrumbs component and form containers have separate width tokens to prevent one from affecting the other. This allows for independent adjustment of their widths.
+
+- **Mobile Padding**: On mobile devices, form containers should have appropriate horizontal padding (e.g., `px-4`) to prevent content from touching the edges of the screen.
+
+- **Width Inheritance**: Be careful with nested components that might inherit width constraints from their parents. Use explicit width classes when necessary to override inherited constraints.

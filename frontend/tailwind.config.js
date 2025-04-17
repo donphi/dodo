@@ -9,6 +9,11 @@ module.exports = {
   ],
   theme: {
     extend: {
+      // Form container width tokens for consistent sizing across components
+      maxWidth: {
+        'form': '480px',  // Default desktop width for forms
+        'breadcrumbs': '440px',  // Width for breadcrumbs component
+      },
       keyframes: {
         backArrowTwice: {
           '0%, 100%': { transform: 'translateX(0)' },

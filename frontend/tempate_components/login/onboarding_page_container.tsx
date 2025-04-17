@@ -8,7 +8,6 @@ export interface PageContainerProps {
   onBackClick?: () => void;
 }
 
-
 export function PageContainer({ children, className = '', onBackClick }: PageContainerProps) {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
@@ -41,7 +40,7 @@ export function PageContainer({ children, className = '', onBackClick }: PageCon
   };
 
   return (
-    <div className={`relative isolate min-h-screen flex flex-col justify-center bg-gray-50 dark:bg-gray-900 transition-colors duration-300 ${className}`}>
+    <div className={`relative isolate flex min-h-full flex-1 flex-col justify-center bg-gray-50 dark:bg-gray-900 transition-colors duration-300 py-12 sm:px-6 lg:px-8 ${className}`}>
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]"
@@ -62,7 +61,7 @@ export function PageContainer({ children, className = '', onBackClick }: PageCon
           className="h-12 w-auto"
         />
       </div>
-      <div className="mt-10 w-full bg-transparent dark:bg-transparent px-6 py-12 sm:max-w-[480px] sm:mx-auto sm:px-12 lg:px-8">
+      <div className="mt-10 mx-auto w-full max-w-[95vw] sm:max-w-form bg-transparent dark:bg-transparent px-6 py-12 sm:px-12">
         {children}
       </div>
     </div>
