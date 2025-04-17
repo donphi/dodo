@@ -1,0 +1,430 @@
+# ==================================================================================================
+# PROJECT WORKFLOW: PHASE 2 - CORE INFRASTRUCTURE DEVELOPMENT
+# ==================================================================================================
+context:
+  project_name: "Biobank Graph Webkit Dep Visualization Platform"
+  version: "1.0.0"
+  change_history:
+    - version: "1.0.0"
+      date: "2025-04-15"
+      author: "yaml-architect"
+      description: "Initial creation of core infrastructure workflow"
+  owner: "Project Orchestrator (project-orchestrator)"
+  responsible_parties:
+    - "config-manager"
+    - "ui-ux-specialist"
+    - "feature-developer"
+    - "documentation-scribe"
+    - "spec-writer"
+    - "red-phase-engineer"
+    - "green-phase-engineer"
+    - "refactor-specialist"
+  business_value: >
+    Establishes the secure, scalable, and maintainable foundation for all application features, ensuring robust data modeling, authentication, API structure, and reusable UI/logic components.
+  scope: >
+    Core infrastructure for user registration, research survey, graph data modeling, authentication, API, and reusable component/template libraries. All configuration is centralized and containerized.
+  boundaries: >
+    Excludes feature-specific logic, advanced analytics, and non-essential integrations. All infrastructure must be testable and documented.
+  relationships:
+    - "Builds on initialized Docker environment and scaffolds"
+    - "Enables all subsequent feature development and integration"
+  assumptions:
+    - "All agents follow TDD and documentation protocols"
+    - "No direct DB access outside of defined APIs"
+  permissions_required:
+    - "Supabase/Neo4j admin access"
+    - "Ability to update config/ and docs/"
+  expected_frequency: "Once per major infrastructure change"
+  security_and_compliance:
+    - "API key authentication for all service-to-service communication"
+    - "User data protected per GDPR/HIPAA"
+    - "No secrets in codebase"
+  related_docs:
+    - "docs/architecture-overview.md"
+    - "docs/configuration-guides/"
+    - "docs/api-documentation/"
+    - "docs/component-module-documentation/"
+  resource_requirements:
+    - "Supabase/Neo4j project access"
+    - "Docker Compose running"
+    - "Node.js in containers"
+  glossary:
+    migration: "A controlled change to the database schema"
+    API key: "Secret token for authenticating service requests"
+    template: "Reusable code or UI component"
+    schema: "Formal definition of data structure"
+  traceability_matrix:
+    - requirement: "User registration/auth"
+      steps: ["BACK-002", "DB-002"]
+    - requirement: "Research survey data model"
+      steps: ["DB-003"]
+    - requirement: "Graph Webkit Dep data model"
+      steps: ["DB-004"]
+    - requirement: "API key auth"
+      steps: ["BACK-003"]
+    - requirement: "Reusable UI/component library"
+      steps: ["FRONT-004"]
+    - requirement: "Centralized config"
+      steps: ["DEVOPS-004"]
+
+steps:
+  # ---------------------- DATABASE MODULE ----------------------
+  - id: "DB-002"
+    status_marker: "[ ]"
+    name: "Design and Apply Supabase User & Auth Schema"
+    description: >
+      Define and migrate the Supabase schema for user registration, authentication, and research survey responses, ensuring all fields are validated and compliant.
+    status: "not_started"
+    error_details: ""
+    phase: 2
+    orchestrator:
+      action: "delegate"
+      rationale: "Config Manager must ensure all schema and migrations are centrally managed and documented."
+    assigned_to: "config-manager"
+    estimated_time: "45 minutes"
+    technology_stack:
+      primary_language: "SQL"
+      frameworks: ["Supabase"]
+      tools: ["Supabase CLI"]
+    prerequisites:
+      environment:
+        - "Supabase instance running"
+        - "Docker Compose up"
+      knowledge:
+        - "Relational data modeling"
+        - "Supabase migration workflow"
+      resources:
+        - "Supabase docs"
+      dependencies:
+        - "DB-001"
+    development_approach:
+      tdd_required: true
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "Centralized migration scripts"
+      - "No direct DB changes outside migration"
+      - "All fields validated"
+    validation:
+      criteria:
+        - "Migration applies without error"
+        - "User registration/auth works via API"
+      commands:
+        - "docker-compose exec backend yarn db:migrate"
+        - "docker-compose exec backend yarn test:auth"
+    error_handling:
+      potential_errors:
+        - error: "Migration fails"
+          detection: "db:migrate returns error"
+          resolution: "Fix SQL, rerun migration"
+        - error: "Auth not working"
+          detection: "test:auth fails"
+          resolution: "Check schema, fix logic"
+    git_operations:
+      required: true
+      confirmation_required: false
+    substeps: []
+
+  - id: "DB-003"
+    status_marker: "[ ]"
+    name: "Model Research Survey Data Structure"
+    description: >
+      Define the Supabase schema for storing research survey questions and user responses, ensuring extensibility and data integrity.
+    status: "not_started"
+    error_details: ""
+    phase: 2
+    orchestrator:
+      action: "delegate"
+      rationale: "Config Manager must ensure all research data models are robust and centrally managed."
+    assigned_to: "config-manager"
+    estimated_time: "30 minutes"
+    technology_stack:
+      primary_language: "SQL"
+      frameworks: ["Supabase"]
+      tools: ["Supabase CLI"]
+    prerequisites:
+      environment:
+        - "Supabase instance running"
+      knowledge:
+        - "Survey data modeling"
+      resources:
+        - "Supabase docs"
+      dependencies:
+        - "DB-002"
+    development_approach:
+      tdd_required: true
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "Centralized migration scripts"
+      - "Extensible schema"
+    validation:
+      criteria:
+        - "Survey data can be created/read via API"
+      commands:
+        - "docker-compose exec backend yarn test:survey"
+    error_handling:
+      potential_errors:
+        - error: "Survey data not saved"
+          detection: "test:survey fails"
+          resolution: "Check schema, fix logic"
+    git_operations:
+      required: true
+      confirmation_required: false
+    substeps: []
+
+  - id: "DB-004"
+    status_marker: "[ ]"
+    name: "Model Graph Webkit Dep Data in Neo4j"
+    description: >
+      Define the Neo4j schema and constraints for the Graph Webkit Dep visualization, including node/edge types and properties.
+    status: "not_started"
+    error_details: ""
+    phase: 2
+    orchestrator:
+      action: "delegate"
+      rationale: "Config Manager must ensure graph data models are robust and centrally managed."
+    assigned_to: "config-manager"
+    estimated_time: "30 minutes"
+    technology_stack:
+      primary_language: "Cypher"
+      frameworks: ["Neo4j Aura"]
+      tools: ["Neo4j Aura CLI"]
+    prerequisites:
+      environment:
+        - "Neo4j Aura instance running"
+      knowledge:
+        - "Graph data modeling"
+      resources:
+        - "Neo4j docs"
+      dependencies:
+        - "DB-001"
+    development_approach:
+      tdd_required: true
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "Centralized schema scripts"
+      - "All node/edge types documented"
+    validation:
+      criteria:
+        - "Graph schema applies without error"
+        - "Test graph queries succeed"
+      commands:
+        - "docker-compose exec backend yarn test:graph"
+    error_handling:
+      potential_errors:
+        - error: "Schema fails to apply"
+          detection: "Neo4j CLI error"
+          resolution: "Fix Cypher, reapply"
+    git_operations:
+      required: true
+      confirmation_required: false
+    substeps: []
+
+  # ---------------------- BACKEND MODULE ----------------------
+  - id: "BACK-002"
+    status_marker: "[ ]"
+    name: "Implement User Registration and Auth API"
+    description: >
+      Implement NestJS GraphQL resolvers for user registration, login, and API key authentication, integrating with Supabase and following TDD.
+    status: "not_started"
+    error_details: ""
+    phase: 2
+    orchestrator:
+      action: "delegate"
+      rationale: "Feature Developer must implement core auth logic, following TDD and config protocols."
+    assigned_to: "feature-developer"
+    estimated_time: "1 hour"
+    technology_stack:
+      primary_language: "TypeScript"
+      frameworks: ["NestJS", "GraphQL"]
+      tools: ["Jest", "ESLint", "Prettier"]
+    prerequisites:
+      environment:
+        - "Backend container running"
+        - "Supabase instance ready"
+      knowledge:
+        - "NestJS GraphQL"
+        - "API key auth"
+      resources:
+        - "NestJS, Supabase docs"
+      dependencies:
+        - "DB-002"
+    development_approach:
+      tdd_required: true
+      pair_programming: true
+      documentation_update_required: true
+    adherence_requirements:
+      - "No hardcoded secrets"
+      - "Centralized config"
+      - "TDD enforced"
+    validation:
+      criteria:
+        - "Registration/login works via GraphQL"
+        - "API key auth enforced"
+      commands:
+        - "docker-compose exec backend yarn test:auth"
+    error_handling:
+      potential_errors:
+        - error: "Auth fails"
+          detection: "test:auth fails"
+          resolution: "Fix resolver logic, check config"
+    git_operations:
+      required: true
+      confirmation_required: false
+    substeps: []
+
+  - id: "BACK-003"
+    status_marker: "[ ]"
+    name: "Implement API Key Authentication Middleware"
+    description: >
+      Implement and test API key authentication middleware in NestJS, ensuring all service-to-service requests are authenticated.
+    status: "not_started"
+    error_details: ""
+    phase: 2
+    orchestrator:
+      action: "delegate"
+      rationale: "Feature Developer must implement security middleware, following config and security protocols."
+    assigned_to: "feature-developer"
+    estimated_time: "30 minutes"
+    technology_stack:
+      primary_language: "TypeScript"
+      frameworks: ["NestJS"]
+      tools: ["Jest"]
+    prerequisites:
+      environment:
+        - "Backend container running"
+      knowledge:
+        - "NestJS middleware"
+        - "API key security"
+      resources:
+        - "NestJS docs"
+      dependencies:
+        - "BACK-002"
+    development_approach:
+      tdd_required: true
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "No hardcoded keys"
+      - "Centralized config"
+      - "Security best practices"
+    validation:
+      criteria:
+        - "API key auth blocks unauthorized requests"
+      commands:
+        - "docker-compose exec backend yarn test:apikey"
+    error_handling:
+      potential_errors:
+        - error: "Unauthorized requests not blocked"
+          detection: "test:apikey fails"
+          resolution: "Fix middleware logic"
+    git_operations:
+      required: true
+      confirmation_required: false
+    substeps: []
+
+  # ---------------------- FRONTEND MODULE ----------------------
+  - id: "FRONT-004"
+    status_marker: "[ ]"
+    name: "Establish Reusable UI Component and Chart Template Library"
+    description: >
+      Create a library of reusable Next.js UI components and ECharts templates, ensuring all are configurable via centralized Tailwind/ECharts config and documented.
+    status: "not_started"
+    error_details: ""
+    phase: 2
+    orchestrator:
+      action: "delegate"
+      rationale: "UI/UX Specialist must establish reusable, documented, and centrally-configured UI/chart templates."
+    assigned_to: "ui-ux-specialist"
+    estimated_time: "1 hour"
+    technology_stack:
+      primary_language: "TypeScript"
+      frameworks: ["Next.js", "Tailwind CSS", "Apache ECharts"]
+      tools: ["Storybook", "ESLint", "Prettier"]
+    prerequisites:
+      environment:
+        - "Frontend container running"
+      knowledge:
+        - "Component-driven development"
+        - "ECharts theming"
+      resources:
+        - "Next.js, Tailwind, ECharts docs"
+      dependencies:
+        - "FRONT-001"
+    development_approach:
+      tdd_required: true
+      pair_programming: true
+      documentation_update_required: true
+    adherence_requirements:
+      - "No direct CSS"
+      - "All config via Tailwind/ECharts theme"
+      - "Templates are immutable"
+    validation:
+      criteria:
+        - "Components render in Storybook"
+        - "Templates documented"
+      commands:
+        - "docker-compose exec frontend yarn storybook"
+    error_handling:
+      potential_errors:
+        - error: "Component fails to render"
+          detection: "Storybook error"
+          resolution: "Fix component code/config"
+    git_operations:
+      required: true
+      confirmation_required: false
+    substeps: []
+
+  # ---------------------- DEVOPS MODULE ----------------------
+  - id: "DEVOPS-004"
+    status_marker: "[ ]"
+    name: "Establish Centralized Configuration System"
+    description: >
+      Implement and document a centralized configuration system in config/ for all environment, service, and feature parameters, with strict validation and environment variable mapping.
+    status: "not_started"
+    error_details: ""
+    phase: 2
+    orchestrator:
+      action: "delegate"
+      rationale: "Config Manager must ensure all config is centralized, validated, and documented."
+    assigned_to: "config-manager"
+    estimated_time: "45 minutes"
+    technology_stack:
+      primary_language: "TypeScript"
+      frameworks: []
+      tools: ["ESLint", "Prettier"]
+    prerequisites:
+      environment:
+        - "config/ directory in repo"
+      knowledge:
+        - "TypeScript config patterns"
+        - "Environment variable management"
+      resources:
+        - "Project requirements"
+      dependencies:
+        - "DEVOPS-001"
+    development_approach:
+      tdd_required: true
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "No hardcoded config"
+      - "All config validated"
+      - "Docs in docs/configuration-guides/"
+    validation:
+      criteria:
+        - "Config loads without error"
+        - "All config values documented"
+      commands:
+        - "docker-compose exec backend yarn config:check"
+    error_handling:
+      potential_errors:
+        - error: "Config validation fails"
+          detection: "config:check fails"
+          resolution: "Fix config, update docs"
+    git_operations:
+      required: true
+      confirmation_required: false
+    substeps: []

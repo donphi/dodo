@@ -1,0 +1,292 @@
+# ==================================================================================================
+# PROJECT WORKFLOW: PHASE 4 - TESTING & QUALITY ASSURANCE
+# ==================================================================================================
+context:
+  project_name: "Biobank Graph Webkit Dep Visualization Platform"
+  version: "1.0.0"
+  change_history:
+    - version: "1.0.0"
+      date: "2025-04-15"
+      author: "yaml-architect"
+      description: "Initial creation of testing & QA workflow"
+  owner: "Project Orchestrator (project-orchestrator)"
+  responsible_parties:
+    - "spec-writer"
+    - "red-phase-engineer"
+    - "green-phase-engineer"
+    - "refactor-specialist"
+    - "feature-developer"
+    - "documentation-scribe"
+    - "git-gatekeeper"
+  business_value: >
+    Ensures all code meets the highest standards of correctness, security, and maintainability through rigorous, automated, and manual testing at every level.
+  scope: >
+    Unit, integration, end-to-end, performance, and security testing for all features and infrastructure, with explicit validation gates and reporting.
+  boundaries: >
+    Excludes non-testable code and manual QA outside the defined process. All tests must be automated and reproducible in Docker.
+  relationships:
+    - "Validates all feature and infrastructure work"
+    - "Feeds into deployment and documentation phases"
+  assumptions:
+    - "All code is testable and covered by automated tests"
+    - "No code is merged without passing all quality gates"
+  permissions_required:
+    - "Access to test suites, codebase, and CI/CD"
+  expected_frequency: "Continuous during development"
+  security_and_compliance:
+    - "All tests must enforce security and privacy requirements"
+    - "No sensitive data in test fixtures"
+  related_docs:
+    - "docs/testing-procedures.md"
+    - "docs/security-testing.md"
+    - "docs/coverage-reports/"
+  resource_requirements:
+    - "Docker Compose running"
+    - "Node.js in containers"
+    - "Access to test and coverage tools"
+  glossary:
+    unit_test: "Test of a single function or module"
+    integration_test: "Test of multiple modules/services working together"
+    e2e_test: "Test of the full application flow"
+    coverage: "Percentage of code exercised by tests"
+    dry_run: "Test execution without side effects"
+  traceability_matrix:
+    - requirement: "Unit test coverage"
+      steps: ["TEST-002"]
+    - requirement: "Integration/E2E testing"
+      steps: ["TEST-003"]
+    - requirement: "Performance/security testing"
+      steps: ["TEST-004"]
+    - requirement: "Validation gates"
+      steps: ["TEST-005"]
+
+steps:
+  # ---------------------- UNIT TESTING ----------------------
+  - id: "TEST-002"
+    status_marker: "[ ]"
+    name: "Execute and Enforce Unit Test Coverage"
+    description: >
+      Run all unit tests for frontend and backend, enforce minimum coverage thresholds, and report results. Block merge if coverage is insufficient.
+    status: "not_started"
+    error_details: ""
+    phase: 4
+    orchestrator:
+      action: "delegate"
+      rationale: "Red Phase Engineer and Green Phase Engineer are responsible for test implementation; Feature Developer and Git Gatekeeper enforce coverage gates."
+    assigned_to: "red-phase-engineer"
+    estimated_time: "30 minutes"
+    technology_stack:
+      primary_language: "TypeScript"
+      frameworks: ["Jest", "Vitest"]
+      tools: ["Coverage Reporter"]
+    prerequisites:
+      environment:
+        - "Test suites available"
+        - "Docker Compose running"
+      knowledge:
+        - "Unit test writing"
+        - "Coverage analysis"
+      resources:
+        - "Feature codebase"
+        - "Coverage config"
+      dependencies:
+        - "FEAT-001"
+        - "FEAT-002"
+        - "FEAT-003"
+    development_approach:
+      tdd_required: true
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "90%+ coverage on critical paths"
+      - "No code merged with failing tests"
+    validation:
+      criteria:
+        - "All unit tests pass"
+        - "Coverage threshold met"
+      commands:
+        - "docker-compose exec backend yarn test:unit --coverage"
+        - "docker-compose exec frontend yarn test:unit --coverage"
+    error_handling:
+      potential_errors:
+        - error: "Coverage below threshold"
+          detection: "Coverage report"
+          resolution: "Add missing tests"
+        - error: "Test fails"
+          detection: "yarn test returns error"
+          resolution: "Fix test or code"
+    git_operations:
+      required: true
+      confirmation_required: false
+    substeps: []
+
+  # ---------------------- INTEGRATION & E2E TESTING ----------------------
+  - id: "TEST-003"
+    status_marker: "[ ]"
+    name: "Execute Integration and End-to-End Tests"
+    description: >
+      Run integration and E2E tests for all critical user flows, including registration, survey, and graph visualization, in Dockerized environments.
+    status: "not_started"
+    error_details: ""
+    phase: 4
+    orchestrator:
+      action: "delegate"
+      rationale: "Green Phase Engineer and Refactor Specialist implement and maintain integration/E2E tests."
+    assigned_to: "green-phase-engineer"
+    estimated_time: "45 minutes"
+    technology_stack:
+      primary_language: "TypeScript"
+      frameworks: ["Jest", "Vitest", "Playwright", "Cypress"]
+      tools: []
+    prerequisites:
+      environment:
+        - "Integration/E2E test suites"
+        - "Docker Compose running"
+      knowledge:
+        - "Integration/E2E test writing"
+      resources:
+        - "Feature codebase"
+        - "Test scenarios"
+      dependencies:
+        - "TEST-002"
+    development_approach:
+      tdd_required: true
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "All critical flows tested"
+      - "No code merged with failing E2E tests"
+    validation:
+      criteria:
+        - "All integration/E2E tests pass"
+      commands:
+        - "docker-compose exec backend yarn test:e2e"
+        - "docker-compose exec frontend yarn test:e2e"
+    error_handling:
+      potential_errors:
+        - error: "E2E test fails"
+          detection: "yarn test:e2e returns error"
+          resolution: "Fix test or code"
+    git_operations:
+      required: true
+      confirmation_required: false
+    substeps: []
+
+  # ---------------------- PERFORMANCE & SECURITY TESTING ----------------------
+  - id: "TEST-004"
+    status_marker: "[ ]"
+    name: "Conduct Performance and Security Testing"
+    description: >
+      Run performance and security tests on all critical endpoints and user flows, ensuring compliance with project security protocols and performance expectations.
+    status: "not_started"
+    error_details: ""
+    phase: 4
+    orchestrator:
+      action: "delegate"
+      rationale: "Refactor Specialist and Feature Developer are responsible for performance/security test implementation."
+    assigned_to: "refactor-specialist"
+    estimated_time: "30 minutes"
+    technology_stack:
+      primary_language: "TypeScript"
+      frameworks: ["Jest", "ESLint", "Prettier"]
+      tools: ["OWASP ZAP", "Lighthouse"]
+    prerequisites:
+      environment:
+        - "Performance/security test tools"
+        - "Docker Compose running"
+      knowledge:
+        - "Security/performance testing"
+      resources:
+        - "Test scenarios"
+      dependencies:
+        - "TEST-003"
+    development_approach:
+      tdd_required: false
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "All endpoints tested for security"
+      - "Performance meets requirements"
+    validation:
+      criteria:
+        - "No critical security issues"
+        - "Performance within targets"
+      commands:
+        - "docker-compose exec backend yarn test:security"
+        - "docker-compose exec frontend yarn test:performance"
+    error_handling:
+      potential_errors:
+        - error: "Security vulnerability found"
+          detection: "test:security fails"
+          resolution: "Fix code, retest"
+        - error: "Performance below target"
+          detection: "test:performance fails"
+          resolution: "Optimize code, retest"
+    git_operations:
+      required: true
+      confirmation_required: false
+    substeps: []
+
+  # ---------------------- VALIDATION GATES & REPORTING ----------------------
+  - id: "TEST-005"
+    status_marker: "[ ]"
+    name: "Enforce Validation Gates and Generate Reports"
+    description: >
+      Enforce all validation gates (test, lint, type, security) in CI/CD, generate and archive reports, and block merge if any gate fails. Provide dry-run capability for all checks.
+    status: "not_started"
+    error_details: ""
+    phase: 4
+    orchestrator:
+      action: "delegate"
+      rationale: "Git Gatekeeper and Documentation Scribe enforce validation gates and reporting."
+    assigned_to: "git-gatekeeper"
+    estimated_time: "20 minutes"
+    technology_stack:
+      primary_language: "TypeScript"
+      frameworks: ["GitHub Actions", "GitLab CI/CD"]
+      tools: ["ESLint", "Prettier", "TypeScript Compiler"]
+    prerequisites:
+      environment:
+        - "CI/CD pipeline configured"
+        - "All test/lint/type/security scripts"
+      knowledge:
+        - "CI/CD validation"
+        - "Report archiving"
+      resources:
+        - "CI/CD config"
+        - "docs/coverage-reports/"
+      dependencies:
+        - "TEST-002"
+        - "TEST-003"
+        - "TEST-004"
+    development_approach:
+      tdd_required: false
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "No code merged with failing gates"
+      - "All reports archived"
+      - "Dry-run supported"
+    validation:
+      criteria:
+        - "All gates pass in CI/CD"
+        - "Reports available in docs/coverage-reports/"
+      commands:
+        - "docker-compose exec backend yarn lint"
+        - "docker-compose exec frontend yarn lint"
+        - "docker-compose exec backend yarn tsc --noEmit"
+        - "docker-compose exec frontend yarn tsc --noEmit"
+        - "docker-compose exec backend yarn test:security"
+        - "docker-compose exec frontend yarn test:performance"
+    error_handling:
+      potential_errors:
+        - error: "Gate fails in CI/CD"
+          detection: "CI/CD status red"
+          resolution: "Fix code, rerun pipeline"
+        - error: "Report missing"
+          detection: "ls docs/coverage-reports/ fails"
+          resolution: "Generate and archive report"
+    git_operations:
+      required: true
+      confirmation_required: true
+    substeps: []

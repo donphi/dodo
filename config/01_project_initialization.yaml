@@ -1,0 +1,702 @@
+# ==================================================================================================
+# PROJECT WORKFLOW: PHASE 1 - PROJECT INITIALIZATION
+# ==================================================================================================
+# Contextual Metadata
+context:
+  project_name: "Biobank Graph Webkit Dep Visualization Platform"
+  version: "1.0.0"
+  change_history:
+    - version: "1.0.0"
+      date: "2025-04-15"
+      author: "yaml-architect"
+      description: "Initial creation of project initialization workflow"
+  owner: "Project Orchestrator (project-orchestrator)"
+  responsible_parties:
+    - "config-manager"
+    - "ui-ux-specialist"
+    - "feature-developer"
+    - "documentation-scribe"
+    - "git-gatekeeper"
+    - "spec-writer"
+    - "red-phase-engineer"
+    - "green-phase-engineer"
+    - "refactor-specialist"
+  business_value: >
+    Enables biomedical researchers and data scientists to register, answer research questions, and interactively visualize and manipulate complex Neo4j graph data using Apache ECharts in a secure, scalable, and production-grade web application.
+  scope: >
+    Full-stack web application for user registration, research survey, and advanced graph visualization (Graph Webkit Dep) with manipulation capabilities. Includes centralized configuration, TDD workflow, CI/CD, and Dockerized infrastructure.
+  boundaries: >
+    Excludes LLM/embedding/ML features, centralized logging, and vector/caching layers. All development and deployment must occur within Docker containers.
+  relationships:
+    - "Integrates Next.js frontend, NestJS backend, Supabase DB, Neo4j Aura, and Apache ECharts"
+    - "CI/CD via GitHub Actions/GitLab CI/CD, deployed to Vercel"
+  assumptions:
+    - "All agents strictly follow custom mode protocols"
+    - "No direct host installation; all commands run in Docker"
+    - "Centralized config in config/ directory"
+  permissions_required:
+    - "Access to Docker and Docker Compose"
+    - "GitHub/GitLab repository access"
+    - "Supabase and Neo4j credentials (managed via env vars)"
+  expected_frequency: "Continuous during project lifecycle"
+  security_and_compliance:
+    - "API key authentication for all service-to-service communication"
+    - "GDPR/HIPAA compliance for biomedical data"
+    - "No sensitive data in codebase; all secrets via env vars"
+  related_docs:
+    - "prompt_recruitment.md"
+    - "docs/architecture-overview.md"
+    - "docs/configuration-guides/"
+    - "docs/deployment-procedures.md"
+    - "docs/api-documentation/"
+    - "docs/component-module-documentation/"
+  resource_requirements:
+    - "Docker Engine >= 20.10"
+    - "Node.js >= 18 (in container)"
+    - "Supabase project"
+    - "Neo4j Aura instance"
+    - "Vercel account"
+    - "GitHub/GitLab account"
+  glossary:
+    TDD: "Test-Driven Development"
+    CI/CD: "Continuous Integration/Continuous Deployment"
+    API: "Application Programming Interface"
+    SSR: "Server-Side Rendering"
+    SSG: "Static Site Generation"
+    ECharts: "Apache ECharts data visualization library"
+    Supabase: "PostgreSQL-based backend-as-a-service"
+    Neo4j: "Graph database"
+    Vercel: "Cloud platform for frontend deployment"
+    Docker: "Containerization platform"
+    Graph Webkit Dep: "Custom Neo4j graph visualization module"
+  traceability_matrix:
+    - requirement: "User registration and research survey"
+      steps: ["FRONT-001", "BACK-001", "DB-001"]
+    - requirement: "Graph Webkit Dep visualization and manipulation"
+      steps: ["FRONT-002", "BACK-002", "DB-002"]
+    - requirement: "Centralized configuration"
+      steps: ["DEVOPS-001", "BACK-003", "FRONT-003"]
+    - requirement: "TDD workflow"
+      steps: ["TEST-001", "TEST-002", "TEST-003"]
+    - requirement: "CI/CD and Dockerized environment"
+      steps: ["DEVOPS-002", "DEVOPS-003"]
+    - requirement: "Documentation as Living System"
+      steps: ["DOC-001", "DOC-002"]
+
+# ==================================================================================================
+# PHASE 1: PROJECT INITIALIZATION - WORKFLOW STEPS
+# ==================================================================================================
+steps:
+  # ---------------------- DEVOPS MODULE ----------------------
+  - id: "DEVOPS-001"
+    status_marker: "[x]"
+    name: "Initialize Dockerized Development Environment"
+    description: >
+      Set up the foundational Docker and Docker Compose environment for all development, ensuring all services (frontend, backend, database) are containerized from the outset.
+    status: "completed_with_errors"
+    error_details: |
+      Docker Compose environment started, but several critical issues prevent full service health:
+        - supabase-1: Fails to start. Cause: POSTGRES_PASSWORD not set (env var missing). See container logs for details.
+        - backend-1: Fails to start. Cause: Cannot find module '/app/dist/main' (likely build or mount issue).
+        - neo4j-1: Fails to start. Cause: Invalid value for NEO4J_AUTH (env var not set).
+        - frontend-1: Starts and is accessible, but warns about missing NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.
+      Additional warnings: Many required environment variables (SUPABASE_SERVICE_ROLE_KEY, NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD, API_KEY, SUPABASE_URL, SUPABASE_DB_PASSWORD, etc.) are not set and default to blank, which will cause runtime failures or security issues.
+      Action required: Set all required environment variables in your .env file or Docker Compose environment before retrying. See docs/configuration-guides/docker-setup.md for details.
+    phase: 1
+    orchestrator:
+      action: "delegate"
+      rationale: "Project Orchestrator must ensure all development is containerized per Docker-First Principle and assign to config-manager for config and devops setup."
+    assigned_to: "config-manager"
+    estimated_time: "1 hour"
+    technology_stack:
+      primary_language: "TypeScript"
+      frameworks: ["Docker", "Docker Compose"]
+      tools: ["Node.js", "Supabase CLI", "Neo4j Aura CLI"]
+    prerequisites:
+      environment:
+        - "Docker Engine >= 20.10 running"
+        - "Docker Compose available"
+      knowledge:
+        - "Containerization concepts"
+        - "Project architecture"
+      resources:
+        - "Dockerfile templates"
+        - "docker-compose.yml template"
+      dependencies: []
+    development_approach:
+      tdd_required: false
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "All services must be containerized"
+      - "No direct host installation"
+      - "Centralized config for all container parameters"
+    validation:
+      criteria:
+        - "docker-compose up starts all services without error"
+        - "All containers are healthy"
+      commands:
+        - "docker-compose up --build"
+        - "docker-compose ps"
+    error_handling:
+      potential_errors:
+        - error: "Docker daemon not running"
+          detection: "docker info fails"
+          resolution: "Start Docker service and retry"
+        - error: "Port conflicts"
+          detection: "docker-compose up error: port already in use"
+          resolution: "Change port mappings in docker-compose.yml"
+        - error: "Container build failure"
+          detection: "docker-compose up --build fails"
+          resolution: "Check Dockerfile syntax, fix errors, rebuild"
+    git_operations:
+      required: true
+      confirmation_required: false
+    substeps:
+      - id: "DEVOPS-001.1"
+        status_marker: "[ ]"
+        name: "Create Dockerfile for Next.js Frontend"
+        description: "Write a Dockerfile for the Next.js frontend, using multi-stage build for dev and prod."
+        status: "completed"
+        error_details: "Docker build issues resolved by removing lock file references and adding missing files and directories."
+        phase: 1
+        orchestrator:
+            action: "delegate"
+            rationale: "Config Manager is responsible for all config and infra setup."
+        assigned_to: "config-manager"
+        estimated_time: "20 minutes"
+        technology_stack:
+            primary_language: "TypeScript"
+            frameworks: ["Next.js", "Docker"]
+            tools: ["Node.js"]
+        prerequisites:
+            environment:
+                - "Docker Engine running"
+            knowledge:
+                - "Next.js Docker best practices"
+            resources:
+                - "Official Next.js Dockerfile examples"
+            dependencies: []
+        development_approach:
+            tdd_required: false
+            pair_programming: false
+            documentation_update_required: true
+        adherence_requirements:
+            - "Use multi-stage build"
+            - "No hardcoded secrets"
+        validation:
+            criteria:
+                - "Dockerfile builds successfully"
+            commands:
+                - "docker build -f Dockerfile.frontend ."
+        error_handling:
+            potential_errors:
+                - error: "Build fails due to missing dependencies"
+                detection: "docker build error"
+                resolution: "Add missing dependencies to package.json"
+        git_operations:
+            required: true
+            confirmation_required: false
+        substeps: []
+
+      - id: "DEVOPS-001.2"
+        status_marker: "[ ]"
+        name: "Create Dockerfile for NestJS Backend"
+        description: "Write a Dockerfile for the NestJS backend, using multi-stage build for dev and prod."
+        status: "completed"
+        error_details: "Docker build issues resolved by removing lock file references and adding missing files and directories."
+        phase: 1
+        orchestrator:
+            action: "delegate"
+            rationale: "Config Manager is responsible for all config and infra setup."
+        assigned_to: "config-manager"
+        estimated_time: "20 minutes"
+        technology_stack:
+            primary_language: "TypeScript"
+            frameworks: ["NestJS", "Docker"]
+            tools: ["Node.js"]
+        prerequisites:
+            environment:
+                - "Docker Engine running"
+            knowledge:
+                - "NestJS Docker best practices"
+            resources:
+                - "Official NestJS Dockerfile examples"
+            dependencies: []
+        development_approach:
+            tdd_required: false
+            pair_programming: false
+            documentation_update_required: true
+        adherence_requirements:
+            - "Use multi-stage build"
+            - "No hardcoded secrets"
+        validation:
+            criteria:
+                - "Dockerfile builds successfully"
+            commands:
+                - "docker build -f Dockerfile.backend ."
+        error_handling:
+            potential_errors:
+                - error: "Build fails due to missing dependencies"
+                detection: "docker build error"
+                resolution: "Add missing dependencies to package.json"
+        git_operations:
+            required: true
+            confirmation_required: false
+        substeps: []
+
+      - id: "DEVOPS-001.3"
+        status_marker: "[ ]"
+        name: "Create docker-compose.yml for Multi-Service Orchestration"
+        description: "Write a docker-compose.yml to orchestrate frontend, backend, Supabase, and Neo4j containers."
+        status: "completed"
+        error_details: |
+          docker-compose.yaml is functionally complete for multi-service orchestration (frontend, backend, Supabase/Postgres, Neo4j). All required services are present and configured with environment variables, build contexts, and persistent volumes.
+          Recommended improvements for future enhancement:
+          - Add healthchecks for all services.
+          - Set resource limits (memory/cpu) for containers.
+          - Add restart policies for resilience.
+          - Consider explicit network naming and logging configuration.
+          - For production, use Docker secrets or a secure env management solution.
+        phase: 1
+        orchestrator:
+          action: "delegate"
+          rationale: "Config Manager is responsible for all config and infra setup."
+        assigned_to: "config-manager"
+        estimated_time: "20 minutes"
+        technology_stack:
+          primary_language: "YAML"
+          frameworks: ["Docker Compose"]
+          tools: []
+        prerequisites:
+          environment:
+            - "Docker Engine running"
+            - "Docker Compose available"
+          knowledge:
+            - "Service orchestration"
+          resources:
+            - "Official Docker Compose docs"
+          dependencies: []
+        development_approach:
+          tdd_required: false
+          pair_programming: false
+          documentation_update_required: true
+        adherence_requirements:
+          - "All services must be defined"
+          - "No hardcoded secrets"
+        validation:
+          criteria:
+            - "docker-compose up starts all services"
+          commands:
+            - "docker-compose up"
+        error_handling:
+          potential_errors:
+            - error: "Service fails to start"
+              detection: "docker-compose logs"
+              resolution: "Check logs, fix config, restart"
+        git_operations:
+          required: true
+          confirmation_required: false
+        substeps: []
+
+  # ---------------------- FRONTEND MODULE ----------------------
+  - id: "FRONT-001"
+    status_marker: "[x]"
+    name: "Scaffold Next.js Frontend Application"
+    description: >
+      Initialize a Next.js application with Tailwind CSS and Apache ECharts, ensuring all configuration is centralized and the project structure is feature-based.
+    status: "completed"
+    implementation_details: |
+      - Folder structure established for: components, hooks, utils, lib, styles, and config
+      - Tailwind CSS integrated (tailwind.config.js, postcss.config.js, styles/globals.css, _app.tsx)
+      - TypeScript strict mode enabled in tsconfig.json
+      - Supabase client integrated in lib/supabaseClient.ts
+      - ECharts integrated via reusable EChart component
+      - ESLint and Prettier configured for code quality and formatting
+      - Documentation updated in docs/component-module-documentation
+    error_details: ""
+    phase: 1
+    orchestrator:
+      action: "delegate"
+      rationale: "Project Orchestrator must ensure UI/UX Specialist sets up the frontend per design system and config protocols."
+    assigned_to: "ui-ux-specialist"
+    estimated_time: "45 minutes"
+    technology_stack:
+      primary_language: "TypeScript"
+      frameworks: ["Next.js", "Tailwind CSS", "Apache ECharts"]
+      tools: ["Node.js", "Yarn", "ESLint", "Prettier"]
+    prerequisites:
+      environment:
+        - "Docker container for frontend running"
+      knowledge:
+        - "Next.js project scaffolding"
+        - "Tailwind CSS integration"
+        - "ECharts basics"
+      resources:
+        - "Official Next.js, Tailwind, ECharts docs"
+      dependencies:
+        - "DEVOPS-001"
+    development_approach:
+      tdd_required: true
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "Centralized Tailwind config"
+      - "No hardcoded styles"
+      - "Feature-based directory structure"
+    validation:
+      criteria:
+        - "Next.js app runs in Docker"
+        - "Tailwind and ECharts are functional"
+      commands:
+        - "docker-compose exec frontend yarn dev"
+        - "curl http://localhost:3000"
+    error_handling:
+      potential_errors:
+        - error: "Next.js app fails to start"
+          detection: "docker-compose logs frontend"
+          resolution: "Check logs, fix config, restart"
+        - error: "Tailwind/ECharts not working"
+          detection: "UI missing styles or charts"
+          resolution: "Check integration, reinstall packages"
+    git_operations:
+      required: true
+      confirmation_required: false
+    substeps:
+      - id: "FRONT-001.1"
+        status_marker: "[ ]"
+        name: "Enhance Frontend with New Pages and Template Components"
+        description: >
+          UI/UX Specialist created and integrated new application pages and template components to establish a robust, extensible frontend foundation.
+        status: "in_progress"
+        implementation_details: |
+          - New pages created:
+              - Landing page (index.tsx): Features hero and footer components for first-time visitors.
+              - Login page (login.tsx): Supports multiple login methods for user authentication.
+              - Registration page (register.tsx): Includes a multi-step onboarding flow for new users.
+              - Dashboard page (dashboard.tsx): Main user interface after login, for data visualization and interaction.
+          - Integrated template components from frontend/tempate_components/*, including:
+              - Hero, footer, and landing section components
+              - Dashboard layout and widgets
+              - Login/onboarding UI elements (breadcrumbs, buttons, checkboxes, dropdowns, multi-select, radio, text fields)
+          - All new UI elements adhere to centralized configuration and design system protocols.
+        pending_issues:
+          - TypeScript errors detected in new pages/components due to missing dependencies.
+          - Resolution: Required npm packages must be installed (see frontend/package.json for details).
+        assigned_to: "ui-ux-specialist"
+        estimated_time: "1 hour"
+        technology_stack:
+          primary_language: "TypeScript"
+          frameworks: ["Next.js", "Tailwind CSS"]
+          tools: ["Node.js", "ESLint", "Prettier"]
+        dependencies:
+          - "FRONT-001"
+        documentation_update_required: true
+        validation:
+          criteria:
+            - "All new pages render without runtime errors after dependencies are installed"
+            - "Template components display as designed"
+          commands:
+            - "docker-compose exec frontend yarn dev"
+            - "curl http://localhost:3000"
+        error_handling:
+          potential_errors:
+            - error: "TypeScript compilation errors"
+              detection: "yarn build or yarn dev output"
+              resolution: "Install missing dependencies and re-run"
+            - error: "UI components not rendering"
+              detection: "Blank or broken UI"
+              resolution: "Check import paths and component integration"
+
+  # ---------------------- BACKEND MODULE ----------------------
+  - id: "BACK-001"
+    status_marker: "[x]"
+    name: "Scaffold NestJS Backend Application"
+    description: >
+      Initialize a NestJS backend with GraphQL, Neo4j, and Supabase integration, ensuring all configuration is centralized and the project structure is feature-based.
+    status: "completed"
+    implementation_details: |
+      - Modular NestJS structure with AppModule, ConfigModule/Service
+      - GraphQL integration with code-first approach
+      - Supabase and Neo4j client integrations
+      - Repository pattern implementation
+      - API Key authentication middleware
+      - Health check endpoints
+      - Structured logging setup
+      - ESLint and Prettier configuration
+      - Error handling middleware
+      - Documentation updates in docs/component-module-documentation
+    error_details: ""
+    phase: 1
+    orchestrator:
+      action: "delegate"
+      rationale: "Project Orchestrator must ensure Feature Developer sets up backend per architecture and config protocols."
+    assigned_to: "feature-developer"
+    estimated_time: "45 minutes"
+    technology_stack:
+      primary_language: "TypeScript"
+      frameworks: ["NestJS", "GraphQL"]
+      tools: ["Node.js", "ESLint", "Prettier"]
+    prerequisites:
+      environment:
+        - "Docker container for backend running"
+      knowledge:
+        - "NestJS project scaffolding"
+        - "GraphQL basics"
+        - "Neo4j/Supabase integration"
+      resources:
+        - "Official NestJS, GraphQL, Neo4j, Supabase docs"
+      dependencies:
+        - "DEVOPS-001"
+    development_approach:
+      tdd_required: true
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "Centralized config"
+      - "Repository pattern"
+      - "Feature-based directory structure"
+    validation:
+      criteria:
+        - "NestJS app runs in Docker"
+        - "GraphQL endpoint available"
+      commands:
+        - "docker-compose exec backend yarn start:dev"
+        - "curl http://localhost:4000/graphql"
+    error_handling:
+      potential_errors:
+        - error: "NestJS app fails to start"
+          detection: "docker-compose logs backend"
+          resolution: "Check logs, fix config, restart"
+        - error: "GraphQL endpoint not available"
+          detection: "curl fails"
+          resolution: "Check GraphQL module setup"
+    git_operations:
+      required: true
+      confirmation_required: false
+    substeps: []
+
+  # ---------------------- DATABASE MODULE ----------------------
+  - id: "DB-001"
+    status_marker: "[ ]"
+    name: "Provision Supabase and Neo4j Instances"
+    description: >
+      Set up Supabase and Neo4j Aura instances, configure access, and ensure connectivity from Docker containers.
+    status: "in_progress"
+    implementation_details: |
+      - Created documentation scaffold in docs/database/README.md
+      - Outlined required sections for data models, access patterns, security protocols, and example queries
+      - Structured documentation to be updated after each TDD Green Phase
+      - Actual database provisioning and configuration is still pending and will be completed as part of the TDD workflow
+    error_details: ""
+    phase: 1
+    orchestrator:
+      action: "delegate"
+      rationale: "Project Orchestrator must ensure Config Manager provisions and configures databases securely."
+    assigned_to: "config-manager"
+    estimated_time: "30 minutes"
+    technology_stack:
+      primary_language: "N/A"
+      frameworks: ["Supabase", "Neo4j Aura"]
+      tools: ["Supabase CLI", "Neo4j Aura CLI"]
+    prerequisites:
+      environment:
+        - "Supabase and Neo4j accounts"
+      knowledge:
+        - "Database provisioning"
+        - "Cloud service setup"
+      resources:
+        - "Supabase/Neo4j docs"
+      dependencies:
+        - "DEVOPS-001"
+    development_approach:
+      tdd_required: false
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "No credentials in codebase"
+      - "All secrets via env vars"
+    validation:
+      criteria:
+        - "Supabase and Neo4j accessible from containers"
+      commands:
+        - "docker-compose exec backend yarn db:check"
+    error_handling:
+      potential_errors:
+        - error: "Cannot connect to Supabase/Neo4j"
+          detection: "Connection error in logs"
+          resolution: "Check env vars, network config"
+    git_operations:
+      required: false
+      confirmation_required: false
+    substeps: []
+
+  # ---------------------- TESTING MODULE ----------------------
+  - id: "TEST-001"
+    status_marker: "[x]"
+    name: "Establish TDD and Testing Frameworks"
+    description: >
+      Set up Jest/Vitest, ESLint, Prettier, and TypeScript strict mode in both frontend and backend, ensuring all code is testable and quality gates are in place.
+    status: "completed"
+    implementation_details: |
+      - Frontend testing established with Jest, React Testing Library, and Cypress for E2E.
+      - Backend testing established with Jest.
+      - Test utilities and mocks implemented for Supabase and Neo4j (see backend/test/utils/mockSupabase.ts and mockNeo4j.ts).
+      - TDD workflow and best practices documented in docs/testing/README.md.
+      - Test script commands (test, test:coverage, lint, type-check) added to frontend/package.json and backend/package.json.
+      - Test coverage reporting configured for both frontend and backend.
+      - CI/CD integration for automated testing and coverage reporting via .github/workflows/test.yml.
+    error_details: ""
+    phase: 1
+    orchestrator:
+      action: "delegate"
+      rationale: "Project Orchestrator must ensure Feature Developer and TDD Task Force establish testing protocols."
+    assigned_to: "feature-developer"
+    estimated_time: "30 minutes"
+    technology_stack:
+      primary_language: "TypeScript"
+      frameworks: ["Jest", "Vitest", "ESLint", "Prettier"]
+      tools: ["TypeScript Compiler"]
+    prerequisites:
+      environment:
+        - "Frontend and backend containers running"
+      knowledge:
+        - "Testing frameworks"
+        - "Linting/formatting tools"
+      resources:
+        - "Jest/Vitest/ESLint/Prettier docs"
+      dependencies:
+        - "FRONT-001"
+        - "BACK-001"
+    development_approach:
+      tdd_required: true
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "Strict TDD workflow"
+      - "No code without tests"
+      - "All code linted and formatted"
+    validation:
+      criteria:
+        - "All test, lint, and type check commands pass"
+      commands:
+        - "docker-compose exec frontend yarn test"
+        - "docker-compose exec backend yarn test"
+        - "docker-compose exec frontend yarn lint"
+        - "docker-compose exec backend yarn lint"
+        - "docker-compose exec frontend yarn tsc --noEmit"
+        - "docker-compose exec backend yarn tsc --noEmit"
+    error_handling:
+      potential_errors:
+        - error: "Tests fail"
+          detection: "yarn test returns non-zero"
+          resolution: "Fix failing tests"
+        - error: "Lint/type errors"
+          detection: "yarn lint or tsc fails"
+          resolution: "Fix code style or type issues"
+    git_operations:
+      required: true
+      confirmation_required: false
+    substeps: []
+
+  # ---------------------- DOCUMENTATION MODULE ----------------------
+  - id: "DOC-001"
+    status_marker: "[ ]"
+    name: "Initialize Documentation Structure"
+    description: >
+      Create the docs/ folder structure and initial documentation templates for architecture, API, components, config, setup, and deployment.
+    status: "not_started"
+    error_details: ""
+    phase: 1
+    orchestrator:
+      action: "delegate"
+      rationale: "Project Orchestrator must ensure Documentation Scribe establishes documentation as a living system."
+    assigned_to: "documentation-scribe"
+    estimated_time: "30 minutes"
+    technology_stack:
+      primary_language: "Markdown"
+      frameworks: []
+      tools: []
+    prerequisites:
+      environment:
+        - "docs/ folder in repo"
+      knowledge:
+        - "Documentation best practices"
+      resources:
+        - "Project requirements"
+      dependencies:
+        - "DEVOPS-001"
+    development_approach:
+      tdd_required: false
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "Docs as Living System"
+      - "Consistent Markdown formatting"
+    validation:
+      criteria:
+        - "docs/ folder exists with required files"
+      commands:
+        - "ls docs/"
+    error_handling:
+      potential_errors:
+        - error: "Missing docs/ folder"
+          detection: "ls docs/ returns error"
+          resolution: "Create docs/ folder and templates"
+    git_operations:
+      required: true
+      confirmation_required: false
+    substeps: []
+
+  # ---------------------- INTEGRATION MODULE ----------------------
+  - id: "INT-001"
+    status_marker: "[ ]"
+    name: "Initial Integration Smoke Test"
+    description: >
+      Run a smoke test to verify that all initialized services (frontend, backend, database) can communicate as expected within Docker Compose.
+    status: "not_started"
+    error_details: ""
+    phase: 1
+    orchestrator:
+      action: "delegate"
+      rationale: "Project Orchestrator must ensure initial integration is validated before feature development."
+    assigned_to: "feature-developer"
+    estimated_time: "20 minutes"
+    technology_stack:
+      primary_language: "TypeScript"
+      frameworks: ["Next.js", "NestJS", "Supabase", "Neo4j"]
+      tools: ["Docker Compose"]
+    prerequisites:
+      environment:
+        - "All containers running"
+      knowledge:
+        - "Service integration basics"
+      resources:
+        - "docker-compose.yml"
+      dependencies:
+        - "FRONT-001"
+        - "BACK-001"
+        - "DB-001"
+    development_approach:
+      tdd_required: false
+      pair_programming: false
+      documentation_update_required: false
+    adherence_requirements:
+      - "All services must be reachable"
+      - "No hardcoded endpoints"
+    validation:
+      criteria:
+        - "Frontend can call backend API"
+        - "Backend can access Supabase and Neo4j"
+      commands:
+        - "curl http://localhost:3000/api/health"
+        - "curl http://localhost:4000/graphql"
+    error_handling:
+      potential_errors:
+        - error: "Service unreachable"
+          detection: "curl fails"
+          resolution: "Check Docker Compose network, fix config"
+    git_operations:
+      required: false
+      confirmation_required: false
+    substeps: []

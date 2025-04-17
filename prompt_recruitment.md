@@ -26,193 +26,85 @@ You are hereby ORDERED to recruit and deploy a specialized battalion of AI agent
 **[IMPORTANT: THIS SECTION MUST BE EDITED TO MATCH YOUR SPECIFIC PROJECT REQUIREMENTS]**
 
 1.  **TECHNOLOGY ARSENAL:**
-    **[INSTRUCTIONS: SELECT ONE OPTION FROM EACH CATEGORY AND REMOVE ALL OTHERS. DELETE ANY SECTIONS THAT DON'T APPLY TO YOUR PROJECT]**
 
     ### 1.1 Project Overview
-    * **Project Description**: [SELECT ONE OR CUSTOMIZE]
+    * **Project Description**: 
       * Modern web application with responsive UI and data visualization capabilities <!-- For customer-facing dashboards -->
-      * Enterprise-grade API service with comprehensive documentation <!-- For multi-client backend services -->
-      * Retrieval-Augmented Generation (RAG) system for domain-specific knowledge <!-- For specialized AI assistants -->
-      * Real-time data processing pipeline with visualization dashboard <!-- For immediate monitoring systems -->
-      * Mobile-first progressive web application with offline capabilities <!-- For unreliable connectivity environments -->
-      * Microservices architecture for scalable backend operations <!-- For independently scalable components -->
-    * **Project Domain**: [SELECT ONE OR CUSTOMIZE]
-      * E-commerce <!-- Online shopping platforms -->
+
+    * **Project Domain**: 
       * Healthcare/Biomedical <!-- Patient/medical systems -->
-      * Finance/Banking <!-- Financial transaction systems -->
-      * Education/E-learning <!-- Learning management platforms -->
-      * Enterprise Resource Planning <!-- Business management systems -->
-      * Content Management <!-- Digital content publishing -->
-      * Social Media/Community <!-- User interaction platforms -->
       * Data Analytics/Business Intelligence <!-- Business intelligence tools -->
 
     ### 1.2 Frontend Technologies
-    * **Frontend Framework**: [SELECT ONE OR CUSTOMIZE]
+    * **Frontend Framework**: 
       * Next.js (v. latest stable) <!-- SSR/SSG for SEO-critical sites -->
-      * React (v. latest stable) <!-- Component-based SPAs -->
-      * Vue.js (v. latest stable) <!-- Progressive framework with easy learning curve -->
-      * Angular (v. latest stable) <!-- Full-featured MVC for enterprise apps -->
-      * Svelte (v. latest stable) <!-- Compile-time framework for performance -->
-      * None (Backend-only application) <!-- Backend-only applications -->
-    * **UI Design System**: [SELECT ONE OR CUSTOMIZE]
+
+    * **UI Design System**: 
       * Tailwind CSS <!-- Utility-first for custom designs -->
-      * Material UI <!-- Google's design language -->
-      * Chakra UI <!-- Accessible component library -->
-      * Bootstrap <!-- Rapid responsive development -->
-      * Ant Design <!-- Enterprise UI components -->
-      * Custom design system <!-- Unique brand requirements -->
-    * **State Management**: [SELECT ONE OR CUSTOMIZE]
-      * Redux/Redux Toolkit <!-- For complex state logic -->
-      * Zustand <!-- Lightweight alternative -->
-      * MobX <!-- Reactive state management -->
-      * Context API <!-- Built-in React state -->
-      * Pinia/Vuex <!-- For Vue applications -->
-      * NgRx <!-- For Angular applications -->
-    * **Data Visualization**: [SELECT ONE OR CUSTOMIZE]
+
+    * **Data Visualization**: 
       * Apache ECharts <!-- Comprehensive charting -->
-      * D3.js <!-- Custom visualization needs -->
-      * Chart.js <!-- Simple, flexible charts -->
-      * Plotly <!-- Scientific/interactive charts -->
-      * Recharts <!-- React-specific charts -->
       * None <!-- No visualization needed -->
 
     ### 1.3 Backend Technologies
-    * **Primary Language**: [SELECT ONE OR CUSTOMIZE]
+    * **Primary Language**: 
       * TypeScript (strict mode enabled) <!-- Typed JS for large teams -->
-      * JavaScript (ES2022+) <!-- For rapid development -->
-      * Python (3.10+) <!-- Versatile, great for data/AI -->
-      * Go (1.20+) <!-- High-performance services -->
-      * Rust (latest stable) <!-- Memory-safe systems programming -->
-      * Java (17+) <!-- Enterprise stability -->
-      * C# (.NET 7+) <!-- Microsoft ecosystem integration -->
-    * **Backend Framework**: [SELECT ONE OR CUSTOMIZE]
-      * Express.js <!-- Minimal Node.js framework -->
+
+    * **Backend Framework**: 
+
       * NestJS <!-- Enterprise TypeScript framework -->
-      * FastAPI <!-- High-performance Python APIs -->
-      * Django <!-- Full-featured Python framework -->
-      * Spring Boot <!-- Java microservices standard -->
-      * ASP.NET Core <!-- High-performance .NET -->
-      * Actix Web <!-- Ultra-fast Rust framework -->
-      * Gin <!-- Efficient Go web framework -->
-      * None (Serverless or static application) <!-- Serverless/static applications -->
-    * **API Architecture**: [SELECT ONE OR CUSTOMIZE]
-      * REST <!-- Standard web API pattern -->
+
+    * **API Architecture**: 
+      * Neo4j Aura
       * GraphQL <!-- Flexible data fetching -->
-      * gRPC <!-- High-performance microservices -->
-      * WebSockets <!-- Real-time communication -->
-      * Hybrid (combination of the above) <!-- Mixed approach for varied needs -->
 
     ### 1.4 Database & Storage
-    * **Primary Database**: [SELECT ONE OR CUSTOMIZE]
-      * PostgreSQL <!-- Advanced relational DB -->
-      * MySQL/MariaDB <!-- Popular web DB -->
-      * MongoDB <!-- Flexible document DB -->
-      * DynamoDB <!-- AWS-managed scaling -->
-      * Firestore <!-- Real-time document DB -->
-      * SQLite <!-- Embedded lightweight DB -->
+    * **Primary Database**: 
       * Supabase <!-- Firebase alternative -->
-    * **Vector Database**: [SELECT IF APPLICABLE]
-      * Pinecone <!-- Managed vector search -->
-      * Weaviate <!-- Self-hosted semantic search -->
-      * Qdrant <!-- Filtered vector search -->
-      * FAISS <!-- High-performance vectors -->
-      * Milvus <!-- Large-scale vector DB -->
-      * Chroma <!-- Simple RAG integration -->
+    * **Vector Database**: 
       * None <!-- No vector search needed -->
-    * **Caching Layer**: [SELECT ONE OR CUSTOMIZE]
-      * Redis <!-- Versatile in-memory store -->
-      * Memcached <!-- Simple distributed caching -->
-      * Elasticsearch <!-- Search with caching -->
-      * CDN (Cloudflare/Akamai/Fastly) <!-- Global asset caching -->
+    * **Caching Layer**: 
       * None <!-- No caching needed -->
 
     ### 1.5 AI/ML Components
-    * **LLM Provider**: [SELECT IF APPLICABLE]
-      * OpenAI API (GPT-4/3.5) <!-- State-of-the-art LLMs -->
-      * Anthropic API (Claude) <!-- Safety-focused models -->
-      * Cohere API <!-- Enterprise-grade LLMs -->
-      * Mistral AI <!-- Cost-effective models -->
-      * Ollama <!-- Local LLM deployment -->
-      * HuggingFace Inference API <!-- Diverse model access -->
+    * **LLM Provider**: 
       * None <!-- No LLM functionality -->
-    * **Embedding Model**: [SELECT IF APPLICABLE]
-      * OpenAI Embeddings <!-- Strong general embeddings -->
-      * Cohere Embed <!-- Multilingual support -->
-      * NVIDIA NeMo Embedding API <!-- Domain-specific embeddings -->
-      * Sentence Transformers <!-- Open-source option -->
-      * BiomedCLIP/PubMedBERT <!-- Medical domain -->
+    * **Embedding Model**: 
       * None <!-- No embedding functionality -->
-    * **ML Framework**: [SELECT IF APPLICABLE]
-      * TensorFlow/Keras <!-- Production-ready ML -->
-      * PyTorch <!-- Research-friendly framework -->
-      * scikit-learn <!-- Classical ML algorithms -->
-      * Hugging Face Transformers <!-- Pre-trained model ecosystem -->
+    * **ML Framework**: 
       * None <!-- No custom ML development -->
 
     ### 1.6 DevOps & Infrastructure
-    * **Containerization**: [SELECT ONE OR CUSTOMIZE]
+    * **Containerization**: 
       * Docker <!-- Standard container platform -->
-      * Kubernetes <!-- Coprompt_recruitment.mdntainer orchestration at scale -->
       * Docker Compose <!-- Multi-container setups -->
-      * Podman <!-- Secure daemonless containers -->
-      * None (Traditional deployment) <!-- Traditional deployment -->
-    * **CI/CD Pipeline**: [SELECT ONE OR CUSTOMIZE]
+
+    * **CI/CD Pipeline**: 
       * GitHub Actions <!-- GitHub-integrated automation -->
       * GitLab CI/CD <!-- GitLab-integrated pipelines -->
-      * Jenkins <!-- Customizable self-hosted CI/CD -->
-      * CircleCI <!-- Cloud-based parallel pipelines -->
-      * AWS CodePipeline <!-- AWS-native CI/CD -->
-      * Azure DevOps <!-- Microsoft ecosystem CI/CD -->
-    * **Deployment Target**: [SELECT ONE OR CUSTOMIZE]
-      * AWS (ECS/EKS/Lambda) <!-- Comprehensive cloud services -->
-      * Azure (App Service/AKS/Functions) <!-- Microsoft-integrated cloud -->
-      * GCP (Cloud Run/GKE/Functions) <!-- Google's cloud platform -->
+
+    * **Deployment Target**: 
       * Vercel <!-- Optimized for Next.js/React -->
-      * Netlify <!-- JAMstack deployment -->
-      * Digital Ocean <!-- Simpler cloud provider -->
-      * Self-hosted (On-premises) <!-- On-premises control -->
-      * Docker Swarm <!-- Lightweight orchestration -->
 
     ### 1.7 Quality Assurance
-    * **Testing Frameworks**: [SELECT APPLICABLE OPTIONS]
-      * Jest <!-- JS unit/integration testing -->
-      * React Testing Library <!-- Component testing -->
-      * Cypress <!-- End-to-end web testing -->
-      * Playwright <!-- Cross-browser testing -->
-      * Pytest <!-- Python test framework -->
-      * JUnit <!-- Java test framework -->
-      * NUnit <!-- .NET test framework -->
-      * Selenium <!-- Browser automation -->
-    * **Code Quality Tools**: [SELECT APPLICABLE OPTIONS]
+    * **Testing Frameworks**: 
+
+
+    * **Code Quality Tools**: 
       * ESLint <!-- JS code linting -->
       * Prettier <!-- Code formatting -->
       * TypeScript Compiler <!-- Static type checking -->
-      * Black <!-- Python formatting -->
-      * Flake8 <!-- Python linting -->
-      * MyPy <!-- Python type checking -->
-      * SonarQube <!-- Multi-language analysis -->
-      * Husky <!-- Git hooks automation -->
-    * **Performance Testing**: [SELECT IF APPLICABLE]
-      * Lighthouse <!-- Web performance metrics -->
-      * JMeter <!-- Load/stress testing -->
-      * k6 <!-- Developer-friendly load testing -->
+
+    * **Performance Testing**: 
+
       * None <!-- No performance testing needed -->
 
     ### 1.8 Monitoring & Observability
-    * **Logging**: [SELECT ONE OR CUSTOMIZE]
-      * ELK Stack <!-- Comprehensive log management -->
-      * Datadog <!-- Unified monitoring platform -->
-      * New Relic <!-- Application performance focus -->
-      * Grafana/Loki <!-- Visualization-rich logging -->
-      * Sentry <!-- Real-time error tracking -->
-      * Loguru <!-- Python logging utility -->
-      * Winston <!-- Node.js logging library -->
+    * **Logging**: 
+
       * None <!-- No centralized logging -->
-    * **Metrics & Tracing**: [SELECT IF APPLICABLE]
-      * Prometheus <!-- Time-series metrics -->
-      * Grafana <!-- Metrics dashboarding -->
-      * Jaeger <!-- Distributed request tracing -->
-      * OpenTelemetry <!-- Standardized observability -->
+    * **Metrics & Tracing**: 
+
       * None <!-- No metrics collection needed -->
 
 2.  **ARCHITECTURAL DIRECTIVES:**
@@ -225,40 +117,20 @@ You are hereby ORDERED to recruit and deploy a specialized battalion of AI agent
     *   **Minimalism:** Avoid unnecessary complexity and file creation. Each file must serve a clear purpose within the architecture. Prefer fewer, well-structured files over many small files that fragment the codebase. All agents MUST justify the creation of new files based on architectural necessity, not convenience.
 
     ### 2.2 Code Organization
-    *   **Directory Structure:** [SELECT ONE OR CUSTOMIZE]
+    *   **Directory Structure:** 
         * Feature-based organization (group by feature/domain) <!-- By business domain, ideal for microservices -->
-        * Layer-based organization (group by technical role) <!-- By technical role, good for monoliths -->
-        * Hybrid approach (combination of feature and layer) <!-- Combined organization for complex apps -->
-    *   **Code Boundaries:** Clearly defined module boundaries with explicit public APIs <!-- Essential for maintainability -->
-    *   **Dependency Management:** Strict control of dependencies between modules <!-- Prevents circular dependencies -->
 
     ### 2.3 Design Patterns
-    *   **Architectural Patterns:** [SELECT APPLICABLE OPTIONS]
+    *   **Architectural Patterns:** 
         * Microservices architecture <!-- Independent, scalable services -->
-        * Monolithic architecture <!-- Single deployable application -->
-        * Serverless architecture <!-- Function-based, no server management -->
-        * Event-driven architecture <!-- Async event-based communication -->
-        * Hexagonal/Clean/Onion architecture <!-- Domain-centric design -->
-        * Model-View-Controller (MVC) <!-- Separation of data, UI, and logic -->
-        * Model-View-ViewModel (MVVM) <!-- UI with data binding -->
-    *   **Implementation Patterns:** [SELECT APPLICABLE OPTIONS]
+
+    *   **Implementation Patterns:** 
         * Repository pattern <!-- Data access abstraction -->
-        * Factory pattern <!-- Object creation logic -->
-        * Strategy pattern <!-- Swappable algorithms -->
-        * Observer pattern <!-- Event notification system -->
-        * Dependency injection <!-- Inversion of control -->
-        * Command pattern <!-- Operation encapsulation -->
+
 
     ### 2.4 Security Architecture
-    *   **Authentication:** [SELECT ONE OR CUSTOMIZE]
-        * JWT-based authentication <!-- Token-based for stateless apps -->
-        * OAuth 2.0 / OpenID Connect <!-- For third-party integration -->
-        * Session-based authentication <!-- For monolithic applications -->
+    *   **Authentication:** 
         * API key authentication <!-- Simple service-to-service auth -->
-        * Multi-factor authentication (MFA) <!-- For high-security needs -->
-    *   **Authorization:** Role-based access control (RBAC) or attribute-based access control (ABAC) <!-- Access control model -->
-    *   **Data Protection:** Encryption at rest and in transit <!-- Data confidentiality -->
-    *   **Input Validation:** Comprehensive validation at all entry points <!-- Prevents attacks -->
 
 3.  **OPERATIONAL PROTOCOLS:**
 
@@ -279,40 +151,23 @@ You are hereby ORDERED to recruit and deploy a specialized battalion of AI agent
         * Configuration guides <!-- Setup and configuration -->
         * Development setup instructions <!-- Local development -->
         * Deployment procedures <!-- Production deployment -->
-        * Testing strategies <!-- Test approach and coverage -->
     *   **Documentation Timing:** Every agent MUST update relevant documentation sections after completing any subtask <!-- Keep docs current -->
-    *   **Documentation Format:** [SELECT ONE OR CUSTOMIZE]
+    *   **Documentation Format:** 
         * Markdown files in repository <!-- Simple text-based docs -->
-        * OpenAPI/Swagger for API documentation <!-- Interactive API docs -->
-        * JSDoc/TypeDoc for code documentation <!-- Code-level docs -->
-        * Sphinx for Python documentation <!-- Python-specific docs -->
-        * Storybook for UI component documentation <!-- Visual component docs -->
 
     ### 3.3 Version Control Protocols
-    *   **Git Workflow:** [SELECT ONE OR CUSTOMIZE]
+    *   **Git Workflow:** 
         * GitHub Flow (feature branches + pull requests) <!-- Simple PR-based workflow -->
-        * GitFlow (develop, feature, release, hotfix branches) <!-- For complex release management -->
-        * Trunk-based development (short-lived feature branches) <!-- For continuous delivery -->
     *   **Commit Standards:**
         * Conventional Commits format (type: description) <!-- Structured commit messages -->
-        * Atomic commits (single logical change per commit) <!-- Small, focused changes -->
-        * Descriptive commit messages <!-- Clear explanation of changes -->
     *   **Confirmation Gate:**
         * A **mandatory confirmation gate** exists before pushing changes <!-- Prevents unauthorized pushes -->
-        * After implementation/testing/refactoring is complete, the orchestrating agent MUST ask for explicit confirmation <!-- User approval required -->
-        * Only upon receiving a "Yes" confirmation can changes be pushed to the repository <!-- Explicit permission needed -->
         * A dedicated agent is responsible for executing Git commands only upon instruction <!-- Controlled Git operations -->
 
     ### 3.4 Deployment Pipeline
-    *   **Environment Stages:** [SELECT APPLICABLE OPTIONS]
-        * Development <!-- For active development work -->
-        * Testing/QA <!-- For quality assurance -->
-        * Staging <!-- Production-like final testing -->
+    *   **Environment Stages:** 
         * Production <!-- Live environment for users -->
-    *   **Deployment Strategy:** [SELECT ONE OR CUSTOMIZE]
-        * Blue-Green deployment <!-- Zero-downtime switching -->
-        * Canary releases <!-- Gradual traffic shifting -->
-        * Rolling updates <!-- Sequential instance updates -->
+    *   **Deployment Strategy:** 
         * Feature flags <!-- Runtime feature toggling -->
     *   **Containerization:** All components must be containerized using Docker or equivalent technology <!-- Consistent environments -->
     *   **Infrastructure as Code:** All infrastructure must be defined as code using tools like Terraform, AWS CloudFormation, or equivalent <!-- Reproducible infrastructure -->

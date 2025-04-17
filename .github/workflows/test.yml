@@ -1,0 +1,67 @@
+name: Test & Coverage
+
+on:
+  push:
+    branches: [main, develop, feature/**]
+  pull_request:
+    branches: [main, develop, feature/**]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        ports: [5432:5432]
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: ./frontend
+
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: ./backend
+
+      - name: Run frontend unit/component tests (Jest)
+        run: npm run test:coverage
+        working-directory: ./frontend
+
+      - name: Run frontend E2E tests (Cypress)
+        run: npm run test:e2e
+        working-directory: ./frontend
+
+      - name: Run backend unit/integration tests (Jest)
+        run: npm run test:cov
+        working-directory: ./backend
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: |
+            frontend/coverage
+            backend/coverage
+
+      - name: Enforce coverage thresholds
+        run: |
+          npx --yes check-coverage frontend/coverage/lcov.info 80
+          npx --yes check-coverage backend/coverage/lcov.info 80
+
+# Note: You may need to add or adjust steps for database mocks, Supabase/Neo4j emulation, or secrets as your project evolves.

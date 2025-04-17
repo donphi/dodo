@@ -1,0 +1,50 @@
+# Backend Application Module & Component Documentation
+
+## Overview
+
+This document describes the structure and usage of the core modules, middleware, and configuration for the NestJS backend application (BACK-001).
+
+## Module Structure
+
+- **AppModule**: Root module, imports all feature and infrastructure modules.
+- **ConfigModule/ConfigService**: Loads configuration from environment variables and the central `config/` directory. All config access must use this service.
+- **GraphQLModule**: Sets up code-first GraphQL with auto-generated schema, playground in non-production.
+- **SupabaseModule**: Provides a Supabase client, configured via `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`.
+- **Neo4jModule**: Provides a Neo4j driver, configured via `NEO4J_URL`, `NEO4J_USER`, `NEO4J_PASSWORD`.
+- **LoggingModule/LoggingService**: Provides structured JSON logging, implements NestJS LoggerService.
+- **Repository Pattern**: `BaseRepository<T>` abstract class for data access abstraction.
+- **API Key Middleware**: Enforces API key authentication for all requests, using the `API_KEY` config value.
+- **HealthController**: Exposes `/health` endpoint for readiness checks.
+- **ErrorHandlingMiddleware**: Catches unhandled errors, logs them, and returns a generic error message.
+
+## Configuration
+
+All configuration values must be provided via environment variables or the central `config/` directory. No secrets or config values may be hardcoded.
+
+### Required Environment Variables
+
+- `PORT`: Port to run the backend server (default: 4000)
+- `GLOBAL_PREFIX`: (optional) Global API prefix
+- `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`: Supabase connection
+- `NEO4J_URL`, `NEO4J_USER`, `NEO4J_PASSWORD`: Neo4j connection
+- `API_KEY`: API key for service-to-service authentication
+- `NODE_ENV`: Environment (development, production, etc.)
+
+## Usage Example
+
+To add a new feature module:
+1. Create a new module and service, importing `ConfigService` for config and using the repository pattern for data access.
+2. Register the module in `AppModule`.
+3. Expose GraphQL resolvers as needed.
+
+## Code Quality
+
+- All code must pass ESLint and Prettier checks.
+- All config must be accessed via `ConfigService`.
+- All logging must use `LoggingService`.
+- All endpoints must be protected by API key middleware.
+
+## Health & Monitoring
+
+- `/health` endpoint returns `{ status: 'ok' }` for readiness checks.
+- All errors are logged in structured JSON format.

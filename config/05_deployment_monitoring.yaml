@@ -1,0 +1,295 @@
+# ==================================================================================================
+# PROJECT WORKFLOW: PHASE 5 - DEPLOYMENT & MONITORING
+# ==================================================================================================
+context:
+  project_name: "Biobank Graph Webkit Dep Visualization Platform"
+  version: "1.0.0"
+  change_history:
+    - version: "1.0.0"
+      date: "2025-04-15"
+      author: "yaml-architect"
+      description: "Initial creation of deployment & monitoring workflow"
+  owner: "Project Orchestrator (project-orchestrator)"
+  responsible_parties:
+    - "git-gatekeeper"
+    - "config-manager"
+    - "feature-developer"
+    - "documentation-scribe"
+    - "ui-ux-specialist"
+  business_value: >
+    Ensures reliable, secure, and auditable deployment of all application components, with robust monitoring, backup, and disaster recovery for production operations.
+  scope: >
+    CI/CD pipeline setup, environment configuration, deployment to Vercel, monitoring, backup, and disaster recovery for all services, with strict validation and rollback.
+  boundaries: >
+    Excludes manual deployments and non-Dockerized environments. All deployments must be automated, validated, and documented.
+  relationships:
+    - "Builds on all previous phases"
+    - "Feeds into ongoing operations and maintenance"
+  assumptions:
+    - "All code passes validation gates before deployment"
+    - "No direct production changes outside CI/CD"
+  permissions_required:
+    - "Access to Vercel, GitHub/GitLab, Docker, and cloud resources"
+  expected_frequency: "Per release or hotfix"
+  security_and_compliance:
+    - "No secrets in codebase; all via env vars"
+    - "Production data protected and backed up"
+  related_docs:
+    - "docs/deployment-procedures.md"
+    - "docs/monitoring.md"
+    - "docs/backup-recovery.md"
+  resource_requirements:
+    - "Vercel account"
+    - "GitHub/GitLab account"
+    - "Docker Compose"
+    - "Backup storage"
+  glossary:
+    CI/CD: "Continuous Integration/Continuous Deployment"
+    rollback: "Revert to previous stable state"
+    blue_green: "Zero-downtime deployment strategy"
+    canary: "Gradual rollout to subset of users"
+    backup: "Copy of data for recovery"
+  traceability_matrix:
+    - requirement: "Automated deployment"
+      steps: ["DEVOPS-005"]
+    - requirement: "Environment setup"
+      steps: ["DEVOPS-006"]
+    - requirement: "Monitoring/logging"
+      steps: ["DEVOPS-007"]
+    - requirement: "Backup/disaster recovery"
+      steps: ["DEVOPS-008"]
+
+steps:
+  # ---------------------- CI/CD PIPELINE SETUP ----------------------
+  - id: "DEVOPS-005"
+    status_marker: "[ ]"
+    name: "Configure CI/CD Pipeline for Automated Deployment"
+    description: >
+      Set up GitHub Actions and/or GitLab CI/CD pipelines for automated build, test, and deployment of all services, enforcing all validation gates and gated push.
+    status: "not_started"
+    error_details: ""
+    phase: 5
+    orchestrator:
+      action: "delegate"
+      rationale: "Git Gatekeeper is responsible for all Git and CI/CD operations, with config-manager for pipeline config."
+    assigned_to: "git-gatekeeper"
+    estimated_time: "1 hour"
+    technology_stack:
+      primary_language: "YAML"
+      frameworks: ["GitHub Actions", "GitLab CI/CD"]
+      tools: ["Docker", "Node.js"]
+    prerequisites:
+      environment:
+        - "GitHub/GitLab repo"
+        - "Docker Compose"
+      knowledge:
+        - "CI/CD pipeline config"
+        - "Validation gates"
+      resources:
+        - ".github/workflows/ or .gitlab-ci.yml"
+      dependencies:
+        - "TEST-005"
+    development_approach:
+      tdd_required: false
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "All validation gates enforced"
+      - "No push without confirmation"
+      - "All commands run in Docker"
+    validation:
+      criteria:
+        - "Pipeline runs on push/PR"
+        - "All steps pass before deploy"
+      commands:
+        - "git push"
+        - "Check CI/CD status"
+    error_handling:
+      potential_errors:
+        - error: "Pipeline fails"
+          detection: "CI/CD status red"
+          resolution: "Fix code/config, rerun"
+        - error: "Unauthorized push"
+          detection: "Push without confirmation"
+          resolution: "Block and report"
+    git_operations:
+      required: true
+      confirmation_required: true
+    substeps: []
+
+  # ---------------------- ENVIRONMENT SETUP ----------------------
+  - id: "DEVOPS-006"
+    status_marker: "[ ]"
+    name: "Configure Environments for Dev, Staging, Production"
+    description: >
+      Set up and document environment-specific configuration for dev, staging, and production in config/ and Vercel, using environment variables and secrets management.
+    status: "not_started"
+    error_details: ""
+    phase: 5
+    orchestrator:
+      action: "delegate"
+      rationale: "Config Manager manages all environment config and secrets."
+    assigned_to: "config-manager"
+    estimated_time: "45 minutes"
+    technology_stack:
+      primary_language: "TypeScript"
+      frameworks: []
+      tools: ["Vercel CLI", "Docker"]
+    prerequisites:
+      environment:
+        - "Vercel account"
+        - "config/ directory"
+      knowledge:
+        - "Environment variable management"
+        - "Vercel config"
+      resources:
+        - "Vercel dashboard"
+        - "config/"
+      dependencies:
+        - "DEVOPS-005"
+    development_approach:
+      tdd_required: false
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "No secrets in codebase"
+      - "All env vars documented"
+    validation:
+      criteria:
+        - "Envs configured in Vercel and config/"
+        - "Secrets not in codebase"
+      commands:
+        - "vercel env ls"
+        - "ls config/"
+    error_handling:
+      potential_errors:
+        - error: "Secret in codebase"
+          detection: "grep for secrets"
+          resolution: "Remove and rotate secret"
+        - error: "Env not set"
+          detection: "vercel env ls missing var"
+          resolution: "Add missing env var"
+    git_operations:
+      required: true
+      confirmation_required: false
+    substeps: []
+
+  # ---------------------- DEPLOYMENT, VALIDATION & ROLLBACK ----------------------
+  - id: "DEVOPS-007"
+    status_marker: "[ ]"
+    name: "Deploy to Vercel and Validate Zero-Downtime"
+    description: >
+      Deploy all services to Vercel using blue-green/canary strategy, validate deployment, and provide rollback procedures in case of failure.
+    status: "not_started"
+    error_details: ""
+    phase: 5
+    orchestrator:
+      action: "delegate"
+      rationale: "Git Gatekeeper executes deployment; Feature Developer and Documentation Scribe validate and document."
+    assigned_to: "git-gatekeeper"
+    estimated_time: "1 hour"
+    technology_stack:
+      primary_language: "TypeScript"
+      frameworks: ["Vercel", "Docker"]
+      tools: ["Vercel CLI"]
+    prerequisites:
+      environment:
+        - "Vercel project"
+        - "CI/CD pipeline passing"
+      knowledge:
+        - "Vercel deployment"
+        - "Zero-downtime strategies"
+      resources:
+        - "Vercel dashboard"
+        - "docs/deployment-procedures.md"
+      dependencies:
+        - "DEVOPS-006"
+    development_approach:
+      tdd_required: false
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "Blue-green/canary deploy"
+      - "Rollback documented"
+      - "No downtime"
+    validation:
+      criteria:
+        - "Deployment succeeds"
+        - "No downtime observed"
+        - "Rollback works if needed"
+      commands:
+        - "vercel --prod"
+        - "curl health endpoints"
+        - "vercel rollback"
+    error_handling:
+      potential_errors:
+        - error: "Deployment fails"
+          detection: "vercel --prod returns error"
+          resolution: "Rollback, fix, redeploy"
+        - error: "Downtime observed"
+          detection: "Health check fails"
+          resolution: "Rollback, investigate"
+    git_operations:
+      required: true
+      confirmation_required: true
+    substeps: []
+
+  # ---------------------- MONITORING, BACKUP & DISASTER RECOVERY ----------------------
+  - id: "DEVOPS-008"
+    status_marker: "[ ]"
+    name: "Implement Monitoring, Backup, and Disaster Recovery"
+    description: >
+      Set up basic monitoring (health checks, error rates), configure automated backups for Supabase/Neo4j, and document disaster recovery procedures.
+    status: "not_started"
+    error_details: ""
+    phase: 5
+    orchestrator:
+      action: "delegate"
+      rationale: "Config Manager and Documentation Scribe ensure monitoring, backup, and recovery are implemented and documented."
+    assigned_to: "config-manager"
+    estimated_time: "45 minutes"
+    technology_stack:
+      primary_language: "TypeScript"
+      frameworks: []
+      tools: ["Supabase CLI", "Neo4j Aura CLI"]
+    prerequisites:
+      environment:
+        - "Supabase/Neo4j admin access"
+        - "Backup storage"
+      knowledge:
+        - "Monitoring basics"
+        - "Backup/recovery procedures"
+      resources:
+        - "docs/monitoring.md"
+        - "docs/backup-recovery.md"
+      dependencies:
+        - "DEVOPS-007"
+    development_approach:
+      tdd_required: false
+      pair_programming: false
+      documentation_update_required: true
+    adherence_requirements:
+      - "Automated backups"
+      - "Disaster recovery documented"
+      - "Health checks in place"
+    validation:
+      criteria:
+        - "Backups run on schedule"
+        - "Recovery procedures tested"
+        - "Monitoring alerts configured"
+      commands:
+        - "supabase db backup"
+        - "neo4j-admin backup"
+        - "curl health endpoints"
+    error_handling:
+      potential_errors:
+        - error: "Backup fails"
+          detection: "Backup command error"
+          resolution: "Fix config, rerun backup"
+        - error: "Recovery fails"
+          detection: "Recovery test fails"
+          resolution: "Update recovery docs, retest"
+    git_operations:
+      required: true
+      confirmation_required: false
+    substeps: []

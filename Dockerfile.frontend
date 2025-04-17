@@ -1,0 +1,46 @@
+# -----------------------------------------------------------------------------
+# Multi-stage Dockerfile for Next.js Frontend (biobank-frontend)
+# Centralized config: see config/containers.yaml
+# -----------------------------------------------------------------------------
+
+# --- Builder Stage ---
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Install dependencies (use package-lock.json or yarn.lock if present)
+COPY ./frontend/package.json ./
+RUN npm install
+
+# Copy source code
+COPY ./frontend .
+
+# Build Next.js app (env vars for build-time config)
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
+RUN npm run build
+
+# --- Production Stage ---
+FROM node:18-alpine AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Copy only necessary files from builder
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+
+# Expose port (matches config/containers.yaml)
+EXPOSE 3000
+
+# Runtime env vars (injected at container start)
+ENV NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+
+# Start Next.js in production mode
+CMD ["npm", "start"]
