@@ -6,11 +6,10 @@ export interface PageContainerProps {
   children: ReactNode;
   className?: string;
   onBackClick?: () => void;
-  maxWidthClass?: string;
 }
 
 
-export function PageContainer({ children, className = '', onBackClick, maxWidthClass = "max-w-2xl" }: PageContainerProps) {
+export function PageContainer({ children, className = '', onBackClick }: PageContainerProps) {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
 
@@ -56,14 +55,14 @@ export function PageContainer({ children, className = '', onBackClick, maxWidthC
         />
       </div>
       <BackButton onClick={handleBackClick} />
-      <div className={`${maxWidthClass} mx-auto px-4 py-8 sm:px-6 lg:px-8`}>
-        <div className="mb-10 text-center">
-          <img
-            alt="Dodo"
-            src={isDarkMode ? "/dodo_logo_dark.svg" : "/dodo_logo.svg"}
-            className="mx-auto h-12 w-auto"
-          />
-        </div>
+      <div className="mt-6 flex justify-center">
+        <img
+          alt="Dodo"
+          src={isDarkMode ? "/dodo_logo_dark.svg" : "/dodo_logo.svg"}
+          className="h-12 w-auto"
+        />
+      </div>
+      <div className="mt-10 w-full bg-transparent dark:bg-transparent px-6 py-12 sm:max-w-[480px] sm:mx-auto sm:px-12 lg:px-8">
         {children}
       </div>
     </div>

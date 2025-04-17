@@ -23,7 +23,12 @@ export function Breadcrumbs({ steps, currentStep, onStepBack }: BreadcrumbsProps
   }
 
   return (
-    <nav aria-label="Progress" className="mb-8 relative">
+    <nav aria-label="Progress" className="mb-8 relative w-full max-w-[95%] sm:max-w-[340px] mx-auto" style={{ maxWidth: '340px' }}>
+      {/*
+        Breadcrumb width is set slightly narrower than text fields on onboarding_page_container
+        (sm:max-w-[440px] vs sm:max-w-[480px]) for visual hierarchy and alignment.
+        Circles reduced for improved proportionality.
+      */}
       {currentStep > 0 && onStepBack && (
         <div className="absolute left-0 top-1/2 -translate-y-1/2">
           <BackButton onClick={() => onStepBack(currentStep - 1)} />
@@ -45,7 +50,7 @@ export function Breadcrumbs({ steps, currentStep, onStepBack }: BreadcrumbsProps
                   </div>
                   <a
                     href="#"
-                    className="relative flex size-8 items-center justify-center rounded-full bg-indigo-600 hover:bg-indigo-900"
+                    className="relative flex size-5 items-center justify-center rounded-full bg-indigo-600 hover:bg-indigo-900"
                   >
                     <CheckIcon aria-hidden="true" className="size-5 text-white" />
                     <span className="sr-only">{step.name}</span>
@@ -59,9 +64,9 @@ export function Breadcrumbs({ steps, currentStep, onStepBack }: BreadcrumbsProps
                   <a
                     href="#"
                     aria-current="step"
-                    className="relative flex size-8 items-center justify-center rounded-full border-2 border-indigo-600 bg-white dark:bg-gray-800"
+                    className="relative flex size-5 items-center justify-center rounded-full border-2 border-indigo-600 bg-white dark:bg-gray-800"
                   >
-                    <span aria-hidden="true" className="size-2.5 rounded-full bg-indigo-600" />
+                    <span aria-hidden="true" className="size-2 rounded-full bg-indigo-600" />
                     <span className="sr-only">{step.name}</span>
                   </a>
                 </>
@@ -72,9 +77,9 @@ export function Breadcrumbs({ steps, currentStep, onStepBack }: BreadcrumbsProps
                   </div>
                   <a
                     href="#"
-                    className="group relative flex size-8 items-center justify-center rounded-full border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-500"
+                    className="group relative flex size-5 items-center justify-center rounded-full border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-500"
                   >
-                    <span aria-hidden="true" className="size-2.5 rounded-full bg-transparent group-hover:bg-gray-300" />
+                    <span aria-hidden="true" className="size-2 rounded-full bg-transparent group-hover:bg-gray-300" />
                     <span className="sr-only">{step.name}</span>
                   </a>
                 </>
