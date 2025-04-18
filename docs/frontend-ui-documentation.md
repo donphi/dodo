@@ -1,154 +1,61 @@
 # Frontend UI Documentation
 
-## Authentication Flow Components
+## Dashboard Profile and Menu
 
-### AuthenticationGateway Component (renamed from UnifiedLogin)
+The dashboard includes a user profile display and menu functionality that provides the following features:
 
-The `AuthenticationGateway` component is a unified authentication interface that combines both standard email/password login and OAuth login options (Google, GitHub) in a single, vertically-aligned component. This component replaces the previous split implementation where different authentication methods were handled by separate components.
+### Profile Display
+- Shows the user's profile picture if available from Supabase
+- Falls back to displaying the user's initials in a colored avatar if no profile picture is available
+- Displays the user's name and email in the mobile view
 
-**Location:** `frontend/tempate_components/login/authentication_gateway.tsx`
+### Menu Functionality
+- **Contact Us**: Navigates to the contact page using Next.js router
+- **Logout**: Properly logs the user out of their Supabase session
+- **Delete Account**: Securely deletes the user's profile and account data from Supabase
 
-**Features:**
-- Consistent styling and layout using the PageContainer component
-- Proper vertical alignment of content
-- Consistent background display
-- Support for both standard email/password login and OAuth providers
-- Dark mode support with automatic theme detection
+### Implementation Details
 
-**Props:**
-- `onOAuthLogin`: Optional callback function that receives the provider name ('Google' or 'GitHub') when an OAuth login button is clicked
+The profile and menu functionality is implemented in the `frontend/components/dashboard/single_page.tsx` component, which uses:
 
-**Usage:**
+1. The `useAuth` hook (`frontend/hooks/useAuth.ts`) to:
+   - Fetch and display the current user's profile information
+   - Handle authentication state
+   - Provide logout functionality
+   - Securely delete user accounts
+
+2. Supabase Edge Functions:
+   - `delete-user.ts`: A serverless function that handles secure account deletion using Supabase admin privileges
+
+### Required Environment Variables
+
+For the profile and authentication features to work properly, the following environment variables must be set:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+For the account deletion functionality to work in production, the Supabase Edge Function must be deployed with:
+
+```
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+```
+
+### Usage Example
+
+The profile menu is automatically included in the dashboard layout. No additional configuration is needed to use it.
+
 ```tsx
-import { AuthenticationGateway } from '../tempate_components/login/authentication_gateway';
+// Example of how the dashboard is used in pages
+import Dashboard from '../components/dashboard/single_page';
 
-const LoginPage: React.FC = () => {
-  const handleOAuthLogin = (provider: string) => {
-    console.log(`OAuth login with ${provider}`);
-    // Implement OAuth login logic here
-  };
-
+const DashboardPage: React.FC = () => {
   return (
-    <AuthenticationGateway onOAuthLogin={handleOAuthLogin} />
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <Dashboard />
+    </div>
   );
 };
-```
 
-## Authentication Workflow
-
-The authentication system supports three main user flows:
-
-### 1. Standard Email/Password Login
-
-When a user comes to the site and clicks on the Dodo logo:
-- They are taken to the login page (`/login`) which displays the `AuthenticationGateway` component
-- If they have previously registered with email/password, they can enter their credentials and log in directly
-- The system validates their credentials against Supabase and grants access to the dashboard if valid
-
-### 2. Standard Registration (5-step onboarding)
-
-If a user doesn't have an account and prefers not to use OAuth:
-- From the login page, they click "Register now"
-- They are taken to the registration page (`/register`) which uses the `StandardRegistration` component
-- They complete the 5-step onboarding process with breadcrumb navigation:
-  1. Account (create email/password)
-  2. Profile
-  3. Affiliation
-  4. Biobank Access
-  5. Finish
-- After completion, they can log in using their email/password
-
-### 3. OAuth Login/Registration (Google or GitHub)
-
-If a user clicks on either the Google or GitHub button:
-- The system initiates OAuth authentication with the selected provider
-- After successful OAuth authentication, the system checks Supabase to determine if the user has registered before
-- If the user is already registered:
-  - They are logged in directly and redirected to the dashboard
-- If the user is not registered:
-  - They are directed to a 4-step onboarding process (skipping the Account step since OAuth handles authentication):
-    1. Profile
-    2. Affiliation
-    3. Biobank Access
-    4. Finish
-  - After completion, they are logged in and can use OAuth for future logins
-
-## Component Structure
-
-The authentication system consists of these key components:
-
-1. **AuthenticationGateway** - The main entry point for login, providing both standard and OAuth options
-2. **onboarding_flow.tsx** - Contains the multi-step registration components:
-   - `StandardRegistration` - 5-step flow for email/password users
-   - `GoogleRegistration` - 4-step flow for Google OAuth users
-   - `GitHubRegistration` - 4-step flow for GitHub OAuth users
-3. **onboarding_page_container.tsx** - Provides consistent layout and styling for all authentication pages
-4. **components/** - Reusable UI components used across the authentication system
-
-### Registration Step Icons
-
-The registration flow includes biotech/data science themed icons that provide visual cues for users during the registration process. A single icon representing the current step is displayed above the breadcrumbs.
-
-**Features:**
-- Single icon representing the current step in the registration process
-- Biotech/data science themed icons from Lucide React
-- Colored ring around the icon (no white outline)
-- Positioned above the breadcrumbs
-- Consistent styling with the rest of the authentication flow
-- Accessible design with proper ARIA attributes
-
-**Icons Used:**
-- Account: UserCircle
-- Profile: Microscope
-- Affiliation: Building2
-- Biobank Access: Vial
-- Finish: CheckCircle
-
-The icons are integrated directly into the RegistrationFlow component, providing a clean and intuitive visual indication of the current step in the registration process.
-
-## Implementation Notes
-
-- The `signin_or_register.tsx` and `app_component.tsx` files have been removed as they've been replaced by the more cohesive `AuthenticationGateway` component.
-- The `AuthenticationGateway` component uses the same `PageContainer` as the registration flow, ensuring consistent styling and proper background display.
-- OAuth authentication is handled through Supabase's built-in providers, which simplifies the integration.
-- The system maintains separate flows for standard and OAuth users while providing a unified visual experience.
-
-## Responsive Design and Width Management
-
-### Width Tokens
-
-The application uses centralized width tokens in the Tailwind configuration to ensure consistent sizing across components:
-
-```js
-// In tailwind.config.js
-maxWidth: {
-  'form': '480px',       // Default desktop width for forms
-  'breadcrumbs': '440px', // Width for breadcrumbs component
-},
-```
-
-These tokens should be used consistently across the application to maintain visual harmony and ensure that changes to component widths can be made in a single location.
-
-### Component Width Guidelines
-
-1. **Form Containers**: Use `sm:max-w-form` for form containers on desktop. On mobile, use `w-full` with appropriate padding.
-
-2. **Breadcrumbs**: Use `sm:max-w-breadcrumbs` for the breadcrumbs component on desktop. On mobile, use a percentage-based width like `max-w-[95%]` to ensure it doesn't extend to the edges of the screen.
-
-3. **Form Elements**: All form elements should use `w-full` to ensure they expand to fill their container.
-
-### Responsive Design Pattern
-
-The application follows a mobile-first approach:
-
-1. Default styles are applied for mobile devices
-2. `sm:` prefix is used for tablet and desktop styles (≥640px)
-3. `lg:` prefix is used for larger desktop styles (≥1024px)
-
-### Important Notes
-
-- **Breadcrumbs and Form Width Relationship**: The breadcrumbs component and form containers have separate width tokens to prevent one from affecting the other. This allows for independent adjustment of their widths.
-
-- **Mobile Padding**: On mobile devices, form containers should have appropriate horizontal padding (e.g., `px-4`) to prevent content from touching the edges of the screen.
-
-- **Width Inheritance**: Be careful with nested components that might inherit width constraints from their parents. Use explicit width classes when necessary to override inherited constraints.
+export default DashboardPage;

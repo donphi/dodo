@@ -31,9 +31,10 @@ const oauthSteps = [
 interface RegistrationFlowProps {
   isOAuth?: boolean;
   provider?: string | null;
+  onComplete?: (formData: Record<string, any>) => void;
 }
 
-export function RegistrationFlow({ isOAuth = false, provider = null }: RegistrationFlowProps) {
+export function RegistrationFlow({ isOAuth = false, provider = null, onComplete }: RegistrationFlowProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const router = useRouter();
@@ -107,7 +108,7 @@ export function RegistrationFlow({ isOAuth = false, provider = null }: Registrat
             />
           );
         case 3:
-          return <FinishStep formData={formData} isOAuth={true} provider={provider} />;
+          return <FinishStep formData={formData} isOAuth={true} provider={provider} onComplete={onComplete} />;
         default:
           return null;
       }
@@ -157,7 +158,7 @@ export function RegistrationFlow({ isOAuth = false, provider = null }: Registrat
             />
           );
         case 4:
-          return <FinishStep formData={formData} />;
+          return <FinishStep formData={formData} onComplete={onComplete} />;
         default:
           return null;
       }
@@ -500,9 +501,21 @@ interface FinishStepProps {
   formData: Record<string, unknown>;
   isOAuth?: boolean;
   provider?: string | null;
+  onComplete?: (formData: Record<string, any>) => void;
 }
 
-export function FinishStep({ formData, isOAuth = false, provider = null }: FinishStepProps) {
+export function FinishStep({ formData, isOAuth = false, provider = null, onComplete }: FinishStepProps) {
+  const router = useRouter();
+  
+  const handleComplete = () => {
+    if (onComplete) {
+      onComplete(formData as Record<string, any>);
+    } else {
+      // Default behavior if no onComplete handler is provided
+      console.log('Registration completed with data:', formData);
+      router.push('/dashboard');
+    }
+  };
   return (
     <div className="space-y-6 w-full">
       <div className="rounded-md bg-green-50 p-4">
@@ -557,7 +570,7 @@ export function FinishStep({ formData, isOAuth = false, provider = null }: Finis
         </div>
       </div>
 
-      <Button>Complete Registration and Launch Explorer</Button>
+      <Button onClick={handleComplete}>Complete Registration and Launch Explorer</Button>
     </div>
   );
 }
