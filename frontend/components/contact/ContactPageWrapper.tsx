@@ -62,8 +62,8 @@ const ContactPageWrapper: React.FC<ContactPageWrapperProps> = ({
   );
 
   return (
-    <>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center transition-colors duration-300">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col transition-colors duration-300">
+      <div className="flex-1 flex items-center justify-center">
         <div className="relative isolate flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
           {/* Background gradient effect */}
           <div
@@ -94,7 +94,7 @@ const ContactPageWrapper: React.FC<ContactPageWrapperProps> = ({
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
 

@@ -36,7 +36,7 @@ const social = [
 
 export default function Footer(): JSX.Element {
   return (
-    <footer className="bg-white dark:bg-gray-900 transition-colors duration-300">
+    <footer className="transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-6 py-12 sm:py-16 lg:px-8">
         <nav aria-label="Footer" className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm font-medium">
           {links.map((item) => (

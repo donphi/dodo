@@ -5,13 +5,13 @@ import Footer from '../components/hero_landing/footer';
 import BackButton from '../components/back_button';
 
 const termsMarkdown = `
-**Effective Date:** February 14, 2025  
+**Effective Date:** April 18, 2025
 
-Please read these Terms of Service ("Terms") carefully before using the Biobankly application or website. These Terms constitute a legally binding agreement between you ("User" or "you") and **Biobankly ("Company", "we", or "us")** governing your access to and use of the Biobankly service ("Service"). By accessing or using Biobankly, you agree to be bound by these Terms. If you do not agree, you must not use the Service.
+Please read these Terms of Service ("Terms") carefully before using the Dodo (DD) application, part of the Biobankly platform ("Biobankly", "we", or "us"). These Terms constitute a legally binding agreement between you ("User" or "you") and Biobankly governing your access to and use of the DD service ("Service"). By accessing or using DD, you agree to be bound by these Terms. If you do not agree, you must not use the Service.
 
-Biobankly is a platform that provides visualization, statistical analysis, and data exploration tools for biobank data. We want to clarify our role: **Biobankly does not host, control, or own the biobank datasets** you may access through our tool – those remain on their respective platforms (such as DNAnexus or the biobank's servers). Biobankly simply connects to those sources with your permission to fetch data for visualization. Additionally, Biobankly uses **DNAnexus's OpenID Connect (OIDC)** for user authentication (bridged through **Supabase OAuth**) but is not operated by or affiliated with DNAnexus, Supabase, or any biobank. By using Biobankly, you also agree to any relevant terms of these third-party services that you use to log in or access data, though Biobankly itself is a separate entity.
+DD is an experimental application developed to support the Biobankly platform. It provides a simplified environment for testing features related to biobank research tools. Unlike the main Biobankly platform, **DD does not use DNAnexus** and does not access third-party biobank datasets. Instead, it uses **Supabase** for data storage and supports login via **GitHub and Gmail OAuth providers**. You may delete your account at any time, which will erase all login credentials and any data collected during onboarding.
 
-Think of Biobankly as **a set of binoculars**: we help you see and analyze biobank data that you have permission to access, but we don't hold the data ourselves. The following sections outline the terms under which we offer our Service.
+Think of DD as a **sandbox environment** for Biobankly features, not connected to any external biobank systems. The following sections outline the terms under which we offer this Service.
 
 ---
 

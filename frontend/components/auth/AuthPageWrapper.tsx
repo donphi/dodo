@@ -11,12 +11,12 @@ interface AuthPageWrapperProps {
  */
 const AuthPageWrapper: React.FC<AuthPageWrapperProps> = ({ children }) => {
   return (
-    <>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center transition-colors duration-300">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col transition-colors duration-300">
+      <div className="flex-1 flex items-center justify-center">
         {children}
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
 
