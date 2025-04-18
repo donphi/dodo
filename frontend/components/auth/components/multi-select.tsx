@@ -25,3 +25,4 @@ export function MultiSelect({ id, label, options }: MultiSelectProps) {
     </div>
   );
 }
+

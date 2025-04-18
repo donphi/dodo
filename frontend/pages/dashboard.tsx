@@ -1,5 +1,5 @@
 import React from 'react';
-import Dashboard from '../tempate_components/dashboard/single_page';
+import Dashboard from '../components/dashboard/single_page';
 
 const DashboardPage: React.FC = () => {
   return (

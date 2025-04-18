@@ -19,7 +19,10 @@ export function TextInput({
   return (
     <div>
       {label && (
-        <label htmlFor={id} className="block text-sm/6 font-medium text-gray-900 dark:text-gray-100">
+        <label
+          htmlFor={id}
+          className="block text-sm/6 font-medium text-gray-900 dark:text-gray-100"
+        >
           {label}
         </label>
       )}
@@ -36,3 +39,4 @@ export function TextInput({
     </div>
   );
 }
+

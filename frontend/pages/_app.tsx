@@ -1,7 +1,7 @@
 import type { AppProps } from 'next/app';
 import '../styles/globals.css';
 import { ThemeProvider } from '../context/ThemeContext';
-import ThemeSwitcher from '../tempate_components/theme_switch';
+import ThemeSwitcher from '../components/theme_switch';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (

@@ -1,12 +1,12 @@
 import React from 'react';
-// Import the registration flow template
-import { StandardRegistration } from '../tempate_components/login/onboarding_flow';
+import { StandardRegistration } from '../components/auth/RegistrationFlow';
+import AuthPageWrapper from '../components/auth/AuthPageWrapper';
 
 const RegisterPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center transition-colors duration-300">
+    <AuthPageWrapper>
       <StandardRegistration />
-    </div>
+    </AuthPageWrapper>
   );
 };
 

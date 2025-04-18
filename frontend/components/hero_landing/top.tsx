@@ -1,5 +1,6 @@
 import { ChevronRightIcon } from '@heroicons/react/20/solid'
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 
 export default function Example() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -68,15 +69,15 @@ export default function Example() {
           Explore real-world phenotype connections through intuitive, data-driven maps. Discover patterns across the UK Biobank cohort in seconds.
           </p>
           <div className="mt-10 flex items-center gap-x-6">
-            <a
+            <Link
               href="/login"
               className="rounded-md bg-indigo-600 dark:bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 dark:hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:focus-visible:outline-indigo-400"
             >
               Launch Dodo
-            </a>
-            <a href="/login" className="text-sm/6 font-semibold text-gray-900 dark:text-white">
+            </Link>
+            <Link href="/login" className="text-sm/6 font-semibold text-gray-900 dark:text-white">
               Learn more <span aria-hidden="true">→</span>
-            </a>
+            </Link>
           </div>
         </div>
         <div className="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">

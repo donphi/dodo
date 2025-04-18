@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import Footer from '../tempate_components/hero_landing/footer';
-import BackButton from '../tempate_components/back_button';
+import Footer from '../components/hero_landing/footer';
+import BackButton from '../components/back_button';
 
 const termsMarkdown = `
 **Effective Date:** February 14, 2025  

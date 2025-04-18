@@ -35,9 +35,14 @@ export function Switch({
           }`}
         />
       </button>
-      <label htmlFor={id} className="text-sm/6 text-gray-700 dark:text-gray-300 select-none cursor-pointer">
+      <label
+        htmlFor={id}
+        className="text-sm/6 text-gray-700 dark:text-gray-300 select-none cursor-pointer"
+      >
         {label}
       </label>
     </div>
   );
 }
+
+

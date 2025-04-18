@@ -7,7 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "format": "prettier --write .",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -43,12 +42,9 @@
     "cypress": "^13.0.0",
     "eslint": "latest",
     "eslint-config-next": "latest",
-    "eslint-config-prettier": "latest",
-    "eslint-plugin-prettier": "latest",
     "identity-obj-proxy": "latest",
     "jest": "^29.0.0",
     "jest-environment-jsdom": "^29.0.0",
-    "prettier": "latest",
     "ts-jest": "^29.0.0",
     "typescript": "latest"
   }

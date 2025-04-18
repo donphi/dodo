@@ -45,3 +45,4 @@ export function Checkbox({ id, label }: CheckboxProps) {
     </div>
   );
 }
+

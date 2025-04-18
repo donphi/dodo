@@ -18,7 +18,10 @@ export function TextArea({
 }: TextAreaProps) {
   return (
     <div>
-      <label htmlFor={id} className="block text-sm/6 font-medium text-gray-900 dark:text-gray-100">
+      <label
+        htmlFor={id}
+        className="block text-sm/6 font-medium text-gray-900 dark:text-gray-100"
+      >
         {label}
       </label>
       <div className="mt-2">
@@ -34,3 +37,4 @@ export function TextArea({
     </div>
   );
 }
+
