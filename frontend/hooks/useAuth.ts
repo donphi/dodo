@@ -35,11 +35,24 @@ export function useAuth() {
   // Function to insert user session
   const recordUserSession = async (userId: string) => {
     try {
+      // Get IP address from an IP service
+      let ipAddress = null;
+      try {
+        const ipResponse = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipResponse.json();
+        ipAddress = ipData.ip;
+      } catch (ipError) {
+        console.error('Failed to get IP address:', ipError);
+        // Continue without IP if the service fails
+      }
+      
+      // Insert the session with IP address
       const { error } = await supabase
         .from('user_sessions')
         .insert({
           user_id: userId,
-          arrival_time: new Date().toISOString()
+          arrival_time: new Date().toISOString(),
+          ip_address: ipAddress
         });
         
       if (error) {
