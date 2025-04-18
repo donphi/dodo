@@ -100,14 +100,14 @@ export function AuthTemplate({
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="mt-6 flex justify-center">{logo || defaultLogo}</div>
         {title && (
-          <h2 className="mt-6 text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <h2 className="mt-2 text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             {title}
           </h2>
         )}
       </div>
 
       {/* Main content area */}
-      <div className="mt-10 mx-auto w-full max-w-[95vw] sm:max-w-form">
+      <div className="mt-4 mx-auto w-full max-w-[95vw] sm:max-w-form">
         <div className="bg-transparent dark:bg-transparent px-6 py-12 sm:px-12">
           {children}
 

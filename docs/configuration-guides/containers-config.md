@@ -1,21 +1,18 @@
 # Centralized Container/Service Configuration Guide
 
-**File:** `config/containers.yaml`  
-**Maintainer:** Configuration Manager  
-**Last Updated:** 2025-04-15
+**File:** `config/containers.yaml`
+**Maintainer:** Configuration Manager
+**Last Updated:** 2025-04-18
 
 ---
 
 ## Purpose
 
-This document describes the structure, usage, and environment variable mappings for the centralized container/service configuration file: `config/containers.yaml`.  
+This document describes the structure, usage, and environment variable mappings for the centralized container/service configuration file: `config/containers.yaml`.
 This file is the **single source of truth** for all parameters used in Dockerfiles and `docker-compose.yaml` for the following services:
 - Next.js Frontend (`frontend`)
-- NestJS Backend (`backend`)
-- Supabase Database (`supabase`)
-- Neo4j Database (`neo4j`)
 
-All secrets and sensitive values **must** be provided via environment variables.  
+All secrets and sensitive values **must** be provided via environment variables.
 **No hardcoded secrets** are permitted in Dockerfiles, compose files, or application code.
 
 ---
@@ -24,8 +21,12 @@ All secrets and sensitive values **must** be provided via environment variables.
 
 ```yaml
 version: "1.0.0"
-last_updated: "2025-04-15"
+last_updated: "2025-04-18"
 author: "config-manager"
+description: |
+  Defines all container/service parameters for the Next.js frontend.
+  No hardcoded secrets. All values are referenced by Dockerfiles and docker-compose.yml.
+  Update this file before making any changes to container/service configuration.
 services:
   frontend:
     name: "frontend"
@@ -36,60 +37,11 @@ services:
       - 3000:3000
     env:
       NODE_ENV: "development"
-      NEXT_PUBLIC_SUPABASE_URL: "${SUPABASE_URL}"
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: "${SUPABASE_ANON_KEY}"
+      NEXT_PUBLIC_SUPABASE_URL: "${NEXT_PUBLIC_SUPABASE_URL}"
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "${NEXT_PUBLIC_SUPABASE_ANON_KEY}"
     resource_limits:
       cpus: "0.5"
       memory: "512m"
-  backend:
-    name: "backend"
-    image: "biobank-backend:latest"
-    build_context: "./backend"
-    dockerfile: "Dockerfile.backend"
-    ports:
-      - 4000:4000
-    env:
-      NODE_ENV: "development"
-      SUPABASE_URL: "${SUPABASE_URL}"
-      SUPABASE_SERVICE_ROLE_KEY: "${SUPABASE_SERVICE_ROLE_KEY}"
-      NEO4J_URI: "${NEO4J_URI}"
-      NEO4J_USER: "${NEO4J_USER}"
-      NEO4J_PASSWORD: "${NEO4J_PASSWORD}"
-      API_KEY: "${API_KEY}"
-    resource_limits:
-      cpus: "0.5"
-      memory: "512m"
-  supabase:
-    name: "supabase"
-    image: "supabase/postgres:15.1.0.116"
-    ports:
-      - 5432:5432
-    env:
-      POSTGRES_PASSWORD: "${SUPABASE_DB_PASSWORD}"
-      POSTGRES_DB: "postgres"
-    volumes:
-      - supabase-data:/var/lib/postgresql/data
-    resource_limits:
-      cpus: "0.5"
-      memory: "1g"
-  neo4j:
-    name: "neo4j"
-    image: "neo4j:5.15"
-    ports:
-      - 7474:7474
-      - 7687:7687
-    env:
-      NEO4J_AUTH: "${NEO4J_USER}/${NEO4J_PASSWORD}"
-    volumes:
-      - neo4j-data:/data
-    resource_limits:
-      cpus: "0.5"
-      memory: "1g"
-volumes:
-  supabase-data:
-    driver: local
-  neo4j-data:
-    driver: local
 ```
 
 ---
@@ -101,26 +53,22 @@ volumes:
 - **build_context**: Path to build context for Dockerfile (string)
 - **dockerfile**: Dockerfile name (string)
 - **ports**: List of port mappings (host:container, int:int)
-- **env**: Key-value pairs for environment variables.  
+- **env**: Key-value pairs for environment variables.
   - **Secrets and sensitive values must be referenced as `${ENV_VAR}` and provided via .env or deployment environment.**
 - **resource_limits**: CPU and memory limits for the container (string)
-- **volumes**: List of volume mappings for persistent data (if applicable)
 
 ---
 
 ## Environment Variable Mapping
 
-All secrets and sensitive values must be provided via environment variables.  
+All secrets and sensitive values must be provided via environment variables.
 **Example mappings:**
-- `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (from Supabase project settings)
-- `NEO4J_URI`, `NEO4J_USER`, `NEO4J_PASSWORD` (from Neo4j Aura or local instance)
-- `API_KEY` (generated for service-to-service authentication)
-- `SUPABASE_DB_PASSWORD` (for Supabase Postgres)
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (from Supabase project settings)
 
-**Local development:**  
+**Local development:**
 Provide these in a `.env` file (never commit secrets to version control).
 
-**Production/CI/CD:**  
+**Production/CI/CD:**
 Set these as environment variables in Vercel, GitHub Actions, or your deployment platform.
 
 ---
@@ -143,21 +91,18 @@ Reference the parameters in `config/containers.yaml` when writing `docker-compos
 services:
   frontend:
     build:
-      context: ./frontend
+      context: .
       dockerfile: Dockerfile.frontend
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
     image: biobank-frontend:latest
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=development
-      - NEXT_PUBLIC_SUPABASE_URL=${SUPABASE_URL}
-      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-  # ... other services as defined above
+      NODE_ENV: development
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
 ```
 
 ---

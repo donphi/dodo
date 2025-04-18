@@ -5,10 +5,10 @@
 # ==================================================================================================
 
 version: "1.0.0"
-last_updated: "2025-04-15"
+last_updated: "2025-04-18"
 author: "config-manager"
 description: |
-  Defines all container/service parameters for the Next.js frontend, NestJS backend, Supabase, and Neo4j.
+  Defines all container/service parameters for the Next.js frontend.
   No hardcoded secrets. All values are referenced by Dockerfiles and docker-compose.yml.
   Update this file before making any changes to container/service configuration.
 
@@ -22,68 +22,12 @@ services:
       - 3000:3000  # host:container
     env:
       NODE_ENV: "development"
-      NEXT_PUBLIC_SUPABASE_URL: "${SUPABASE_URL}"         # from .env or deployment env
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: "${SUPABASE_ANON_KEY}" # from .env or deployment env
+      NEXT_PUBLIC_SUPABASE_URL: "${NEXT_PUBLIC_SUPABASE_URL}"         # from .env or deployment env
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "${NEXT_PUBLIC_SUPABASE_ANON_KEY}" # from .env or deployment env
       # Add other public env vars as needed
     resource_limits:
       cpus: "0.5"
       memory: "512m"
-
-  backend:
-    name: "backend"
-    image: "biobank-backend:latest"
-    build_context: "./backend"
-    dockerfile: "Dockerfile.backend"
-    ports:
-      - 4000:4000  # host:container
-    env:
-      NODE_ENV: "development"
-      SUPABASE_URL: "${SUPABASE_URL}"           # from .env or deployment env
-      SUPABASE_SERVICE_ROLE_KEY: "${SUPABASE_SERVICE_ROLE_KEY}" # from .env or deployment env
-      NEO4J_URI: "${NEO4J_URI}"                 # from .env or deployment env
-      NEO4J_USER: "${NEO4J_USER}"               # from .env or deployment env
-      NEO4J_PASSWORD: "${NEO4J_PASSWORD}"       # from .env or deployment env
-      API_KEY: "${API_KEY}"                     # from .env or deployment env
-      # Add other backend env vars as needed
-    resource_limits:
-      cpus: "0.5"
-      memory: "512m"
-
-  supabase:
-    name: "supabase"
-    image: "supabase/postgres:15.1.0.116"
-    ports:
-      - 5432:5432
-    env:
-      POSTGRES_PASSWORD: "${SUPABASE_DB_PASSWORD}" # from .env or deployment env
-      POSTGRES_DB: "postgres"
-      # Add other Supabase env vars as needed
-    volumes:
-      - supabase-data:/var/lib/postgresql/data
-    resource_limits:
-      cpus: "0.5"
-      memory: "1g"
-
-  neo4j:
-    name: "neo4j"
-    image: "neo4j:5.15"
-    ports:
-      - 7474:7474   # HTTP
-      - 7687:7687   # Bolt
-    env:
-      NEO4J_AUTH: "${NEO4J_USER}/${NEO4J_PASSWORD}" # from .env or deployment env
-      # Add other Neo4j env vars as needed
-    volumes:
-      - neo4j-data:/data
-    resource_limits:
-      cpus: "0.5"
-      memory: "1g"
-
-volumes:
-  supabase-data:
-    driver: local
-  neo4j-data:
-    driver: local
 
 # All secrets must be provided via environment variables (.env for local, Vercel/CI for prod)
 # Do not hardcode any sensitive values here.

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { AuthTemplate } from './AuthTemplate';
 import { Breadcrumbs } from './components/breadcrumbs';
+import { UserCircle, Microscope, Building2, Dna, CheckCircle } from 'lucide-react';
 import { TextInput } from './components/text_field';
 import { Checkbox } from './components/checkbox';
 import { Dropdown } from './components/dropdown';
@@ -163,9 +164,38 @@ export function RegistrationFlow({ isOAuth = false, provider = null }: Registrat
     }
   };
 
+  // Function to get the appropriate icon for the current step
+  const getCurrentStepIcon = () => {
+    const stepName = steps[currentStep].name.toLowerCase();
+    switch (stepName) {
+      case 'account':
+        return UserCircle;
+      case 'profile':
+        return Microscope;
+      case 'affiliation':
+        return Building2;
+      case 'biobank access':
+        return Dna;
+      case 'finish':
+        return CheckCircle;
+      default:
+        return UserCircle;
+    }
+  };
+
+  const StepIcon = getCurrentStepIcon();
+
   return (
-    <AuthTemplate onBackClick={currentStep > 0 ? handlePrevious : handleBackToHome}>
-      <Breadcrumbs steps={steps} currentStep={currentStep} onStepBack={handlePrevious} />
+    <AuthTemplate
+      title="Quick Signup Guide"
+    >
+      <div className="flex flex-col items-center">
+        {/* Single icon representing current step */}
+        <div className="mb-6">
+          <StepIcon className="h-8 w-8 text-indigo-600" aria-hidden="true" />
+        </div>
+        <Breadcrumbs steps={steps} currentStep={currentStep} onStepBack={handlePrevious} />
+      </div>
       {renderStep()}
     </AuthTemplate>
   );

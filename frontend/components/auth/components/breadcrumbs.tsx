@@ -51,13 +51,14 @@ export function Breadcrumbs({ steps, currentStep, onStepBack }: BreadcrumbsProps
               {status === 'complete' ? (
                 <>
                   <div aria-hidden="true" className="absolute inset-0 flex items-center">
-                    <div className="h-0.5 w-full bg-indigo-600" />
+                    <div className="h-0.5 w-full bg-indigo-600 dark:bg-indigo-500" />
                   </div>
+                  
                   <a
                     href="#"
-                    className="relative flex size-5 items-center justify-center rounded-full bg-indigo-600 hover:bg-indigo-900"
+                    className="relative flex size-5 items-center justify-center rounded-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600"
                   >
-                    <CheckIcon aria-hidden="true" className="size-5 text-white" />
+                    <CheckIcon aria-hidden="true" className="size-3 text-white dark:text-gray-900" />
                     <span className="sr-only">{step.name}</span>
                   </a>
                 </>
@@ -66,12 +67,13 @@ export function Breadcrumbs({ steps, currentStep, onStepBack }: BreadcrumbsProps
                   <div aria-hidden="true" className="absolute inset-0 flex items-center">
                     <div className="h-0.5 w-full bg-gray-200 dark:bg-gray-700" />
                   </div>
+                  
                   <a
                     href="#"
                     aria-current="step"
-                    className="relative flex size-5 items-center justify-center rounded-full border-2 border-indigo-600 bg-white dark:bg-gray-800"
+                    className="relative flex size-5 items-center justify-center rounded-full border-2 border-indigo-600 dark:border-indigo-500 bg-white dark:bg-gray-800"
                   >
-                    <span aria-hidden="true" className="size-2 rounded-full bg-indigo-600" />
+                    <span aria-hidden="true" className="size-2 rounded-full bg-indigo-600 dark:bg-indigo-500" />
                     <span className="sr-only">{step.name}</span>
                   </a>
                 </>
@@ -80,13 +82,14 @@ export function Breadcrumbs({ steps, currentStep, onStepBack }: BreadcrumbsProps
                   <div aria-hidden="true" className="absolute inset-0 flex items-center">
                     <div className="h-0.5 w-full bg-gray-200 dark:bg-gray-700" />
                   </div>
+                  
                   <a
                     href="#"
                     className="group relative flex size-5 items-center justify-center rounded-full border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-500"
                   >
                     <span
                       aria-hidden="true"
-                      className="size-2 rounded-full bg-transparent group-hover:bg-gray-300"
+                      className="size-2 rounded-full bg-transparent group-hover:bg-gray-300 dark:group-hover:bg-gray-600"
                     />
                     <span className="sr-only">{step.name}</span>
                   </a>

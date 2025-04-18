@@ -85,6 +85,27 @@ The authentication system consists of these key components:
 3. **onboarding_page_container.tsx** - Provides consistent layout and styling for all authentication pages
 4. **components/** - Reusable UI components used across the authentication system
 
+### Registration Step Icons
+
+The registration flow includes biotech/data science themed icons that provide visual cues for users during the registration process. A single icon representing the current step is displayed above the breadcrumbs.
+
+**Features:**
+- Single icon representing the current step in the registration process
+- Biotech/data science themed icons from Lucide React
+- Colored ring around the icon (no white outline)
+- Positioned above the breadcrumbs
+- Consistent styling with the rest of the authentication flow
+- Accessible design with proper ARIA attributes
+
+**Icons Used:**
+- Account: UserCircle
+- Profile: Microscope
+- Affiliation: Building2
+- Biobank Access: Vial
+- Finish: CheckCircle
+
+The icons are integrated directly into the RegistrationFlow component, providing a clean and intuitive visual indication of the current step in the registration process.
+
 ## Implementation Notes
 
 - The `signin_or_register.tsx` and `app_component.tsx` files have been removed as they've been replaced by the more cohesive `AuthenticationGateway` component.
