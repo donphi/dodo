@@ -34,7 +34,7 @@ export default function Dashboard() {
   const { user, profile, signOut, deleteAccount } = useAuth();
   const router = useRouter();
   
-  const userName = profile?.name || user?.user_metadata?.full_name || 'User';
+  const userName = profile?.fullName || user?.user_metadata?.full_name || 'User';
   const userEmail = profile?.email || user?.email || '';
   const userImageUrl = profile?.avatar_url || user?.user_metadata?.avatar_url || null;
   

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 
 // Text Input Field Component
 interface TextInputProps {
@@ -7,6 +7,8 @@ interface TextInputProps {
   type?: string;
   required?: boolean;
   autoComplete?: string;
+  value?: string;
+  onChange?: (id: string, value: string) => void;
 }
 
 export function TextInput({
@@ -15,6 +17,8 @@ export function TextInput({
   type = 'text',
   required = false,
   autoComplete = '',
+  value = '',
+  onChange,
 }: TextInputProps) {
   return (
     <div>
@@ -33,6 +37,8 @@ export function TextInput({
           type={type}
           required={required}
           autoComplete={autoComplete}
+          value={value}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => onChange && onChange(id, e.target.value)}
           className="block w-full rounded-md bg-white dark:bg-gray-800 px-3 py-1.5 text-base text-gray-900 dark:text-gray-100 outline outline-1 -outline-offset-1 outline-gray-300 dark:outline-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 dark:focus:outline-indigo-500 sm:text-sm/6"
         />
       </div>

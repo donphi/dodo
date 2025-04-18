@@ -70,6 +70,24 @@ const { data: { subscription } } = supabase.auth.onAuthStateChange(
 );
 ```
 
+**Note:** For this functionality to work properly, the RLS policy for the `user_sessions` table must allow authenticated users to insert records. The default policy in the setup guide disallows all modifications from the client side. The following SQL should be executed in the Supabase SQL Editor to update the policy:
+
+```sql
+-- First, drop the restrictive policy if it exists
+DROP POLICY IF EXISTS "Disallow public modification" ON public.user_sessions;
+
+-- Create a policy that allows authenticated users to insert their own session records
+CREATE POLICY "Allow authenticated users to insert their own sessions"
+ON public.user_sessions FOR INSERT
+TO authenticated
+WITH CHECK (auth.uid() = user_id);
+
+-- Keep the policy that allows users to read their own sessions
+CREATE POLICY IF NOT EXISTS "Allow individual user read access"
+ON public.user_sessions FOR SELECT
+USING (auth.uid() = user_id);
+```
+
 This ensures that each login is recorded in the sessions table, with the following data:
 - `user_id`: The ID of the logged-in user
 - `arrival_time`: Automatically set to the current timestamp by the database default

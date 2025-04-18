@@ -15,10 +15,15 @@ const LoginPage = () => {
       // Convert provider name to lowercase for Supabase
       const providerName = provider.toLowerCase();
       
+      // First check if the user already exists and has a profile
+      // We'll use a custom redirectTo URL that includes a check parameter
+      const redirectUrl = new URL(`${window.location.origin}/auth/callback`);
+      redirectUrl.searchParams.append('provider', provider);
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: providerName as any,
         options: {
-          redirectTo: `${window.location.origin}/register`
+          redirectTo: redirectUrl.toString()
         }
       });
       

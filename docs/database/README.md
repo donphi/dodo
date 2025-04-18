@@ -29,12 +29,30 @@ This document describes the data models, access patterns, security protocols, an
 - **Authentication:** Managed by Supabase Auth (JWT-based).
 - **Authorization:** Row-Level Security (RLS) policies enforced for all tables.
 - **API Key:** Used for service-to-service backend operations.
+- **Session Tracking:** User login sessions are recorded in the `user_sessions` table.
+
+**Related Documentation:**
+- [Supabase Setup Guide](./supabase-setup-guide.md) - Complete setup instructions for authentication and tables
+- [Authentication Flow Fixes](./registration-flow-auth-fix.md) - Solutions for registration flow issues
+- [Auth Sessions Update](./auth-sessions-update.md) - Implementation of session tracking
+- [Sessions Table RLS Fix](./sessions-table-rls-fix.md) - Fix for RLS policies on the sessions table
+- [OAuth Authentication Fix](./oauth-authentication-fix.md) - Fix for "Anonymous signins are disabled" error with OAuth
 
 ### 1.3 Row-Level Security (RLS) Policies
 
 - Only authenticated users can access their own data.
 - Service role key required for privileged backend operations.
-- *(Detailed RLS policy SQL will be added post-implementation.)*
+- Custom RLS policies for specific tables (e.g., `profiles`, `user_sessions`).
+- SQL scripts for RLS policies are stored in the [sql directory](./sql/).
+
+**Example RLS Policy:**
+```sql
+-- Allow users to insert their own session records
+CREATE POLICY "Allow authenticated users to insert their own sessions"
+ON public.user_sessions FOR INSERT
+TO authenticated
+WITH CHECK (auth.uid() = user_id);
+```
 
 ### 1.4 Indexes & Performance
 

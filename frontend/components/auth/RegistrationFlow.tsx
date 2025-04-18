@@ -34,9 +34,13 @@ interface RegistrationFlowProps {
   onComplete?: (formData: Record<string, any>) => void;
 }
 
+import { supabase } from '../../lib/supabaseClient';
+
 export function RegistrationFlow({ isOAuth = false, provider = null, onComplete }: RegistrationFlowProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Record<string, any>>({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const steps = isOAuth ? oauthSteps : standardSteps;
@@ -66,15 +70,120 @@ export function RegistrationFlow({ isOAuth = false, provider = null, onComplete 
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>, validateFn?: () => boolean) => {
+  // Async handler for AccountStep (standard registration)
+  const handleAccountSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+
+    // Validate all required fields are present
+    if (!formData.fullName || !formData.email || !formData.password || !formData.confirmPassword || !formData.acceptTerms) {
+      setError('All fields are required and terms must be accepted');
+      return;
+    }
+
+    // Validate passwords match
+    const password = formData.password;
+    const confirmPassword = formData.confirmPassword;
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    // No longer creating the user account here
+    // Just proceed to the next step after validation
+    setLoading(true);
+    try {
+      // Store validated data in formData state
+      setFormData((prev) => ({
+        ...prev,
+        email: formData.email,
+      }));
+      
+      // Proceed to next step
+      handleNext();
+    } catch (err: any) {
+      setError(err.message || 'Validation failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Validation helpers for each step
+  const validateAccountStep = () => {
+    const requiredFields = ['fullName', 'email', 'password', 'confirmPassword', 'acceptTerms'];
+    for (const field of requiredFields) {
+      if (!formData[field] || (field === 'acceptTerms' && formData[field] !== true)) {
+        setError('All fields are required and terms must be accepted.');
+        return false;
+      }
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match.');
+      return false;
+    }
+    setError(null);
+    return true;
+  };
+
+  const validateProfileStep = () => {
+    const requiredFields = ['role', 'experience', 'country'];
+    for (const field of requiredFields) {
+      if (!formData[field]) {
+        setError('All fields in this step are required.');
+        return false;
+      }
+    }
+    setError(null);
+    return true;
+  };
+
+  const validateAffiliationStep = () => {
+    const requiredFields = ['institution', 'sector', 'expertise'];
+    for (const field of requiredFields) {
+      if (!formData[field] || (Array.isArray(formData[field]) && formData[field].length === 0)) {
+        setError('All fields in this step are required.');
+        return false;
+      }
+    }
+    setError(null);
+    return true;
+  };
+
+  const validateBiobankStep = () => {
+    const requiredFields = ['ukBiobank', 'otherBiobanks', 'ethics'];
+    for (const field of requiredFields) {
+      if (
+        formData[field] === undefined ||
+        formData[field] === null ||
+        (Array.isArray(formData[field]) && formData[field].length === 0) ||
+        formData[field] === ''
+      ) {
+        setError('All fields in this step are required.');
+        return false;
+      }
+    }
+    setError(null);
+    return true;
+  };
+
+  // Generalized handleSubmit for each step
+  const handleSubmit = (
+    e: React.FormEvent<HTMLFormElement>,
+    validateFn?: () => boolean
+  ) => {
     e.preventDefault();
 
-    // If validation function is provided, only proceed if validation passes
     if (validateFn && !validateFn()) {
       return;
     }
 
-    // Move to next step on form submit
     handleNext();
   };
 
@@ -86,7 +195,7 @@ export function RegistrationFlow({ isOAuth = false, provider = null, onComplete 
           return (
             <ProfileStep
               provider={provider}
-              onSubmit={handleSubmit}
+              onSubmit={e => handleSubmit(e, validateProfileStep)}
               formData={formData}
               onFormChange={handleFormChange}
             />
@@ -94,7 +203,7 @@ export function RegistrationFlow({ isOAuth = false, provider = null, onComplete 
         case 1:
           return (
             <AffiliationStep
-              onSubmit={handleSubmit}
+              onSubmit={e => handleSubmit(e, validateAffiliationStep)}
               formData={formData}
               onFormChange={handleFormChange}
             />
@@ -102,7 +211,7 @@ export function RegistrationFlow({ isOAuth = false, provider = null, onComplete 
         case 2:
           return (
             <BiobankAccessStep
-              onSubmit={handleSubmit}
+              onSubmit={e => handleSubmit(e, validateBiobankStep)}
               formData={formData}
               onFormChange={handleFormChange}
             />
@@ -118,25 +227,17 @@ export function RegistrationFlow({ isOAuth = false, provider = null, onComplete 
         case 0:
           return (
             <AccountStep
-              onSubmit={(e) =>
-                handleSubmit(e, () => {
-                  // Validate password match
-                  const password = formData.password;
-                  const confirmPassword = formData.confirmPassword;
-                  if (password !== confirmPassword) {
-                    return false;
-                  }
-                  return true;
-                })
-              }
+              onSubmit={e => handleAccountSubmit(e)}
               formData={formData}
               onFormChange={handleFormChange}
+              loading={loading}
+              error={error}
             />
           );
         case 1:
           return (
             <ProfileStep
-              onSubmit={handleSubmit}
+              onSubmit={e => handleSubmit(e, validateProfileStep)}
               formData={formData}
               onFormChange={handleFormChange}
             />
@@ -144,7 +245,7 @@ export function RegistrationFlow({ isOAuth = false, provider = null, onComplete 
         case 2:
           return (
             <AffiliationStep
-              onSubmit={handleSubmit}
+              onSubmit={e => handleSubmit(e, validateAffiliationStep)}
               formData={formData}
               onFormChange={handleFormChange}
             />
@@ -152,7 +253,7 @@ export function RegistrationFlow({ isOAuth = false, provider = null, onComplete 
         case 3:
           return (
             <BiobankAccessStep
-              onSubmit={handleSubmit}
+              onSubmit={e => handleSubmit(e, validateBiobankStep)}
               formData={formData}
               onFormChange={handleFormChange}
             />
@@ -195,8 +296,24 @@ export function RegistrationFlow({ isOAuth = false, provider = null, onComplete 
         <div className="mb-6">
           <StepIcon className="h-8 w-8 text-indigo-600" aria-hidden="true" />
         </div>
-        <Breadcrumbs steps={steps} currentStep={currentStep} onStepBack={handlePrevious} />
+        <Breadcrumbs steps={steps} currentStep={currentStep} />
       </div>
+      {error && (
+        <div className="w-full flex justify-center">
+          <div className="rounded-md bg-red-50 dark:bg-red-900 p-4 mb-4 text-center w-full">
+            <div className="flex justify-center">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800 dark:text-red-200">{error}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {renderStep()}
     </AuthTemplate>
   );
@@ -209,46 +326,33 @@ interface StepProps {
   onFormChange?: (id: string, value: any) => void;
 }
 
-export function AccountStep({ onSubmit, formData = {}, onFormChange }: StepProps) {
-  const [passwordError, setPasswordError] = useState('');
+interface AccountStepProps extends StepProps {
+  loading?: boolean;
+  error?: string | null;
+}
 
+export function AccountStep({ onSubmit, formData = {}, onFormChange, loading = false, error = null }: AccountStepProps) {
+  // Remove local password error state and validation
+  // All validation is now handled at the parent component level
+  
   const handleChange = (id: string, value: any) => {
     if (onFormChange) {
       onFormChange(id, value);
     }
-
-    // Clear password error when either password field changes
-    if (id === 'password' || id === 'confirmPassword') {
-      setPasswordError('');
-
-      // Validate passwords match when both fields have values
-      const otherField = id === 'password' ? 'confirmPassword' : 'password';
-      const otherValue = formData[otherField];
-
-      if (value && otherValue && value !== otherValue) {
-        setPasswordError('Passwords do not match');
-      }
-    }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    // Validate passwords match before submitting
-    const password = formData.password;
-    const confirmPassword = formData.confirmPassword;
-
-    if (password !== confirmPassword) {
-      setPasswordError('Passwords do not match');
-      return;
-    }
-
-    onSubmit(e);
-  };
+  // Remove local handleSubmit, rely on parent validation
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 w-full">
-      <TextInput id="fullName" label="Full Name" required={true} autoComplete="name" />
+    <form onSubmit={onSubmit} className="space-y-6 w-full">
+      <TextInput
+        id="fullName"
+        label="Full Name"
+        required={true}
+        autoComplete="name"
+        value={formData.fullName || ''}
+        onChange={handleChange}
+      />
 
       <TextInput
         id="email"
@@ -256,6 +360,8 @@ export function AccountStep({ onSubmit, formData = {}, onFormChange }: StepProps
         type="email"
         required={true}
         autoComplete="email"
+        value={formData.email || ''}
+        onChange={handleChange}
       />
 
       <TextInput
@@ -264,22 +370,54 @@ export function AccountStep({ onSubmit, formData = {}, onFormChange }: StepProps
         type="password"
         required={true}
         autoComplete="new-password"
+        value={formData.password || ''}
+        onChange={handleChange}
       />
 
-      <div>
-        <TextInput
-          id="confirmPassword"
-          label="Confirm Password"
-          type="password"
-          required={true}
-          autoComplete="new-password"
-        />
-        {passwordError && <p className="mt-1 text-sm text-red-600">{passwordError}</p>}
-      </div>
+      <TextInput
+        id="confirmPassword"
+        label="Confirm Password"
+        type="password"
+        required={true}
+        autoComplete="new-password"
+        value={formData.confirmPassword || ''}
+        onChange={handleChange}
+      />
 
-      <Checkbox id="acceptTerms" label="I agree to the terms and data use policy" />
+      <Checkbox
+        id="acceptTerms"
+        required={true}
+        checked={formData.acceptTerms || false}
+        onChange={handleChange}
+        label={
+          <>
+            I agree to the{' '}
+            <a
+              href="/terms-of-service"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline text-indigo-600 hover:text-indigo-800"
+            >
+              Terms of Service
+            </a>{' '}
+            and{' '}
+            <a
+              href="/privacy-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline text-indigo-600 hover:text-indigo-800"
+            >
+              Privacy Policy
+            </a>
+          </>
+        }
+      />
 
-      <Button type="submit">Next</Button>
+      {/* Error message is now displayed at the top level component only */}
+
+      <Button type="submit" disabled={loading}>
+        {loading ? 'Registering...' : 'Next'}
+      </Button>
     </form>
   );
 }
@@ -417,8 +555,14 @@ export function AffiliationStep({ onSubmit, formData = {}, onFormChange }: StepP
     { value: 'bioinformatics', label: 'Bioinformatics' },
     { value: 'genomics', label: 'Genomics' },
     { value: 'ml', label: 'Machine Learning' },
+    { value: 'deep-learning', label: 'Deep Learning' },
+    { value: 'nlp', label: 'Natural Language Processing' },
+    { value: 'computer-vision', label: 'Computer Vision' },
+    { value: 'data-mining', label: 'Data Mining' },
+    { value: 'statistics', label: 'Statistics' },
     { value: 'public-health', label: 'Public Health' },
     { value: 'other', label: 'Other' },
+    { value: 'none', label: 'None' },
   ];
 
   const handleChange = (id: string, value: any) => {
@@ -429,8 +573,6 @@ export function AffiliationStep({ onSubmit, formData = {}, onFormChange }: StepP
 
   return (
     <form onSubmit={onSubmit} className="space-y-6 w-full">
-      <TextInput id="institution" label="Institution/Company" required={true} />
-
       <Dropdown
         id="sector"
         label="Sector"
@@ -439,7 +581,21 @@ export function AffiliationStep({ onSubmit, formData = {}, onFormChange }: StepP
         onChange={(value) => handleChange('sector', value)}
       />
 
-      <MultiSelect id="expertise" label="Field of Expertise" options={expertiseOptions} />
+      <TextInput
+        id="institution"
+        label="Name of your organisation or group you represent"
+        required={true}
+        value={formData.institution || ''}
+        onChange={handleChange}
+      />
+
+      <MultiSelect
+        id="expertise"
+        label="Select the industry or domain you work in"
+        options={expertiseOptions}
+        value={formData.expertise || []}
+        onChange={handleChange}
+      />
 
       <Button type="submit">Next</Button>
     </form>
@@ -454,6 +610,7 @@ export function BiobankAccessStep({ onSubmit, formData = {}, onFormChange }: Ste
   ];
 
   const otherBiobanksOptions = [
+    { value: 'genomics-uk', label: 'Genomics England' },
     { value: '100k', label: '100K Genomes' },
     { value: 'finngen', label: 'FinnGen' },
     { value: 'all-of-us', label: 'All of Us' },
@@ -464,7 +621,6 @@ export function BiobankAccessStep({ onSubmit, formData = {}, onFormChange }: Ste
     { value: 'yes', label: 'Yes' },
     { value: 'no', label: 'No' },
     { value: 'in-progress', label: 'In Progress' },
-    { value: 'not-required', label: 'Not Required' },
   ];
 
   const handleChange = (id: string, value: any) => {
@@ -479,9 +635,17 @@ export function BiobankAccessStep({ onSubmit, formData = {}, onFormChange }: Ste
         id="ukBiobank"
         label="Are you registered with UK Biobank?"
         options={yesNoOptions}
+        value={formData.ukBiobank || ''}
+        onChange={handleChange}
       />
 
-      <MultiSelect id="otherBiobanks" label="Other biobanks used?" options={otherBiobanksOptions} />
+      <MultiSelect
+        id="otherBiobanks"
+        label="Other biobanks used?"
+        options={otherBiobanksOptions}
+        value={formData.otherBiobanks || []}
+        onChange={handleChange}
+      />
 
       <Dropdown
         id="ethics"
@@ -506,19 +670,102 @@ interface FinishStepProps {
 
 export function FinishStep({ formData, isOAuth = false, provider = null, onComplete }: FinishStepProps) {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
-  const handleComplete = () => {
-    if (onComplete) {
-      onComplete(formData as Record<string, any>);
-    } else {
-      // Default behavior if no onComplete handler is provided
-      console.log('Registration completed with data:', formData);
-      router.push('/dashboard');
+  const handleComplete = async () => {
+    try {
+      setLoading(true);
+      
+      // First check if we have a session
+      const { data: sessionData } = await supabase.auth.getSession();
+      
+      if (!sessionData.session) {
+        // If no session, we need to create the user first for non-OAuth flow
+        if (!isOAuth) {
+          // For standard registration, create the user account
+          const { data: userData, error: signUpError } = await supabase.auth.signUp({
+            email: formData.email as string,
+            password: formData.password as string,
+            options: {
+              data: {
+                full_name: formData.fullName as string,
+              },
+            },
+          });
+          
+          if (signUpError) throw signUpError;
+          
+          if (!userData.user) {
+            throw new Error('Failed to create user account');
+          }
+          
+          // Update the user's profile in Supabase
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({
+              id: userData.user.id,
+              email: userData.user.email,
+              fullName: formData.fullName,
+              role: formData.role,
+              experience: formData.experience,
+              country: formData.country,
+              institution: formData.institution,
+              sector: formData.sector,
+              expertise: formData.expertise,
+              ukBiobank: formData.ukBiobank,
+              otherBiobanks: formData.otherBiobanks,
+              ethics: formData.ethics,
+              updated_at: new Date().toISOString()
+            });
+          
+          if (profileError) throw profileError;
+        } else {
+          throw new Error('No authenticated session found. Please try logging in again.');
+        }
+      } else {
+        // We have a session, update the profile for the authenticated user
+        const user = sessionData.session.user;
+        
+        // Update the user's profile in Supabase
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert({
+            id: user.id,
+            email: user.email,
+            fullName: formData.fullName || user.user_metadata?.full_name,
+            role: formData.role,
+            experience: formData.experience,
+            country: formData.country,
+            institution: formData.institution,
+            sector: formData.sector,
+            expertise: formData.expertise,
+            ukBiobank: formData.ukBiobank,
+            otherBiobanks: formData.otherBiobanks,
+            ethics: formData.ethics,
+            updated_at: new Date().toISOString()
+          });
+        
+        if (profileError) throw profileError;
+      }
+      
+      // Now proceed with completion
+      if (onComplete) {
+        onComplete(formData as Record<string, any>);
+      } else {
+        console.log('Registration completed with data:', formData);
+        router.push('/dashboard');
+      }
+    } catch (err: any) {
+      console.error('Error updating profile:', err);
+      setError(err.message || 'Failed to complete registration');
+    } finally {
+      setLoading(false);
     }
   };
   return (
     <div className="space-y-6 w-full">
-      <div className="rounded-md bg-green-50 p-4">
+      <div className="rounded-md bg-green-50 dark:bg-green-900 p-4">
         <div className="flex">
           <div className="flex-shrink-0">
             <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
@@ -530,47 +777,34 @@ export function FinishStep({ formData, isOAuth = false, provider = null, onCompl
             </svg>
           </div>
           <div className="ml-3">
-            <h3 className="text-sm font-medium text-green-800">Registration Complete</h3>
-            <div className="mt-2 text-sm text-green-700">
-              <p>Your details have been saved. You can now access the explorer.</p>
+            <h3 className="text-sm font-medium text-green-800 dark:text-green-200">Thank You!</h3>
+            <div className="mt-2 text-sm text-green-700 dark:text-green-300">
+              <p>Your onboarding is complete. You're all set to explore our platform!</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="rounded-md bg-gray-50 p-6">
-        <h3 className="text-sm font-medium text-gray-900 mb-4">Account Summary</h3>
-
-        {isOAuth && (
-          <div className="mb-4">
-            <p className="text-sm text-gray-700">Signed in with {provider}</p>
-          </div>
-        )}
-
-        {/* Display summary of entered information */}
-        <div className="space-y-4">
-          <div>
-            <h4 className="text-xs font-medium text-gray-500">Profile</h4>
-            <p className="text-sm text-gray-900">
-              Researcher &bull; 5&ndash;9 years &bull; United Kingdom
-            </p>
-          </div>
-
-          <div>
-            <h4 className="text-xs font-medium text-gray-500">Affiliation</h4>
-            <p className="text-sm text-gray-900">
-              Research Institute • Public • Bioinformatics, Genomics
-            </p>
-          </div>
-
-          <div>
-            <h4 className="text-xs font-medium text-gray-500">Biobank Access</h4>
-            <p className="text-sm text-gray-900">UK Biobank: Yes • Ethics: Approved</p>
+      {error && (
+        <div className="w-full flex justify-center">
+          <div className="rounded-md bg-red-50 dark:bg-red-900 p-4 mb-4 text-center w-full">
+            <div className="flex justify-center">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800 dark:text-red-200">{error}</h3>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      <Button onClick={handleComplete}>Complete Registration and Launch Explorer</Button>
+      <Button onClick={handleComplete} disabled={loading}>
+        {loading ? 'Processing...' : 'Let\'s Go!'}
+      </Button>
     </div>
   );
 }

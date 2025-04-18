@@ -110,14 +110,8 @@ export function LoginForm({ onOAuthLogin, onEmailLogin, error }: LoginFormProps)
             type="email"
             required={true}
             autoComplete="email"
-          />
-          <input
-            id="email-value"
-            name="email"
-            type="email"
             value={email}
-            onChange={handleEmailChange}
-            className="hidden"
+            onChange={(id, value) => setEmail(value)}
           />
         </div>
 
@@ -145,20 +139,14 @@ export function LoginForm({ onOAuthLogin, onEmailLogin, error }: LoginFormProps)
               type="password"
               required={true}
               autoComplete="current-password"
-            />
-            <input
-              id="password-value"
-              name="password"
-              type="password"
               value={password}
-              onChange={handlePasswordChange}
-              className="hidden"
+              onChange={(id, value) => setPassword(value)}
             />
           </div>
         </div>
 
         {error && (
-          <div className="rounded-md bg-red-50 p-4">
+          <div className="rounded-md bg-red-50 dark:bg-red-900 p-4 mb-4 mx-auto max-w-md">
             <div className="flex">
               <div className="flex-shrink-0">
                 <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -166,7 +154,7 @@ export function LoginForm({ onOAuthLogin, onEmailLogin, error }: LoginFormProps)
                 </svg>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">{error}</h3>
+                <h3 className="text-sm font-medium text-red-800 dark:text-red-200">{error}</h3>
               </div>
             </div>
           </div>

@@ -17,6 +17,17 @@ const RegisterPage: React.FC = () => {
       try {
         setLoading(true);
         
+        // Check for OAuth parameters in URL
+        const { oauth, provider: urlProvider } = router.query;
+        
+        if (oauth === 'true' && urlProvider) {
+          // This is a redirect from OAuth callback
+          setIsOAuth(true);
+          setProvider(urlProvider as string);
+          setLoading(false);
+          return;
+        }
+        
         // Get current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
@@ -66,49 +77,20 @@ const RegisterPage: React.FC = () => {
     };
     
     checkSession();
-  }, [router]);
+  }, [router, router.query]);
 
   const handleRegistrationComplete = async (formData: Record<string, any>) => {
     try {
-      // Get current user
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      setLoading(true);
       
-      if (userError) {
-        throw userError;
-      }
-      
-      if (!user) {
-        throw new Error('No authenticated user found');
-      }
-      
-      // Update or create profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .upsert({
-          id: user.id,
-          email: user.email,
-          fullName: formData.fullName,
-          role: formData.role,
-          experience: formData.experience,
-          country: formData.country,
-          institution: formData.institution,
-          sector: formData.sector,
-          expertise: formData.expertise,
-          ukBiobank: formData.ukBiobank,
-          otherBiobanks: formData.otherBiobanks,
-          ethics: formData.ethics,
-          updated_at: new Date().toISOString()
-        });
-        
-      if (profileError) {
-        throw profileError;
-      }
-      
-      // Redirect to dashboard
+      // The FinishStep component now handles creating/updating the user profile
+      // We just need to redirect to the dashboard
       router.push('/dashboard');
     } catch (err: any) {
-      console.error('Error saving profile:', err);
-      setError(err.message || 'Failed to save your profile information');
+      console.error('Error completing registration:', err);
+      setError(err.message || 'Failed to complete registration');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -125,7 +107,7 @@ const RegisterPage: React.FC = () => {
   return (
     <AuthPageWrapper>
       {error && (
-        <div className="rounded-md bg-red-50 p-4 mb-6">
+        <div className="rounded-md bg-red-50 dark:bg-red-900 p-4 mb-6 mx-auto max-w-md">
           <div className="flex">
             <div className="flex-shrink-0">
               <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -133,7 +115,7 @@ const RegisterPage: React.FC = () => {
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">{error}</h3>
+              <h3 className="text-sm font-medium text-red-800 dark:text-red-200">{error}</h3>
             </div>
           </div>
         </div>

@@ -3,10 +3,13 @@ import React from 'react';
 // Checkbox Component
 interface CheckboxProps {
   id: string;
-  label: string;
+  label: string | React.ReactNode;
+  required?: boolean;
+  checked?: boolean;
+  onChange?: (id: string, value: boolean) => void;
 }
 
-export function Checkbox({ id, label }: CheckboxProps) {
+export function Checkbox({ id, label, required = false, checked = false, onChange }: CheckboxProps) {
   return (
     <div className="flex gap-3">
       <div className="flex h-6 shrink-0 items-center">
@@ -15,6 +18,9 @@ export function Checkbox({ id, label }: CheckboxProps) {
             id={id}
             name={id}
             type="checkbox"
+            required={required}
+            checked={checked}
+            onChange={(e) => onChange && onChange(id, e.target.checked)}
             className="col-start-1 row-start-1 appearance-none rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 checked:border-indigo-600 dark:checked:border-indigo-500 checked:bg-indigo-600 dark:checked:bg-indigo-500 indeterminate:border-indigo-600 dark:indeterminate:border-indigo-500 indeterminate:bg-indigo-600 dark:indeterminate:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:focus-visible:outline-indigo-400 disabled:border-gray-300 dark:disabled:border-gray-700 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:checked:bg-gray-100 dark:disabled:checked:bg-gray-800 forced-colors:appearance-auto"
           />
           <svg
