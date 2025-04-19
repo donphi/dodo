@@ -318,8 +318,8 @@ export default function Dashboard() {
           <main className="flex-grow flex flex-col">
             <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 flex-grow flex flex-col">
               {/* Force Graph container that fills the available space between header and footer */}
-              <div className="w-full flex-grow border-2 border-gray-300 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-900 transition-colors mb-8">
-                <div className="w-full h-full" style={{ minHeight: '500px' }}>
+              <div className="w-full flex-grow border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-900 transition-colors mb-8 flex flex-col" style={{ minHeight: '500px', maxHeight: 'calc(100vh - 200px)', overflow: 'hidden' }}>
+                <div className="w-full h-full flex-grow overflow-hidden">
                   {viewMode === '3d' ? <ForceGraph3DComponent /> : <ForceGraph2DComponent />}
                 </div>
               </div>
