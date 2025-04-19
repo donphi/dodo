@@ -64,7 +64,7 @@ export default function Footer(): JSX.Element {
           ))}
         </div>
         <p className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400 transition-colors">
-          &copy; {new Date().getFullYear()} Dodo Group, Inc. All rights reserved.
+          &copy; {new Date().getFullYear()} Dodo by Biobankly LTD. All rights reserved.
         </p>
       </div>
     </footer>
