@@ -77,7 +77,7 @@ export default function VisualizationHeader({
           <div className="mt-1 flex flex-wrap items-center">
             <div className="flex items-center text-sm text-gray-500 dark:text-gray-300">
               <Dna className="mr-1.5 size-5 shrink-0 text-gray-400 dark:text-gray-500" />
-              UK Biobank Phenotypes
+              UK Biobank Features
             </div>
             
             <Dot className="mx-2 size-8 text-gray-400 dark:text-gray-500" />
