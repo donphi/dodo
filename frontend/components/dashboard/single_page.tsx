@@ -10,6 +10,7 @@ import { Sun, Moon, MonitorSmartphone, Box, LayoutGrid } from 'lucide-react'
 import { useTheme, Theme } from '../../context/ThemeContext'
 import { useAuth } from '../../hooks/useAuth'
 import { useRouter } from 'next/router'
+import VisualizationHeader from '../VisualizationHeader'
 
 // Dynamically import the graph components with SSR disabled
 const ForceGraph3DComponent = dynamic(() => import('../ForceGraph3D'), { ssr: false })
@@ -93,19 +94,19 @@ export default function Dashboard() {
     return (
       <button
         onClick={cycleTheme}
-        className="flex h-8 w-8 items-center justify-center rounded-full
+        className="flex h-10 w-10 items-center justify-center rounded-full
         bg-white/70 dark:bg-gray-800/70 shadow-md backdrop-blur transition-all duration-300
         hover:bg-white/90 dark:hover:bg-gray-900/90"
         aria-label="Toggle theme"
       >
         {theme === 'light' && (
-          <Sun className="h-4 w-4 text-gray-800 transition-all duration-500 hover:rotate-90 hover:text-indigo-600" />
+          <Sun className="h-5 w-5 text-gray-800 transition-all duration-500 hover:rotate-90 hover:text-indigo-600" />
         )}
         {theme === 'dark' && (
-          <Moon className="h-4 w-4 text-indigo-300 transition-all duration-500 hover:rotate-180 hover:text-white" />
+          <Moon className="h-5 w-5 text-indigo-300 transition-all duration-500 hover:rotate-180 hover:text-white" />
         )}
         {theme === 'system' && (
-          <MonitorSmartphone className="h-4 w-4 text-gray-500 transition-all duration-500 hover:scale-110 hover:text-indigo-600" />
+          <MonitorSmartphone className="h-5 w-5 text-gray-500 transition-all duration-500 hover:scale-110 hover:text-indigo-600" />
         )}
       </button>
     );
@@ -115,202 +116,164 @@ export default function Dashboard() {
     <>
       <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-300">
         <Disclosure as="nav" className="bg-white dark:bg-gray-900 shadow-sm dark:shadow-none border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex h-16 justify-between">
-              <div className="flex">
-                <div className="flex shrink-0 items-center">
-                  <img
-                    alt="Dodo"
-                    src={isDarkMode ? "/dodo_logo_dark.svg" : "/dodo_logo.svg"}
-                    className="block h-8 w-auto lg:hidden"
-                  />
-                  <img
-                    alt="Dodo"
-                    src={isDarkMode ? "/dodo_logo_dark.svg" : "/dodo_logo.svg"}
-                    className="hidden h-8 w-auto lg:block"
-                  />
-                </div>
-                {/* No navigation items as per requirements */}
-              </div>
-              <div className="hidden sm:ml-6 sm:flex sm:items-center">
-                {/* View mode toggle - positioned to the left of theme switcher */}
-                <div className="mr-4">
-                  <button
-                    onClick={toggleView}
-                    className="flex h-8 w-8 items-center justify-center rounded-full
-                    bg-white/70 dark:bg-gray-800/70 shadow-md backdrop-blur transition-all duration-300
-                    hover:bg-white/90 dark:hover:bg-gray-900/90"
-                    aria-label="Toggle view mode"
-                  >
-                    {viewMode === '3d' ? (
-                      <LayoutGrid className="h-4 w-4 text-gray-800 dark:text-indigo-300 transition-all duration-500" />
-                    ) : (
-                      <Box className="h-4 w-4 text-gray-800 dark:text-indigo-300 transition-all duration-500" />
-                    )}
-                  </button>
-                </div>
-                
-                {/* Theme switcher */}
-                <div className="mr-4">
-                  <DashboardThemeSwitcher />
-                </div>
-                
-                {/* Profile dropdown */}
-                <Menu as="div" className="relative">
-                  <div>
-                    <MenuButton className="relative flex rounded-full bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2">
-                      <span className="absolute -inset-1.5" />
+          {({ open }) => (
+            <>
+              <div className="mx-auto max-w-7xl px-6 sm:px-6 lg:px-8">
+                <div className="flex h-16 justify-between">
+                  <div className="flex">
+                    <div className="flex shrink-0 items-center">
+                      <img
+                        alt="Dodo"
+                        src={isDarkMode ? "/dodo_logo_dark.svg" : "/dodo_logo.svg"}
+                        className="block h-8 w-auto lg:hidden"
+                      />
+                      <img
+                        alt="Dodo"
+                        src={isDarkMode ? "/dodo_logo_dark.svg" : "/dodo_logo.svg"}
+                        className="hidden h-8 w-auto lg:block"
+                      />
+                    </div>
+                    {/* No navigation items as per requirements */}
+                  </div>
+                  <div className="hidden sm:ml-6 sm:flex sm:items-center">
+                    {/* Theme switcher - positioned to the left of profile menu */}
+                    <div className="mr-4">
+                      <DashboardThemeSwitcher />
+                    </div>
+                    
+                    {/* Profile dropdown */}
+                    <Menu as="div" className="relative">
+                      <div>
+                        <MenuButton className="relative flex rounded-full bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2">
+                          <span className="absolute -inset-0.5" />
+                          <span className="sr-only">Open user menu</span>
+                          {userImageUrl ? (
+                            <img alt="" src={userImageUrl} className="size-10 rounded-full" />
+                          ) : (
+                            <div className="size-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-medium text-sm text-center">
+                              {userInitials}
+                            </div>
+                          )}
+                        </MenuButton>
+                      </div>
+                      <MenuItems
+                        transition
+                        className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black/5 dark:ring-white/10 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                      >
+                        {userNavigation.map((item) => (
+                          <MenuItem key={item.name}>
+                            {item.name === 'Logout' ? (
+                              <button
+                                onClick={signOut}
+                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 data-[focus]:bg-gray-100 dark:data-[focus]:bg-gray-700 data-[focus]:outline-none transition-colors"
+                              >
+                                {item.name}
+                              </button>
+                            ) : item.name === 'Delete Account' ? (
+                              <button
+                                onClick={() => {
+                                  if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                                    deleteAccount();
+                                  }
+                                }}
+                                className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 data-[focus]:bg-gray-100 dark:data-[focus]:bg-gray-700 data-[focus]:outline-none transition-colors"
+                              >
+                                {item.name}
+                              </button>
+                            ) : (
+                              <a
+                                href={item.href}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  router.push(item.href);
+                                }}
+                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 data-[focus]:bg-gray-100 dark:data-[focus]:bg-gray-700 data-[focus]:outline-none transition-colors"
+                              >
+                                {item.name}
+                              </a>
+                            )}
+                          </MenuItem>
+                        ))}
+                      </MenuItems>
+                    </Menu>
+                  </div>
+                  <div className="-mr-2 flex items-center sm:hidden">
+                    {/* Theme switcher - only visible when menu is open */}
+                    <div className={`mr-4 ${open ? 'block' : 'hidden'}`}>
+                      <DashboardThemeSwitcher />
+                    </div>
+                    {/* Profile icon button */}
+                    <DisclosureButton className="relative inline-flex items-center justify-center rounded-full bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-500 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2">
+                      <span className="absolute -inset-0.5" />
                       <span className="sr-only">Open user menu</span>
                       {userImageUrl ? (
-                        <img alt="" src={userImageUrl} className="size-8 rounded-full" />
+                        <img alt="" src={userImageUrl} className="size-10 rounded-full" />
                       ) : (
-                        <div className="size-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-medium">
+                        <div className="size-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-medium text-sm text-center">
                           {userInitials}
                         </div>
                       )}
-                    </MenuButton>
+                    </DisclosureButton>
                   </div>
-                  <MenuItems
-                    transition
-                    className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black/5 dark:ring-white/10 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
-                  >
-                    {userNavigation.map((item) => (
-                      <MenuItem key={item.name}>
-                        {item.name === 'Logout' ? (
-                          <button
-                            onClick={signOut}
-                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 data-[focus]:bg-gray-100 dark:data-[focus]:bg-gray-700 data-[focus]:outline-none transition-colors"
-                          >
-                            {item.name}
-                          </button>
-                        ) : item.name === 'Delete Account' ? (
-                          <button
-                            onClick={() => {
-                              if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-                                deleteAccount();
-                              }
-                            }}
-                            className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 data-[focus]:bg-gray-100 dark:data-[focus]:bg-gray-700 data-[focus]:outline-none transition-colors"
-                          >
-                            {item.name}
-                          </button>
-                        ) : (
-                          <a
-                            href={item.href}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              router.push(item.href);
-                            }}
-                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 data-[focus]:bg-gray-100 dark:data-[focus]:bg-gray-700 data-[focus]:outline-none transition-colors"
-                          >
-                            {item.name}
-                          </a>
-                        )}
-                      </MenuItem>
-                    ))}
-                  </MenuItems>
-                </Menu>
+                </div>
               </div>
-              <div className="-mr-2 flex items-center sm:hidden">
-                {/* Mobile menu button */}
-                <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md bg-white dark:bg-gray-800 p-2 text-gray-400 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-500 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2">
-                  <span className="absolute -inset-0.5" />
-                  <span className="sr-only">Open main menu</span>
-                  <Bars3Icon aria-hidden="true" className="block size-6 group-data-[open]:hidden" />
-                  <XMarkIcon aria-hidden="true" className="hidden size-6 group-data-[open]:block" />
-                </DisclosureButton>
-              </div>
-            </div>
-          </div>
 
-          <DisclosurePanel className="sm:hidden">
-            {/* No navigation items in mobile menu */}
-            <div className="border-t border-gray-200 dark:border-gray-700 pb-3 pt-4">
-              <div className="flex items-center px-4">
-                {/* Mobile view mode toggle */}
-                <div className="mr-3">
-                  <button
-                    onClick={toggleView}
-                    className="flex h-8 w-8 items-center justify-center rounded-full
-                    bg-white/70 dark:bg-gray-800/70 shadow-md backdrop-blur transition-all duration-300
-                    hover:bg-white/90 dark:hover:bg-gray-900/90"
-                    aria-label="Toggle view mode"
-                  >
-                    {viewMode === '3d' ? (
-                      <LayoutGrid className="h-4 w-4 text-gray-800 dark:text-indigo-300 transition-all duration-500" />
-                    ) : (
-                      <Box className="h-4 w-4 text-gray-800 dark:text-indigo-300 transition-all duration-500" />
-                    )}
-                  </button>
+              <DisclosurePanel className="sm:hidden">
+                {/* No navigation items in mobile menu */}
+                <div className="border-t border-gray-200 dark:border-gray-700 pb-3 pt-4">
+                  <div className="mt-3 space-y-1 text-right">
+                    {userNavigation.map((item) => (
+                      item.name === 'Logout' ? (
+                        <DisclosureButton
+                          key={item.name}
+                          as="button"
+                          onClick={signOut}
+                          className="block w-full text-right px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-800 dark:hover:text-white transition-colors"
+                        >
+                          {item.name}
+                        </DisclosureButton>
+                      ) : item.name === 'Delete Account' ? (
+                        <DisclosureButton
+                          key={item.name}
+                          as="button"
+                          onClick={() => {
+                            if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                              deleteAccount();
+                            }
+                          }}
+                          className="block w-full text-right px-4 py-2 text-base font-medium text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-red-800 dark:hover:text-red-300 transition-colors"
+                        >
+                          {item.name}
+                        </DisclosureButton>
+                      ) : (
+                        <DisclosureButton
+                          key={item.name}
+                          as="a"
+                          href={item.href}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            router.push(item.href);
+                          }}
+                          className="block px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-800 dark:hover:text-white transition-colors"
+                        >
+                          {item.name}
+                        </DisclosureButton>
+                      )
+                    ))}
+                  </div>
                 </div>
-                
-                {/* Mobile theme switcher */}
-                <div className="mr-3">
-                  <DashboardThemeSwitcher />
-                </div>
-                
-                <div className="shrink-0">
-                  {userImageUrl ? (
-                    <img alt="" src={userImageUrl} className="size-10 rounded-full" />
-                  ) : (
-                    <div className="size-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-medium">
-                      {userInitials}
-                    </div>
-                  )}
-                </div>
-                <div className="ml-3">
-                  <div className="text-base font-medium text-gray-800 dark:text-white">{userName}</div>
-                  <div className="text-sm font-medium text-gray-500 dark:text-gray-300">{userEmail}</div>
-                </div>
-              </div>
-              <div className="mt-3 space-y-1">
-                {userNavigation.map((item) => (
-                  item.name === 'Logout' ? (
-                    <DisclosureButton
-                      key={item.name}
-                      as="button"
-                      onClick={signOut}
-                      className="block w-full text-left px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-800 dark:hover:text-white transition-colors"
-                    >
-                      {item.name}
-                    </DisclosureButton>
-                  ) : item.name === 'Delete Account' ? (
-                    <DisclosureButton
-                      key={item.name}
-                      as="button"
-                      onClick={() => {
-                        if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-                          deleteAccount();
-                        }
-                      }}
-                      className="block w-full text-left px-4 py-2 text-base font-medium text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-red-800 dark:hover:text-red-300 transition-colors"
-                    >
-                      {item.name}
-                    </DisclosureButton>
-                  ) : (
-                    <DisclosureButton
-                      key={item.name}
-                      as="a"
-                      href={item.href}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        router.push(item.href);
-                      }}
-                      className="block px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-800 dark:hover:text-white transition-colors"
-                    >
-                      {item.name}
-                    </DisclosureButton>
-                  )
-                ))}
-              </div>
-            </div>
-          </DisclosurePanel>
+              </DisclosurePanel>
+            </>
+          )}
         </Disclosure>
 
         <div className="flex flex-col flex-grow">
           <header>
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-              <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Dashboard</h1>
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <VisualizationHeader 
+                currentView={viewMode} 
+                onViewChange={(view) => setViewMode(view as '2d' | '3d')} 
+              />
             </div>
           </header>
           
