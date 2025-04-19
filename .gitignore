@@ -281,3 +281,6 @@ tailwind-generated.css
 
 # Temporary files created during builds
 .temp-*
+
+# Don't ignore frontend lib directory
+!frontend/lib/

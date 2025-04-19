@@ -2,13 +2,18 @@ import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIt
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useEffect, useState } from 'react'
 import React from 'react'
+import dynamic from 'next/dynamic'
 import Footer from '../hero_landing/footer'
 // Import the ThemeSwitcher component but we'll create a custom wrapper for it
 import ThemeSwitcherOriginal from '../theme_switch'
-import { Sun, Moon, MonitorSmartphone } from 'lucide-react'
+import { Sun, Moon, MonitorSmartphone, Box, LayoutGrid } from 'lucide-react'
 import { useTheme, Theme } from '../../context/ThemeContext'
 import { useAuth } from '../../hooks/useAuth'
 import { useRouter } from 'next/router'
+
+// Dynamically import the graph components with SSR disabled
+const ForceGraph3DComponent = dynamic(() => import('../ForceGraph3D'), { ssr: false })
+const ForceGraph2DComponent = dynamic(() => import('../ForceGraph2D'), { ssr: false })
 
 // Function to get user initials
 function getUserInitials(name: string) {
@@ -40,6 +45,12 @@ export default function Dashboard() {
   
   const userInitials = getUserInitials(userName);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [viewMode, setViewMode] = useState<'2d' | '3d'>('3d');
+  
+  // Toggle between 2D and 3D views
+  const toggleView = () => {
+    setViewMode(viewMode === '3d' ? '2d' : '3d');
+  };
 
   // Check for dark mode on component mount and when theme changes
   useEffect(() => {
@@ -122,7 +133,24 @@ export default function Dashboard() {
                 {/* No navigation items as per requirements */}
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:items-center">
-                {/* Theme switcher - positioned to the left of profile image */}
+                {/* View mode toggle - positioned to the left of theme switcher */}
+                <div className="mr-4">
+                  <button
+                    onClick={toggleView}
+                    className="flex h-8 w-8 items-center justify-center rounded-full
+                    bg-white/70 dark:bg-gray-800/70 shadow-md backdrop-blur transition-all duration-300
+                    hover:bg-white/90 dark:hover:bg-gray-900/90"
+                    aria-label="Toggle view mode"
+                  >
+                    {viewMode === '3d' ? (
+                      <LayoutGrid className="h-4 w-4 text-gray-800 dark:text-indigo-300 transition-all duration-500" />
+                    ) : (
+                      <Box className="h-4 w-4 text-gray-800 dark:text-indigo-300 transition-all duration-500" />
+                    )}
+                  </button>
+                </div>
+                
+                {/* Theme switcher */}
                 <div className="mr-4">
                   <DashboardThemeSwitcher />
                 </div>
@@ -199,6 +227,23 @@ export default function Dashboard() {
             {/* No navigation items in mobile menu */}
             <div className="border-t border-gray-200 dark:border-gray-700 pb-3 pt-4">
               <div className="flex items-center px-4">
+                {/* Mobile view mode toggle */}
+                <div className="mr-3">
+                  <button
+                    onClick={toggleView}
+                    className="flex h-8 w-8 items-center justify-center rounded-full
+                    bg-white/70 dark:bg-gray-800/70 shadow-md backdrop-blur transition-all duration-300
+                    hover:bg-white/90 dark:hover:bg-gray-900/90"
+                    aria-label="Toggle view mode"
+                  >
+                    {viewMode === '3d' ? (
+                      <LayoutGrid className="h-4 w-4 text-gray-800 dark:text-indigo-300 transition-all duration-500" />
+                    ) : (
+                      <Box className="h-4 w-4 text-gray-800 dark:text-indigo-300 transition-all duration-500" />
+                    )}
+                  </button>
+                </div>
+                
                 {/* Mobile theme switcher */}
                 <div className="mr-3">
                   <DashboardThemeSwitcher />
@@ -269,12 +314,14 @@ export default function Dashboard() {
             </div>
           </header>
           
-          {/* Main content area with chart taking up most of the space */}
+          {/* Main content area with force graph taking up most of the space */}
           <main className="flex-grow flex flex-col">
             <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 flex-grow flex flex-col">
-              {/* Chart container that fills the available space between header and footer */}
+              {/* Force Graph container that fills the available space between header and footer */}
               <div className="w-full flex-grow border-2 border-gray-300 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-900 transition-colors mb-8">
-                <div id="echartContainer" className="w-full h-full" style={{ minHeight: '500px' }}></div>
+                <div className="w-full h-full" style={{ minHeight: '500px' }}>
+                  {viewMode === '3d' ? <ForceGraph3DComponent /> : <ForceGraph2DComponent />}
+                </div>
               </div>
             </div>
           </main>

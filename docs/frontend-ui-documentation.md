@@ -99,3 +99,179 @@ Key styling features:
 - `mx-auto max-w-md` - Centers the error message with a maximum width
 - `dark:bg-red-900` - Dark mode background color
 - `dark:text-red-200` - Dark mode text color for better contrast and readability
+
+## 3D Force Graph Visualization
+
+The dashboard now features a 3D force-directed graph visualization that displays network data in an interactive three-dimensional space. This visualization is implemented using the `three-forcegraph` library and Three.js.
+
+### Implementation Details
+
+The 3D Force Graph is implemented in two main components:
+
+1. `frontend/components/ForceGraph3D.tsx`: The core visualization component that:
+   - Renders a 3D force-directed graph
+   - Loads graph data from JSON files
+   - Provides interactive features like node highlighting and click events
+   - Auto-colors nodes by their type
+   - Displays node labels on hover
+
+2. Integration in the dashboard (`frontend/components/dashboard/single_page.tsx`):
+   - The component is dynamically imported with SSR disabled
+   - Placed in the main content area of the dashboard
+   - Sized to fill the available space with a minimum height
+
+### Features
+
+- **Interactive 3D Visualization**: Users can rotate, zoom, and pan the graph using mouse controls
+- **Node Highlighting**: Nodes are highlighted on hover with labels showing node information
+- **Visual Categorization**: Nodes are automatically colored by their type attribute
+- **Animated Links**: Directional particles flow along links to indicate relationships
+- **Click Interaction**: Clicking on nodes triggers an alert with the node's label
+
+### Data Source
+
+The visualization loads graph data from `/graph-data/graph_1000_nodes.json`, which contains nodes and links in the following format:
+
+```json
+{
+  "nodes": [
+    { "id": "node1", "label": "Node 1", "type": "type1" },
+    ...
+  ],
+  "links": [
+    { "source": "node1", "target": "node2" },
+    ...
+  ]
+}
+```
+
+### Technical Implementation
+
+The 3D Force Graph is implemented using the `3d-force-graph` library (version 1.72.3) along with Three.js. The implementation includes proper TypeScript type definitions for both libraries to ensure type safety.
+
+#### Dependencies
+
+```json
+// In package.json
+{
+  "dependencies": {
+    "three": "^0.160.0",
+    "3d-force-graph": "^1.72.3"
+  },
+  "devDependencies": {
+    "@types/three": "^0.160.0"
+  }
+}
+```
+
+#### Component Implementation
+
+```typescript
+// Import the libraries with proper type support
+import ForceGraph3D from "3d-force-graph";
+import * as THREE from "three"; // Uses @types/three for type definitions
+
+// Define custom interfaces for the 3D Force Graph
+interface NodeObject {
+  id: string;
+  label: string;
+  type: string;
+}
+
+interface LinkObject {
+  source: string;
+  target: string;
+}
+
+// Define a custom interface for the ForceGraph3D instance
+interface ForceGraph3DInstance {
+  graphData: (data: { nodes: NodeObject[]; links: LinkObject[] }) => ForceGraph3DInstance;
+  backgroundColor: (color: string) => ForceGraph3DInstance;
+  nodeLabel: (callback: (node: NodeObject) => string) => ForceGraph3DInstance;
+  nodeAutoColorBy: (field: string) => ForceGraph3DInstance;
+  linkDirectionalParticles: (value: number) => ForceGraph3DInstance;
+  linkDirectionalParticleWidth: (value: number) => ForceGraph3DInstance;
+  linkColor: (callback: () => string) => ForceGraph3DInstance;
+  onNodeClick: (callback: (node: NodeObject) => void) => ForceGraph3DInstance;
+}
+
+// Component implementation with proper TypeScript typing
+export default function ForceGraph3DComponent() {
+  // Use null as initial value for refs with custom types
+  const containerRef = useRef<HTMLDivElement>(null);
+  const fgRef = useRef<ForceGraph3DInstance | null>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    // Initialize the 3D Force Graph with the correct API
+    // Pass the container element directly to the constructor
+    const Graph = new ForceGraph3D(containerRef.current)
+      .backgroundColor("#f8fafc")
+      .nodeLabel((node: any) => {
+        // Cast to our custom type to access our properties
+        const customNode = node as CustomNodeObject;
+        return `${customNode.label} (${customNode.type})`;
+      })
+      .nodeAutoColorBy("type")
+      .linkDirectionalParticles(1)
+      .linkDirectionalParticleWidth(1)
+      .linkColor(() => "rgba(100,100,255,0.4)")
+      .onNodeClick((node: any) => {
+        // Cast to our custom type to access our properties
+        const customNode = node as CustomNodeObject;
+        alert(`Clicked on: ${customNode.label}`);
+      });
+
+// Define types for type safety
+type ForceGraph3DInstance = ReturnType<typeof ForceGraph3D>;
+type NodeObject = {
+  id: string;
+  label: string;
+  type: string;
+};
+
+// Initialize the graph in a useEffect hook
+useEffect(() => {
+  if (!containerRef.current) return;
+
+  const Graph = ForceGraph3D()
+    (containerRef.current)
+    .backgroundColor("#f8fafc")
+    .nodeLabel((node: NodeObject) => `${node.label} (${node.type})`)
+    .nodeAutoColorBy("type")
+    .linkDirectionalParticles(1)
+    .linkDirectionalParticleWidth(1)
+    .linkColor(() => "rgba(100,100,255,0.4)")
+    .onNodeClick((node: NodeObject) => {
+      alert(`Clicked on: ${node.label}`);
+    });
+
+  // Load data
+  fetch("/graph-data/graph_1000_nodes.json")
+    .then(res => res.json())
+    .then(data => Graph.graphData(data));
+
+  // Store the graph instance with proper type casting
+  fgRef.current = Graph as ForceGraph3DInstance;
+
+  // Store a reference to the container for cleanup
+  const container = containerRef.current;
+  
+  // Proper cleanup that follows React hooks best practices
+  return () => {
+    if (container) {
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
+    }
+  };
+}, []);
+```
+
+### Responsive Design
+
+The component is designed to be responsive and adapts to the dashboard container:
+- Uses `h-full` and `w-full` to fill the available space
+- Sets a minimum height of 500px to ensure visibility
+- Maintains proper aspect ratio during window resizing
