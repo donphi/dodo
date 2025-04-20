@@ -13,7 +13,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <ThemeProvider>
       <Head>
         {/* Dynamic page-specific metadata that can change between pages */}
-        <title>Dodo by Biobankly</title>
+        <title>Dodo by Biobankly LTD</title>
         <meta
           name="description"
           content="Dodo is your experimental playground for exploring the UK Biobank dataset. Interact with diverse phenotype views, answer data science questions, and shape the future of Biobankly."
