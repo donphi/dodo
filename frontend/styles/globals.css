@@ -3,3 +3,6 @@
 @tailwind utilities;
 
 /* Custom global styles can be added here. */
+html, body, #__next {
+  height: 100%;
+}
