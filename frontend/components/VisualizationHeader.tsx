@@ -17,7 +17,7 @@ declare global {
 
 // Interface for props
 interface VisualizationHeaderProps {
-  currentView?: '2d' | '3d';
+  currentView?: '2d' | '3d' | 'tidy';
   onViewChange?: (view: string) => void;
 }
 
@@ -80,7 +80,7 @@ export default function VisualizationHeader({
               UK Biobank Features
             </div>
             
-            <Dot className="mx-2 size-8 text-gray-400 dark:text-gray-500" />
+            <Dot className="mx-0.5 size-8 text-gray-400 dark:text-gray-500" />
             
             <div className="flex items-center text-sm text-gray-500 dark:text-gray-300">
               {React.createElement(activeView.icon, { 

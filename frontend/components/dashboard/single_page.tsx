@@ -15,6 +15,7 @@ import VisualizationHeader from '../VisualizationHeader'
 // Dynamically import the graph components with SSR disabled
 const ForceGraph3DComponent = dynamic(() => import('../ForceGraph3D'), { ssr: false })
 const ForceGraph2DComponent = dynamic(() => import('../ForceGraph2D'), { ssr: false })
+const TidyTreeComponent = dynamic(() => import('../TidyTree'), { ssr: false })
 
 // Function to get user initials
 function getUserInitials(name: string) {
@@ -46,11 +47,14 @@ export default function Dashboard() {
   
   const userInitials = getUserInitials(userName);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [viewMode, setViewMode] = useState<'2d' | '3d'>('2d');
+  const [viewMode, setViewMode] = useState<'2d' | '3d' | 'tidy'>('2d');
   
-  // Toggle between 2D and 3D views
+  // Toggle between views
   const toggleView = () => {
-    setViewMode(viewMode === '3d' ? '2d' : '3d');
+    // Cycle through view modes: 2d -> 3d -> tidy -> 2d
+    if (viewMode === '2d') setViewMode('3d');
+    else if (viewMode === '3d') setViewMode('tidy');
+    else setViewMode('2d');
   };
 
   // Check for dark mode on component mount and when theme changes
@@ -272,7 +276,7 @@ export default function Dashboard() {
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <VisualizationHeader 
                 currentView={viewMode} 
-                onViewChange={(view) => setViewMode(view as '2d' | '3d')} 
+                onViewChange={(view) => setViewMode(view as '2d' | '3d' | 'tidy')}
               />
             </div>
           </header>
@@ -281,9 +285,11 @@ export default function Dashboard() {
           <main className="flex-grow flex flex-col">
             <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 flex-grow flex flex-col">
               {/* Force Graph container that fills the available space between header and footer */}
-              <div className="w-full flex-grow border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 transition-colors mb-8 flex flex-col" style={{ minHeight: '500px', maxHeight: 'calc(100vh - 200px)', overflow: 'hidden' }}>
-                <div className="w-full h-full flex-grow overflow-hidden rounded-lg">
-                  {viewMode === '3d' ? <ForceGraph3DComponent /> : <ForceGraph2DComponent />}
+              <div className="w-full flex-grow border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 transition-colors mb-8 flex flex-col" style={{ minHeight: '500px', maxHeight: viewMode === 'tidy' ? 'none' : 'calc(100vh - 200px)', overflow: viewMode === 'tidy' ? 'auto' : 'hidden' }}>
+                <div className="w-full h-full flex-grow rounded-lg" style={{ overflow: viewMode === 'tidy' ? 'visible' : 'hidden' }}>
+                  {viewMode === '3d' ? <ForceGraph3DComponent /> :
+                   viewMode === 'tidy' ? <TidyTreeComponent /> :
+                   <ForceGraph2DComponent />}
                 </div>
               </div>
             </div>
