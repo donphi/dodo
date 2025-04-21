@@ -5,7 +5,7 @@ export default function Document() {
         <Html lang="en">
             <Head>
                 {/* Viewport settings - critical for responsive design */}
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
                 {/* Preload favicon */}
                 <link rel="preload" href="/favicon.png" as="image" type="image/png" />
@@ -49,7 +49,8 @@ export default function Document() {
                 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
                 <meta name="format-detection" content="telephone=no" />
                 <meta name="mobile-web-app-capable" content="yes" />
-                <meta name="theme-color" content="transparent" />
+                <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+                <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
 
                 {/* SEO */}
                 <link rel="canonical" href="https://dodo.biobankly.com/" />
@@ -76,7 +77,7 @@ export default function Document() {
                     }}
                 />
             </Head>
-            <body className="bg-transparent">
+            <body>
                 <Main />
                 <NextScript />
             </body>
