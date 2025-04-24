@@ -4,11 +4,12 @@ This document describes the graph visualization components implemented in the pr
 
 ## Overview
 
-The project includes both 2D and 3D force-directed graph visualizations to display network data. These visualizations are implemented using the following React-specific libraries:
+The project currently focuses on hierarchical tree visualizations to display network data. The available visualizations are:
 
-- `react-force-graph-3d` - For 3D graph visualization
-- `react-force-graph-2d` - For 2D graph visualization
-- `three.js` - For 3D rendering (used by react-force-graph-3d)
+- Tidy Tree - A hierarchical tree layout that organizes nodes in a clean, structured format
+- Radial Tidy Tree - A circular hierarchical layout with the root node at the center
+
+> **Note:** 2D and 3D force-directed graph visualizations and Sunburst visualization are temporarily disabled and will be re-enabled in a future update.
 
 ## Components
 
@@ -130,32 +131,37 @@ export default function ForceGraph2DComponent(): JSX.Element {
 
 ## Pages
 
-### Dashboard
+### Graph Page
 
-The dashboard page provides a unified interface with a toggle to switch between 2D and 3D visualizations.
+The graph page provides a unified interface with options to switch between different visualization types. Currently, only Tidy Tree and Radial Tidy Tree visualizations are available.
 
 ```typescript
-// dashboard.tsx
-import { useState } from 'react';
+// graph.tsx
+import React, { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/router';
+import VisualizationHeader from "../components/VisualizationHeader";
 
-// Dynamically import the graph components with SSR disabled
-const ForceGraph3DComponent = dynamic(() => import("../components/ForceGraph3D"), { ssr: false });
-const ForceGraph2DComponent = dynamic(() => import("../components/ForceGraph2D"), { ssr: false });
+// Dynamically import all graph components with SSR disabled
+const TidyTreeComponent = dynamic(() => import("../components/TidyTree"), { ssr: false });
+const RadialTidyTreeComponent = dynamic(() => import("../components/RadialTidyTree"), { ssr: false });
 
-export default function Dashboard() {
-  const [viewMode, setViewMode] = useState<'2d' | '3d'>('3d');
+export default function GraphPage(): React.ReactElement {
+  // Default view is set to 'tidy'
+  const [viewMode, setViewMode] = useState<'tidy' | 'radial'>('tidy');
   
   // Component implementation...
 }
 ```
 
-### Dedicated Pages
+### Visualization Selection
 
-There are also dedicated pages for each visualization type:
+The visualization can be selected from the VisualizationHeader component:
 
-- `/graph-2d` - Renders only the 2D graph visualization
-- `/graph-3d` - Renders only the 3D graph visualization
+1. Click the "View Options" button in the header
+2. Select either "Tidy Tree" or "Radial Tidy Tree" from the dropdown menu
+
+By default, the Tidy Tree visualization is loaded when the page is first accessed.
 
 ## Data Format
 
@@ -240,57 +246,45 @@ To use the graph visualization in your application:
 
 ## Dashboard Integration
 
-The graph visualization has been integrated into the existing dashboard component with a toggle switch to alternate between 2D and 3D views:
+The graph visualization has been integrated into the existing dashboard component with a dropdown menu to select between different visualization types:
 
 ### Implementation Details
 
-1. Both graph components are dynamically imported in the dashboard component:
+1. Tree visualization components are dynamically imported in the graph page:
    ```typescript
    // Dynamically import the graph components with SSR disabled
-   const ForceGraph3DComponent = dynamic(() => import('../ForceGraph3D'), { ssr: false });
-   const ForceGraph2DComponent = dynamic(() => import('../ForceGraph2D'), { ssr: false });
+   const TidyTreeComponent = dynamic(() => import("../components/TidyTree"), { ssr: false });
+   const RadialTidyTreeComponent = dynamic(() => import("../components/RadialTidyTree"), { ssr: false });
    ```
 
 2. A state variable tracks the current view mode:
    ```typescript
-   const [viewMode, setViewMode] = useState<'2d' | '3d'>('3d');
-   
-   // Toggle between 2D and 3D views
-   const toggleView = () => {
-     setViewMode(viewMode === '3d' ? '2d' : '3d');
-   };
+   // Default view is set to 'tidy'
+   const [viewMode, setViewMode] = useState<'tidy' | 'radial'>('tidy');
    ```
 
-3. A toggle button is added to the dashboard header next to the theme switcher:
+3. The VisualizationHeader component provides a dropdown menu for selecting visualization types:
    ```jsx
-   <button
-     onClick={toggleView}
-     className="flex h-8 w-8 items-center justify-center rounded-full
-     bg-white/70 dark:bg-gray-800/70 shadow-md backdrop-blur transition-all duration-300
-     hover:bg-white/90 dark:hover:bg-gray-900/90"
-     aria-label="Toggle view mode"
+   <VisualizationHeader currentView={viewMode} onViewChange={handleViewChange} />
+   ```
+
+4. The appropriate component is conditionally rendered based on the selected view mode:
+   ```jsx
+   <div
+     ref={graphRef}
+     className="flex-grow w-full h-full"
+     style={{ minHeight: '500px', height: 'calc(100vh - 100px)', overflow: 'auto' }}
    >
-     {viewMode === '3d' ? (
-       <LayoutGrid className="h-4 w-4 text-gray-800 dark:text-indigo-300 transition-all duration-500" />
-     ) : (
-       <Cube className="h-4 w-4 text-gray-800 dark:text-indigo-300 transition-all duration-500" />
-     )}
-   </button>
-   ```
-
-4. The appropriate component is conditionally rendered in the main content area:
-   ```jsx
-   <div className="w-full flex-grow border-2 border-gray-300 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-900 transition-colors mb-8">
-     {viewMode === '3d' ? <ForceGraph3DComponent /> : <ForceGraph2DComponent />}
+     {renderVisualization()}
    </div>
    ```
 
 ### UI Integration
 
-The toggle switch is styled to match the existing dashboard design, using the same visual language as the theme switcher:
+The visualization header is designed to provide a seamless user experience:
 
-- The toggle button uses the same rounded style and hover effects as the theme switcher
-- The 2D view is represented by a grid icon (`<LayoutGrid />`)
-- The 3D view is represented by a cube icon (`<Cube />`)
-- The toggle is positioned next to the theme switcher in both desktop and mobile views
-- The graph visualization is contained within the same bordered container that was previously used for the chart
+- The header displays the current visualization type with an appropriate icon
+- The dropdown menu shows available visualization options (currently Tidy Tree and Radial Tidy Tree)
+- Each option includes a descriptive name and icon for easy identification
+- The visualization is contained within a responsive container that adjusts to the browser window size
+- The default visualization is Tidy Tree, which loads automatically when the page is accessed

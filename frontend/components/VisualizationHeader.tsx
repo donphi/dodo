@@ -23,17 +23,18 @@ interface VisualizationHeaderProps {
 
 // Define the view types with their icons and text
 const viewTypes = [
-  { id: '2d', name: '2 Dimensional', icon: Square, description: 'Standard 2D visualization' },
-  { id: '3d', name: '3 Dimensional', icon: Box, description: '3D spatial representation' },
-  { id: 'radial', name: 'Radial Tidy Tree', icon: Disc2, description: 'Circular hierarchy visualization' },
+  // Commented out for now - will be added back later
+  // { id: '2d', name: '2 Dimensional', icon: Square, description: 'Standard 2D visualization' },
+  // { id: '3d', name: '3 Dimensional', icon: Box, description: '3D spatial representation' },
   { id: 'tidy', name: 'Tidy Tree', icon: ListTree, description: 'Organized node-link tree layout' },
-  { id: 'sunburst', name: 'Sunburst', icon: Radar, description: 'Radial space-filling visualization' },
+  { id: 'radial', name: 'Radial Tidy Tree', icon: Disc2, description: 'Circular hierarchy visualization' },
+  // { id: 'sunburst', name: 'Sunburst', icon: Radar, description: 'Radial space-filling visualization' },
 ]
 
 // Main component combining light and dark modes
-export default function VisualizationHeader({ 
-  currentView = '2d', 
-  onViewChange 
+export default function VisualizationHeader({
+  currentView = 'tidy',
+  onViewChange
 }: VisualizationHeaderProps): React.ReactElement {
   // Find the active view based on the currentView prop
   const [activeView, setActiveView] = useState(
@@ -102,7 +103,7 @@ export default function VisualizationHeader({
 
           <PopoverPanel
             transition
-            className="absolute right-0 z-10 mt-5 w-screen max-w-md px-4 sm:px-0 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
+            className="absolute right-0 z-50 mt-5 w-screen max-w-md px-4 sm:px-0 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
           >
             {({ close }) => (
               <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black/5 dark:ring-white/5">
@@ -159,7 +160,7 @@ export default function VisualizationHeader({
 
           <PopoverPanel
             transition
-            className="absolute right-0 z-10 mt-2 w-screen max-w-xs px-0 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
+            className="absolute right-0 z-50 mt-2 w-screen max-w-xs px-0 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
           >
             {({ close }) => (
               <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black/5 dark:ring-white/5">

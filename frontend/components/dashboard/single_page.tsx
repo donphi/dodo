@@ -48,7 +48,7 @@ export default function Dashboard() {
   
   const userInitials = getUserInitials(userName);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [viewMode, setViewMode] = useState<'2d' | '3d' | 'tidy' | 'radial'>('2d');
+  const [viewMode, setViewMode] = useState<'2d' | '3d' | 'tidy' | 'radial'>('tidy');
   
   // Toggle between views
   const toggleView = () => {

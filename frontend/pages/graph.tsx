@@ -30,15 +30,16 @@ export default function GraphPage(): React.ReactElement {
     console.log("Current viewMode before change:", viewMode);
     
     switch (view) {
-      case '2d':
-        setViewMode('2d');
-        // Update URL without full page reload
-        router.push(`/graph?view=2d`, undefined, { shallow: true });
-        break;
-      case '3d':
-        setViewMode('3d');
-        router.push(`/graph?view=3d`, undefined, { shallow: true });
-        break;
+      // Commented out for now - will be added back later
+      // case '2d':
+      //   setViewMode('2d');
+      //   // Update URL without full page reload
+      //   router.push(`/graph?view=2d`, undefined, { shallow: true });
+      //   break;
+      // case '3d':
+      //   setViewMode('3d');
+      //   router.push(`/graph?view=3d`, undefined, { shallow: true });
+      //   break;
       case 'tidy':
         setViewMode('tidy');
         router.push(`/graph?view=tidy`, undefined, { shallow: true });
@@ -48,9 +49,9 @@ export default function GraphPage(): React.ReactElement {
         setViewMode('radial');
         router.push(`/graph?view=radial`, undefined, { shallow: true });
         break;
-      case 'sunburst':
-        // Not implemented yet, stay on current page
-        break;
+      // case 'sunburst':
+      //   // Not implemented yet, stay on current page
+      //   break;
       default:
         // Default to tidy view
         setViewMode('tidy');
@@ -111,12 +112,13 @@ export default function GraphPage(): React.ReactElement {
     console.log("renderVisualization called with viewMode:", viewMode);
     
     switch (viewMode) {
-      case '2d':
-        console.log("Rendering ForceGraph2DComponent");
-        return <ForceGraph2DComponent />;
-      case '3d':
-        console.log("Rendering ForceGraph3DComponent");
-        return <ForceGraph3DComponent />;
+      // Commented out for now - will be added back later
+      // case '2d':
+      //   console.log("Rendering ForceGraph2DComponent");
+      //   return <ForceGraph2DComponent />;
+      // case '3d':
+      //   console.log("Rendering ForceGraph3DComponent");
+      //   return <ForceGraph3DComponent />;
       case 'radial':
         console.log("Rendering RadialTidyTreeComponent");
         return <RadialTidyTreeComponent />;
