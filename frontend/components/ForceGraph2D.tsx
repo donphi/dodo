@@ -229,7 +229,7 @@ export default function ForceGraph2D() {
         g.attr("transform", event.transform);
       });
     
-    svg.call(zoom);
+    svg.call(zoom as any);
     
     // Create a group for all elements
     const g = svg.append("g");
