@@ -131,11 +131,6 @@ export default function GraphPage(): React.ReactElement {
     <main className="flex flex-col w-full h-screen overflow-hidden">
       <VisualizationHeader currentView={viewMode} onViewChange={handleViewChange} />
       
-      {/* Export Button */}
-      <div className="absolute top-16 right-4 z-10">
-        <ExportButton onExport={handleExport} />
-      </div>
-      
       <div
         ref={graphRef}
         className="flex-grow w-full h-full"
