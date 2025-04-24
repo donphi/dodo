@@ -236,7 +236,7 @@ export default function ForceGraph2D() {
     
     // Initialize at a slightly zoomed out view centered on the visualization
     svg.call(
-      zoom.transform,
+      zoom.transform as any,
       d3.zoomIdentity.translate(width / 2, height / 2).scale(0.8)
     );
     
