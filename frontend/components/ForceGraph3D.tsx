@@ -48,7 +48,7 @@ type GraphData = {
   links: LinkObject[];
 };
 
-export default function ForceGraph3DComponent(): JSX.Element {
+export default function ForceGraph3DComponent() {
   const [graphData, setGraphData] = useState<GraphData>({ nodes: [], links: [] });
   const [isDarkMode, setIsDarkMode] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);

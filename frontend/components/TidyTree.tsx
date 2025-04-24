@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useState, useRef, MouseEvent } from "react";
+import React, { useEffect, useState, useRef, MouseEvent } from "react";
 import * as d3 from "d3";
-import ExportButton from "./ExportButton"; // Import the new ExportButton component
+import TidyTreeButtons from "./TidyTreeButtons"; // Import our custom TidyTreeButtons component
 
 // Define types for our tree data structure
 type TreeNodeData = {
@@ -20,7 +20,7 @@ type TreeNodeData = {
 // Use type instead of interface to avoid issues with recursive types
 type TreeNode = d3.HierarchyNode<TreeNodeData>;
 
-export default function TidyTree(): JSX.Element {
+export default function TidyTree() {
   const [data, setData] = useState<TreeNodeData | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -929,9 +929,9 @@ export default function TidyTree(): JSX.Element {
         </div>
       )}
       
-      {/* Export Button - REPLACED THE CONTROL PANEL with just the ExportButton */}
-      <div className="absolute top-2 right-2 z-10">
-        <ExportButton onExport={exportSVG} />
+      {/* TidyTree Buttons - Using our custom TidyTreeButtons component */}
+      <div className="absolute top-2 right-2 z-10 p-2 bg-transparent dark:bg-transparent rounded shadow-sm">
+        <TidyTreeButtons onExport={exportSVG} />
       </div>
       
       {/* Field Data Tooltip */}

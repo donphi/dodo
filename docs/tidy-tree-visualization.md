@@ -11,6 +11,7 @@ The Tidy Tree visualization provides a hierarchical tree layout for the UK Bioba
 ### Components
 
 - **TidyTree.tsx**: The main component that renders the tree visualization using D3.js
+- **TidyTreeButtons.tsx**: A specialized button component for TidyTree that provides export functionality
 - **Integration with dashboard**: The component is integrated into the dashboard's view options alongside the existing 2D and 3D force graph visualizations
 
 ### Data Structure
@@ -55,7 +56,7 @@ The Tidy Tree visualization uses the same hierarchical JSON data structure as th
   - Filtering by node type (fields, categories)
 - **Zoom and Pan**: Supports zooming and panning for exploring large trees
 - **Dark/Light Mode Support**: Automatically adapts to the application's theme
-- **Export Capability**: Allows exporting the visualization as an SVG file
+- **Export Capability**: Allows exporting the visualization as an SVG file using the dedicated TidyTreeButtons component
 
 ## Usage
 
@@ -75,6 +76,7 @@ The Tidy Tree component uses D3.js's tree layout algorithm to position nodes. Ke
 - Dynamic resizing to fit the container
 - Efficient data filtering to handle large datasets
 - Tooltip information on hover for detailed node information
+- Custom TidyTreeButtons component for export functionality, ensuring consistent styling with other visualizations
 
 ## Future Enhancements
 

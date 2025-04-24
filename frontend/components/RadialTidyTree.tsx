@@ -1156,11 +1156,11 @@ const RadialTidyTree: React.FC = () => {
     zoomRef.current = zoom;
 
     // Apply zoom to SVG with the current transform
-    svg.call(zoom)
+    svg.call(zoom as any)
       .on("dblclick.zoom", null) // Disable built-in double-click zoom
       .on("contextmenu", event => event.preventDefault())
       .call(
-        zoom.transform,
+        (zoom.transform as any),
         d3.zoomIdentity
           .translate(translateX, translateY)
           .scale(zoomScale)
@@ -1174,7 +1174,7 @@ const RadialTidyTree: React.FC = () => {
       
       svg.transition()
         .duration(750)
-        .call(zoom.transform, d3.zoomIdentity);
+        .call((zoom.transform as any), d3.zoomIdentity);
         
       setTranslateX(0);
       setTranslateY(0);
@@ -1189,7 +1189,7 @@ const RadialTidyTree: React.FC = () => {
       
       svg.transition()
         .duration(750)
-        .call(zoom.transform, d3.zoomIdentity);
+        .call((zoom.transform as any), d3.zoomIdentity);
         
       setTranslateX(0);
       setTranslateY(0);
@@ -1331,12 +1331,14 @@ const RadialTidyTree: React.FC = () => {
             .attr("r", config.nodeSize * 1.5)
             .attr("fill-opacity", 0.8);
             
-          d3.select(parentElement)
-            .select("text")
-            .transition()
-            .duration(200)
-            .attr("font-weight", "bold")
-            .attr("fill", isDarkMode ? "#fff" : "#000");
+          if (parentElement) {
+            d3.select(parentElement as Element)
+              .select("text")
+              .transition()
+              .duration(200)
+              .attr("font-weight", "bold")
+              .attr("fill", isDarkMode ? "#fff" : "#000");
+          }
         }
       })
       .on("mouseout", function(event, d) {
@@ -1349,12 +1351,14 @@ const RadialTidyTree: React.FC = () => {
             .attr("r", config.nodeSize)
             .attr("fill-opacity", 1);
             
-          d3.select(parentElement)
-            .select("text")
-            .transition()
-            .duration(200)
-            .attr("font-weight", "normal")
-            .attr("fill", null);
+          if (parentElement) {
+            d3.select(parentElement as Element)
+              .select("text")
+              .transition()
+              .duration(200)
+              .attr("font-weight", "normal")
+              .attr("fill", null);
+          }
         }
       });
     
@@ -1418,7 +1422,7 @@ const RadialTidyTree: React.FC = () => {
           }
           
           // Even more padding for levels with many nodes
-          const levelNodes = d.parent ? d.parent.children.length : 0;
+          const levelNodes = d.parent && d.parent.children ? d.parent.children.length : 0;
           if (levelNodes > 15) {
             offset += 5;
           }
@@ -1486,7 +1490,7 @@ const RadialTidyTree: React.FC = () => {
         .attr("font-weight", "bold");
       
       rootContainer.selectAll("path.link")
-        .filter((p: d3.HierarchyLink<TreeNodeData>) => {
+        .filter(function(p: any) {
           return p.source && p.target && ancestors.includes(p.source) && ancestors.includes(p.target);
         })
         .transition()
@@ -1510,10 +1514,10 @@ const RadialTidyTree: React.FC = () => {
         .attr("font-weight", "bold");
       
       rootContainer.selectAll("path.link")
-        .filter((p: d3.HierarchyLink<TreeNodeData>) => {
+        .filter(function(p: any) {
           return p.source && p.target &&
-                ((p.source === d && descendants.includes(p.target)) ||
-                  (descendants.includes(p.source) && descendants.includes(p.target)));
+                ((p.source === d && descendants.includes(p.target as any)) ||
+                  (descendants.includes(p.source as any) && descendants.includes(p.target as any)));
         })
         .transition()
         .duration(200)

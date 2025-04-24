@@ -11,6 +11,7 @@ The Radial Tidy Tree visualization provides a circular hierarchical layout for t
 ### Components
 
 - **RadialTidyTree.tsx**: The main component that renders the radial tree visualization using D3.js
+- **TreeButtons.tsx**: A reusable button component that provides export and view all functionality
 - **Integration with dashboard**: The component is integrated into the dashboard's view options alongside the existing 2D, 3D, and Tidy Tree visualizations
 
 ### Data Structure
@@ -55,7 +56,8 @@ The Radial Tidy Tree visualization uses the same hierarchical JSON data structur
   - Filtering by node type (fields, categories)
 - **Zoom and Pan**: Supports zooming and panning for exploring large trees
 - **Dark/Light Mode Support**: Automatically adapts to the application's theme
-- **Export Capability**: Allows exporting the visualization as an SVG file
+- **Export Capability**: Allows exporting the visualization as an SVG file using the TreeButtons component
+- **View All Functionality**: Provides a button to reset the view to show the entire tree
 - **Tooltips**: Displays detailed information about nodes on click
 - **Visual Indicators**: Small indicators show whether a node is expanded or collapsed
 
@@ -83,6 +85,9 @@ The Radial Tidy Tree component uses D3.js's radial tree layout algorithm to posi
 - Tooltip information on click for detailed node information
 - Automatic theme detection and adaptation
 - Responsive design that works across different screen sizes
+- TreeButtons component for export and view all functionality
+  - Export button allows saving the visualization as an SVG file
+  - View All button resets the zoom and pan to show the entire tree
 
 ## Future Enhancements
 
