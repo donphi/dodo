@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import VisualizationHeader from "../components/VisualizationHeader";
-import ExportButton from "../components/ExportButton";
 
 // Dynamically import all graph components with SSR disabled
 const ForceGraph3DComponent = dynamic(() => import("../components/ForceGraph3D"), { ssr: false });
