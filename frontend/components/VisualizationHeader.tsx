@@ -34,7 +34,7 @@ const viewTypes = [
 export default function VisualizationHeader({ 
   currentView = '2d', 
   onViewChange 
-}: VisualizationHeaderProps): JSX.Element {
+}: VisualizationHeaderProps): React.ReactElement {
   // Find the active view based on the currentView prop
   const [activeView, setActiveView] = useState(
     viewTypes.find(v => v.id === currentView) || viewTypes[0]

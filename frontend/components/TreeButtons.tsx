@@ -11,7 +11,7 @@ export default function TreeButtons({
   onExport, 
   onViewAll,
   className = '' 
-}: TreeButtonsProps): JSX.Element {
+}: TreeButtonsProps): React.ReactElement {
   return (
     <div className="flex flex-row gap-2">
       {/* View All Button - Desktop */}

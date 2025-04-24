@@ -13,7 +13,7 @@ interface TidyTreeButtonsProps {
 export default function TidyTreeButtons({ 
   onExport, 
   className = '' 
-}: TidyTreeButtonsProps): JSX.Element {
+}: TidyTreeButtonsProps): React.ReactElement {
   return (
     <div className="flex flex-row">
       {/* Export Button - Desktop */}

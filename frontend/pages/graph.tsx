@@ -10,7 +10,7 @@ const ForceGraph2DComponent = dynamic(() => import("../components/ForceGraph2D")
 const TidyTreeComponent = dynamic(() => import("../components/TidyTree"), { ssr: false });
 const RadialTidyTreeComponent = dynamic(() => import("../components/RadialTidyTree"), { ssr: false });
 
-export default function GraphPage(): JSX.Element {
+export default function GraphPage(): React.ReactElement {
   const router = useRouter();
   const graphRef = useRef<HTMLDivElement>(null);
   

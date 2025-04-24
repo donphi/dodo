@@ -34,7 +34,7 @@ const social = [
   },
 ];
 
-export default function Footer(): JSX.Element {
+export default function Footer(): React.ReactElement {
   return (
     <footer className="transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-6 py-12 sm:py-16 lg:px-8">
