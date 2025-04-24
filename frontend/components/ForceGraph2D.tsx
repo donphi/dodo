@@ -316,7 +316,7 @@ export default function ForceGraph2D() {
       })
       .attr("stroke", (d: any) => {
         const color = d3.color(d.color);
-        return color ? color.darker(0.5) : "#000";
+        return color ? color.darker(0.5).toString() : "#000";
       })
       .attr("stroke-width", 1)
       .style("cursor", "pointer")
