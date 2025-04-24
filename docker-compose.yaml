@@ -5,13 +5,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.frontend
+      target: ${FRONTEND_TARGET:-development}  # Use development by default, can be overridden with FRONTEND_TARGET=production
       args:
         NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
         NEXT_PUBLIC_SUPABASE_ANON_LOCK: ${NEXT_PUBLIC_SUPABASE_ANON_LOCK}
-    image: biobank-frontend:latest
+    image: biobank-frontend:${FRONTEND_TARGET:-development}
     ports:
       - "3000:3000"
+    volumes:
+      # Mount the frontend directory for hot reloading in development mode
+      - ./frontend:/app:delegated
+      # Prevent node_modules from being overwritten by the host
+      - /app/node_modules
     environment:
-      NODE_ENV: development
+      NODE_ENV: ${FRONTEND_TARGET:-development}
       NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
       NEXT_PUBLIC_SUPABASE_ANON_LOCK: ${NEXT_PUBLIC_SUPABASE_ANON_LOCK}

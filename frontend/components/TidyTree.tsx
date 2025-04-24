@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useRef, MouseEvent } from "react";
 import * as d3 from "d3";
+import ExportButton from "./ExportButton"; // Import the new ExportButton component
 
 // Define types for our tree data structure
 type TreeNodeData = {
@@ -33,10 +34,10 @@ export default function TidyTree(): JSX.Element {
   const [tooltipData, setTooltipData] = useState<TreeNodeData | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0, translateX: 0, translateY: 0 });
   
-  // Configuration options
-  const [nodeSize, setNodeSize] = useState(2.5);
+  // Configuration options - MODIFIED: increased node size and decreased link opacity slightly
+  const [nodeSize, setNodeSize] = useState(3.5);
   const [showLabels, setShowLabels] = useState(true);
-  const [linkOpacity, setLinkOpacity] = useState(0.4);
+  const [linkOpacity, setLinkOpacity] = useState(0.36);
   const [linkWidth, setLinkWidth] = useState(1.5);
   const [showCategories, setShowCategories] = useState(true);
   // Track which branches are expanded (showing their fields)
@@ -928,62 +929,9 @@ export default function TidyTree(): JSX.Element {
         </div>
       )}
       
-      {/* Control Panel UI */}
-      <div className="absolute top-2 right-2 z-10 p-2 bg-white/80 dark:bg-gray-800/80 rounded shadow">
-        <div className="flex flex-col gap-2">
-          <button 
-            onClick={exportSVG}
-            className="px-2 py-1 text-xs bg-blue-500 text-white rounded"
-          >
-            Export SVG
-          </button>
-          
-          <div className="flex items-center">
-            <input 
-              type="checkbox" 
-              checked={showCategories} 
-              onChange={e => setShowCategories(e.target.checked)} 
-              id="show-categories" 
-            />
-            <label htmlFor="show-categories" className="ml-1 text-xs">Categories</label>
-          </div>
-          <div className="flex items-center">
-            <input 
-              type="checkbox" 
-              checked={showLabels} 
-              onChange={e => setShowLabels(e.target.checked)} 
-              id="show-labels" 
-            />
-            <label htmlFor="show-labels" className="ml-1 text-xs">Show Labels</label>
-          </div>
-          <div className="text-xs">Node Size</div>
-          <input 
-            type="range" 
-            min="1" 
-            max="10" 
-            step="0.5"
-            value={nodeSize} 
-            onChange={e => setNodeSize(parseFloat(e.target.value))} 
-          />
-          <div className="text-xs">Link Opacity</div>
-          <input 
-            type="range" 
-            min="0.1" 
-            max="1" 
-            step="0.1"
-            value={linkOpacity} 
-            onChange={e => setLinkOpacity(parseFloat(e.target.value))} 
-          />
-          <div className="text-xs">Link Width</div>
-          <input 
-            type="range" 
-            min="0.5" 
-            max="5" 
-            step="0.5"
-            value={linkWidth} 
-            onChange={e => setLinkWidth(parseFloat(e.target.value))} 
-          />
-        </div>
+      {/* Export Button - REPLACED THE CONTROL PANEL with just the ExportButton */}
+      <div className="absolute top-2 right-2 z-10">
+        <ExportButton onExport={exportSVG} />
       </div>
       
       {/* Field Data Tooltip */}

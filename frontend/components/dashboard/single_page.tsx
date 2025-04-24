@@ -16,6 +16,7 @@ import VisualizationHeader from '../VisualizationHeader'
 const ForceGraph3DComponent = dynamic(() => import('../ForceGraph3D'), { ssr: false })
 const ForceGraph2DComponent = dynamic(() => import('../ForceGraph2D'), { ssr: false })
 const TidyTreeComponent = dynamic(() => import('../TidyTree'), { ssr: false })
+const RadialTidyTreeComponent = dynamic(() => import('../RadialTidyTree'), { ssr: false })
 
 // Function to get user initials
 function getUserInitials(name: string) {
@@ -47,13 +48,14 @@ export default function Dashboard() {
   
   const userInitials = getUserInitials(userName);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [viewMode, setViewMode] = useState<'2d' | '3d' | 'tidy'>('2d');
+  const [viewMode, setViewMode] = useState<'2d' | '3d' | 'tidy' | 'radial'>('2d');
   
   // Toggle between views
   const toggleView = () => {
-    // Cycle through view modes: 2d -> 3d -> tidy -> 2d
+    // Cycle through view modes: 2d -> 3d -> tidy -> radial -> 2d
     if (viewMode === '2d') setViewMode('3d');
     else if (viewMode === '3d') setViewMode('tidy');
+    else if (viewMode === 'tidy') setViewMode('radial');
     else setViewMode('2d');
   };
 
@@ -274,9 +276,9 @@ export default function Dashboard() {
         <div className="flex flex-col flex-grow">
           <header>
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <VisualizationHeader 
-                currentView={viewMode} 
-                onViewChange={(view) => setViewMode(view as '2d' | '3d' | 'tidy')}
+              <VisualizationHeader
+                currentView={viewMode}
+                onViewChange={(view) => setViewMode(view as '2d' | '3d' | 'tidy' | 'radial')}
               />
             </div>
           </header>
@@ -289,6 +291,7 @@ export default function Dashboard() {
                 <div className="w-full h-full flex-grow rounded-lg" style={{ overflow: viewMode === 'tidy' ? 'visible' : 'hidden' }}>
                   {viewMode === '3d' ? <ForceGraph3DComponent /> :
                    viewMode === 'tidy' ? <TidyTreeComponent /> :
+                   viewMode === 'radial' ? <RadialTidyTreeComponent /> :
                    <ForceGraph2DComponent />}
                 </div>
               </div>

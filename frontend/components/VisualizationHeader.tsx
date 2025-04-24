@@ -17,7 +17,7 @@ declare global {
 
 // Interface for props
 interface VisualizationHeaderProps {
-  currentView?: '2d' | '3d' | 'tidy';
+  currentView?: '2d' | '3d' | 'tidy' | 'radial';
   onViewChange?: (view: string) => void;
 }
 
@@ -25,7 +25,7 @@ interface VisualizationHeaderProps {
 const viewTypes = [
   { id: '2d', name: '2 Dimensional', icon: Square, description: 'Standard 2D visualization' },
   { id: '3d', name: '3 Dimensional', icon: Box, description: '3D spatial representation' },
-  { id: 'radial', name: 'Radial Tree', icon: Disc2, description: 'Circular hierarchy visualization' },
+  { id: 'radial', name: 'Radial Tidy Tree', icon: Disc2, description: 'Circular hierarchy visualization' },
   { id: 'tidy', name: 'Tidy Tree', icon: ListTree, description: 'Organized node-link tree layout' },
   { id: 'sunburst', name: 'Sunburst', icon: Radar, description: 'Radial space-filling visualization' },
 ]
@@ -49,8 +49,10 @@ export default function VisualizationHeader({
   
   // Handle view changes
   const handleViewChange = (viewType: typeof viewTypes[0], close: () => void) => {
+    console.log("View change clicked:", viewType.id);
     setActiveView(viewType);
     if (onViewChange) {
+      console.log("Calling onViewChange with:", viewType.id);
       onViewChange(viewType.id);
     }
     // Close the popover

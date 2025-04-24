@@ -1,6 +1,7 @@
 import React from 'react';
 import HeroTop from '../components/hero_landing/top';
 import HeroMiddle from '../components/hero_landing/middle';
+import { FAQ } from '../components/hero_landing/faq';
 import Footer from '../components/hero_landing/footer';
 
 const Home: React.FC = () => (
@@ -8,6 +9,7 @@ const Home: React.FC = () => (
     <main className="flex-1">
       <HeroTop />
       <HeroMiddle />
+      <FAQ />
     </main>
     <Footer />
   </div>
