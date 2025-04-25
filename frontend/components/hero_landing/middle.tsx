@@ -1,4 +1,6 @@
 import { Microscope, Download, BarChart4 } from 'lucide-react'
+import React from 'react'
+import { useEffect, useState } from 'react'
 
 const features = [
   {
@@ -21,9 +23,30 @@ const features = [
   },
 ]
 
-export default function Example() {
+export default function Example(): JSX.Element {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Check for dark mode on component mount and when theme changes
+  useEffect(() => {
+    // Initial check
+    setIsDarkMode(document.documentElement.classList.contains('dark'));
+
+    // Set up observer for theme changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          setIsDarkMode(document.documentElement.classList.contains('dark'));
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, { attributes: true });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="overflow-hidden bg-white dark:bg-gray-900 py-24 sm:py-32 transition-colors duration-300">
+    <div className="py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
           <div className="lg:ml-auto lg:pl-4 lg:pt-4">
@@ -50,13 +73,17 @@ export default function Example() {
             </div>
           </div>
           <div className="flex items-start justify-end lg:order-first">
-            <img
-              alt="Product screenshot"
-              src="https://tailwindcss.com/plus-assets/img/component-images/dark-project-app-screenshot.png"
-              width={2432}
-              height={1442}
-              className="w-[48rem] max-w-none rounded-xl shadow-xl ring-1 ring-gray-400/10 dark:ring-white/10 sm:w-[57rem] transition-colors"
-            />
+            <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
+              <div className="-m-1.5 rounded-xl bg-gray-900/5 dark:bg-white/5 p-1.5 ring-1 ring-inset ring-gray-900/10 dark:ring-white/10 lg:-m-3 lg:rounded-2xl lg:p-3">
+                <img
+                  alt="Product screenshot"
+                  src={isDarkMode ? "/middle_dark.png" : "/middle_light.png"}
+                  width={2345}
+                  height={1416}
+                  className="w-[48rem] max-w-none rounded-md shadow-xl ring-1 ring-gray-900/10 dark:ring-white/10 sm:w-[57rem] transition-colors"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

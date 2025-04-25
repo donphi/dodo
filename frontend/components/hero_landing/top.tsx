@@ -25,25 +25,7 @@ export default function Example() {
   }, []);
 
   return (
-    <div className="relative isolate overflow-hidden bg-white dark:bg-gray-900 transition-colors duration-300">
-      <svg
-        aria-hidden="true"
-        className="absolute inset-0 -z-10 size-full stroke-gray-200 dark:stroke-white/10 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]"
-      >
-        <defs>
-          <pattern
-            x="50%"
-            y={-1}
-            id="0787a7c5-978c-4f66-83c7-11c213f99cb7"
-            width={200}
-            height={200}
-            patternUnits="userSpaceOnUse"
-          >
-            <path d="M.5 200V.5H200" fill="none" />
-          </pattern>
-        </defs>
-        <rect fill="url(#0787a7c5-978c-4f66-83c7-11c213f99cb7)" width="100%" height="100%" strokeWidth={0} />
-      </svg>
+    <div>
       <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-32 lg:flex lg:px-8 lg:py-40">
         <div className="mx-auto max-w-2xl lg:mx-0 lg:shrink-0 lg:pt-8">
           <img
@@ -84,10 +66,10 @@ export default function Example() {
           <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
             <div className="-m-2 rounded-xl bg-gray-900/5 dark:bg-white/5 p-2 ring-1 ring-inset ring-gray-900/10 dark:ring-white/10 lg:-m-4 lg:rounded-2xl lg:p-4">
               <img
-                alt="App screenshot"
-                src="https://tailwindcss.com/plus-assets/img/component-images/project-app-screenshot.png"
-                width={2432}
-                height={1442}
+                alt="TidyTree - Dashboard"
+                src={isDarkMode ? "/top_dark.png" : "/top_light.png"}
+                width={2345}
+                height={1416}
                 className="w-[76rem] rounded-md shadow-2xl ring-1 ring-gray-900/10 dark:ring-white/10"
               />
             </div>
