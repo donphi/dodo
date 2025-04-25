@@ -1671,7 +1671,11 @@ const RadialTidyTree: React.FC = () => {
       // Check if savedTransform is not the initial identity transform
       // Apply saved transform if it exists and is not identity, otherwise apply a default centered view
       if (savedTransform && (savedTransform.k !== 1 || savedTransform.x !== 0 || savedTransform.y !== 0)) {
-         svg.call(zoomRef.current.transform, savedTransform);
+         // Use type assertion to fix the TypeScript error
+         svg.call(
+           zoomRef.current.transform as unknown as (selection: d3.Selection<SVGSVGElement, undefined, null, undefined>, transform: d3.ZoomTransform) => void,
+           savedTransform
+         );
          // Ensure the ref is updated if we applied the saved one
          currentTransformRef.current = savedTransform;
       } else {
@@ -1684,7 +1688,11 @@ const RadialTidyTree: React.FC = () => {
         const translateY = parentHeight / 2 - (bounds.y + bounds.height / 2);
         const initialTransform = d3.zoomIdentity.translate(translateX, translateY);
 
-        svg.call(zoomRef.current.transform, initialTransform);
+        // Use type assertion to fix the TypeScript error
+        svg.call(
+          zoomRef.current.transform as unknown as (selection: d3.Selection<SVGSVGElement, undefined, null, undefined>, transform: d3.ZoomTransform) => void,
+          initialTransform
+        );
         currentTransformRef.current = initialTransform; // Store the calculated initial transform
       }
     }
