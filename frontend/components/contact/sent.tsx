@@ -62,9 +62,9 @@ export default function FeedbackDialog({
                 </DialogTitle>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {status === 'success' 
+                    {status === 'success'
                       ? 'Thank you for your message. We will get back to you as soon as we can.'
-                      : 'There was an error sending your message. Please try again later or contact us directly.'}
+                      : 'Your information was saved, but there was an issue with the email notification. Our team will still receive your message.'}
                   </p>
                 </div>
               </div>

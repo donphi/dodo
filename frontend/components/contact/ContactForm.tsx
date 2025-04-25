@@ -141,11 +141,19 @@ const ContactForm: React.FC = () => {
 
         if (emailError) {
           console.error('Email sending failed:', emailError);
-          // Don't change feedback status - data was saved even if email failed
+          // Update feedback status to error if email sending fails
+          setFeedbackStatus('error');
+          setErrors({
+            general: 'Your information was saved, but we encountered an issue sending the email notification. Our team will still receive your message.'
+          });
         }
       } catch (emailError) {
         console.error('Email function error:', emailError);
-        // Don't change feedback status - data was saved even if email failed
+        // Update feedback status to error if email sending fails
+        setFeedbackStatus('error');
+        setErrors({
+          general: 'Your information was saved, but we encountered an issue sending the email notification. Our team will still receive your message.'
+        });
       }
       
       // Reset form on success

@@ -74,6 +74,8 @@ import { SmtpClient } from 'https://deno.land/x/smtp@v0.7.0/mod.ts'
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Max-Age': '86400',
 }
 
 serve(async (req) => {
@@ -245,6 +247,30 @@ CREATE POLICY "Service role can do everything"
 
 This SQL script is also available at `supabase/migrations/20250425_update_contact_submissions_policies.sql`.
 
+#### CORS Errors When Calling Edge Functions
+
+If you see CORS errors in the console when trying to call the Edge Function:
+
+```
+Access to fetch at 'https://your-project.supabase.co/functions/v1/send-contact-email' has been blocked by CORS policy
+```
+
+This is a common issue with Supabase Edge Functions. Make sure:
+
+1. The Edge Function has proper CORS headers:
+   ```typescript
+   const corsHeaders = {
+     'Access-Control-Allow-Origin': '*',
+     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+     'Access-Control-Allow-Methods': 'POST, OPTIONS',
+     'Access-Control-Max-Age': '86400',
+   }
+   ```
+
+2. The Edge Function properly handles OPTIONS requests (preflight requests)
+3. The Edge Function is deployed with the latest changes
+4. You're using the correct project URL and API key
+
 #### Email Not Being Sent
 
 If emails are not being sent:
@@ -253,6 +279,7 @@ If emails are not being sent:
 2. Verify that all environment variables are correctly set
 3. Ensure your SMTP provider allows sending from your Edge Function (some providers may block unfamiliar IP addresses)
 4. For Gmail, you may need to use an App Password instead of your regular password
+5. Some email providers may block emails sent from Supabase Edge Functions due to security policies
 
 #### Form Submission Shows Success But No Data is Saved
 
