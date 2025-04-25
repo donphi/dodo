@@ -16,7 +16,7 @@ export default function Document() {
                 {/* Open Graph */}
                 <meta property="og:type" content="website" />
                 <meta property="og:url" content="https://dodo.biobankly.com/" />
-                <meta property="og:title" content="Dodo by Biobankly – Explore UK Biobank Phenotypes" />
+                <meta property="og:title" content="Dodo by Biobankly: Explore UK Biobank Phenotypes" />
                 <meta
                     property="og:description"
                     content="Dodo is your experimental playground for exploring the UK Biobank dataset. Interact with diverse phenotype views, answer data science questions, and shape the future of Biobankly."
@@ -35,7 +35,7 @@ export default function Document() {
                 <meta name="twitter:site" content="@biobankly" />
                 <meta name="twitter:creator" content="@biobankly" />
                 <meta name="twitter:url" content="https://dodo.biobankly.com/" />
-                <meta name="twitter:title" content="Dodo by Biobankly – Explore UK Biobank Phenotypes" />
+                <meta name="twitter:title" content="Dodo by Biobankly: Explore UK Biobank Phenotypes" />
                 <meta
                     name="twitter:description"
                     content="Dodo is your experimental playground for exploring the UK Biobank dataset. Interact with diverse phenotype views, answer data science questions, and shape the future of Biobankly."
