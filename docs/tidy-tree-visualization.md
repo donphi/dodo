@@ -78,6 +78,26 @@ The Tidy Tree component uses D3.js's tree layout algorithm to position nodes. Ke
 - Tooltip information on hover for detailed node information
 - Custom TidyTreeButtons component for export functionality, ensuring consistent styling with other visualizations
 
+## Visual Styling
+
+The Tidy Tree visualization uses a consistent color scheme to represent different types of nodes:
+
+- **Root Node**: Indigo (#4f46e5)
+- **Category Nodes**:
+  - Dark mode: Green (#00F583)
+  - Light mode: Green (#00D975)
+- **Field Nodes**:
+  - Dark mode: Yellow (#F5E100)
+  - Light mode: Yellow (#E6D300)
+- **Other Nodes**:
+  - Dark mode: Gray (#69635C)
+  - Light mode: Gray (#d8dbe2)
+
+Nodes have the following visual behaviors:
+- On hover, nodes increase in size by 1.2x and change to indigo color (#4f46e5)
+- Expand/collapse indicators use green (#22c55e) for expanded nodes and white for collapsed nodes
+- No strokes are used on any nodes to maintain a clean visual appearance
+
 ## Future Enhancements
 
 Potential future enhancements for the Tidy Tree visualization:

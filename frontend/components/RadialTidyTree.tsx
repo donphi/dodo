@@ -101,7 +101,7 @@ const RadialTidyTree: React.FC = () => {
     
     // Distance controls - reduced spacing to make the entire visualization more compact
     baseLevelDistance: 150,        
-    levelDistanceIncrement: 200,    
+    levelDistanceIncrement: 250,    
     maxLevelDistance: Infinity,         
     
     // Node distribution controls
@@ -159,15 +159,16 @@ const RadialTidyTree: React.FC = () => {
   useEffect(() => {
     if (!containerRef.current) return;
     
-    // Apply CSS to force square aspect ratio
+    // Apply base CSS
     if (containerRef.current) {
       containerRef.current.style.position = 'relative';
-      containerRef.current.style.aspectRatio = '1 / 1';
       containerRef.current.style.width = '100%';
-      containerRef.current.style.maxWidth = '100%';
       containerRef.current.style.margin = '0 auto';
       containerRef.current.style.overflow = 'hidden';
     }
+    
+    // Breakpoint at which we switch from square to adaptive rectangle
+    const BREAKPOINT_WIDTH = 768; // Medium screen breakpoint (adjust as needed)
     
     const updateDimensions = (): void => {
       if (!containerRef.current) return;
@@ -175,22 +176,50 @@ const RadialTidyTree: React.FC = () => {
       try {
         // Get the container's parent width
         const parentWidth = containerRef.current.parentElement?.clientWidth || window.innerWidth;
+        const parentHeight = containerRef.current.parentElement?.clientHeight || window.innerHeight;
         
         // Get the available width, accounting for any padding or margins
-        const availableWidth = Math.max(parentWidth, 500); // Ensure minimum 500px, subtract margin/padding
+        const availableWidth = Math.max(parentWidth, 500); // Ensure minimum 500px
         
-        // Use the available width for both dimensions to maintain square aspect
-        const size = availableWidth;
+        // Determine if we're below the breakpoint
+        const isBelowBreakpoint = availableWidth < BREAKPOINT_WIDTH;
         
-        // Set dimensions for the SVG
-        setDimensions({ width: size, height: size });
-        
-        // Force the container to be exactly square
-        if (containerRef.current) {
-          containerRef.current.style.width = `${size}px`;
-          containerRef.current.style.height = `${size}px`;
-          containerRef.current.style.maxWidth = `${size}px`; // Set explicit maxWidth
-          containerRef.current.style.maxHeight = `${size}px`; // Set explicit maxHeight
+        if (isBelowBreakpoint) {
+          // Below breakpoint: Fill the available frame completely (adaptive rectangle)
+          // Remove aspect ratio constraint
+          containerRef.current.style.aspectRatio = 'auto';
+          
+          // Set dimensions based on parent container
+          const width = availableWidth;
+          const height = parentHeight || width * 0.75; // Default to 3:4 ratio if height not available
+          
+          setDimensions({ width, height });
+          
+          // Apply dimensions to container
+          if (containerRef.current) {
+            containerRef.current.style.width = `${width}px`;
+            containerRef.current.style.height = `${height}px`;
+            containerRef.current.style.maxWidth = `${width}px`;
+            // Allow height to be flexible
+            containerRef.current.style.maxHeight = 'none';
+          }
+        } else {
+          // Above breakpoint: Maintain square aspect ratio
+          containerRef.current.style.aspectRatio = '1 / 1';
+          
+          // Use the available width for both dimensions to maintain square aspect
+          const size = availableWidth;
+          
+          // Set dimensions for the SVG
+          setDimensions({ width: size, height: size });
+          
+          // Force the container to be exactly square
+          if (containerRef.current) {
+            containerRef.current.style.width = `${size}px`;
+            containerRef.current.style.height = `${size}px`;
+            containerRef.current.style.maxWidth = `${size}px`;
+            containerRef.current.style.maxHeight = `${size}px`;
+          }
         }
       } catch (e) {
         console.warn("Error measuring container dimensions:", e);
@@ -234,37 +263,50 @@ const RadialTidyTree: React.FC = () => {
   // Reference to store the g element for direct transformation
   const gRef = useRef<SVGGElement | null>(null);
 
-  // New zoom functionality - properly centers the view
+  // Enhanced zoom functionality - properly centers the view and ensures the entire tree is visible
   const handleViewAll = useCallback((): void => {
-    if (!svgRef.current || !zoomRef.current) return;
+    if (!svgRef.current || !zoomRef.current || !containerRef.current) return;
     
     const svg = d3.select(svgRef.current);
     
-    // For a radial tree, we need to center at (0,0) in the SVG's coordinate system
-    // This is the center of the root node in a radial layout
-    const scale = 0.95; // Slightly zoomed out to show everything
+    // Find all nodes to determine the maximum radius needed
+    const allNodes = svg.selectAll(".node").data();
+    if (!allNodes.length) return;
     
-    // Since our viewBox is [-width/2, -height/2, width, height],
-    // we need to translate to (0,0) to center the tree, not width/2,height/2
-    const translateX = 0;
-    const translateY = 0;
+    // Calculate the maximum radius used in the tree
+    let maxRadius = 0;
+    allNodes.forEach((node: any) => {
+      if (node.y > maxRadius) {
+        maxRadius = node.y;
+      }
+    });
     
-    // Apply the transform with a smooth transition
+    // Add some padding to ensure labels are visible
+    maxRadius += 100;
+    
+    // Calculate the scale needed to fit the entire tree
+    const containerWidth = dimensions.width;
+    const containerHeight = dimensions.height;
+    
+    // Always use the smaller dimension for scaling to ensure the visualization fits
+    const minDimension = Math.min(containerWidth, containerHeight);
+    const scale = (minDimension / 2) / maxRadius * 0.9;
+    
+    // Reset to initial state with proper scale
     svg.transition()
       .duration(750)
       .call(
         zoomRef.current.transform,
         d3.zoomIdentity
-          .translate(translateX, translateY)
           .scale(scale)
       )
       .on("end", () => {
         // Update React state after transition completes
-        setTranslateX(translateX);
-        setTranslateY(translateY);
+        setTranslateX(0);
+        setTranslateY(0);
         setZoomScale(scale);
       });
-  }, [setTranslateX, setTranslateY, setZoomScale]);
+  }, [dimensions, setTranslateX, setTranslateY, setZoomScale]);
   
   // New expand/collapse all functionality
   const handleToggleExpandAll = useCallback((): void => {
@@ -639,6 +681,8 @@ const RadialTidyTree: React.FC = () => {
       console.log(`Enforcing minimum separation between levels 4 and 5`);
     }
 
+    
+
     const base3 = levelRadii.get(3) ?? 0;
     // Fixed extra gap per level beyond 3
     const step = 500;
@@ -652,6 +696,39 @@ const RadialTidyTree: React.FC = () => {
         console.log(`Level ${lvl}: bumped to ${desired}px (was ${cur.toFixed(1)})`);
       }
     });
+
+    // Special handling for level 3 with massive node counts
+    const level3Nodes = nodesByLevel.get(3) || [];
+    const level3NodeCount = level3Nodes.length;
+    const level3Radius = levelRadii.get(3) || 0;
+
+    // If we have an unusually high number of nodes at level 3
+    if (level3NodeCount > 600) {
+      // Calculate a scaling factor that increases with node count
+      // Start scaling at 100 nodes, max out at 1000+ nodes
+      const nodeCountFactor = Math.min(1, (level3NodeCount - 100) / 900);
+      
+      // Apply a progressive scale: 1.0 (no change) up to 2.5x for extreme cases
+      const scaleFactor = 1 + (1.5 * nodeCountFactor);
+      
+      // Apply the scaling, but only if it would increase the radius
+      const scaledRadius = level3Radius * scaleFactor;
+      if (scaledRadius > level3Radius) {
+        levelRadii.set(3, scaledRadius);
+        console.log(`Level 3 has ${level3NodeCount} nodes - applied scaling factor ${scaleFactor.toFixed(2)} to radius: ${level3Radius.toFixed(1)} → ${scaledRadius.toFixed(1)}`);
+        
+        // Also adjust level 4+ proportionally if they exist
+        for (let lvl = 4; lvl <= (hierarchy.height || 0); lvl++) {
+          const currentRadius = levelRadii.get(lvl) || 0;
+          if (currentRadius > 0) {
+            const adjustedRadius = currentRadius + (scaledRadius - level3Radius);
+            levelRadii.set(lvl, adjustedRadius);
+            console.log(`Level ${lvl}: radius adjusted to maintain spacing: ${currentRadius.toFixed(1)} → ${adjustedRadius.toFixed(1)}`);
+          }
+        }
+      }
+    }
+
     return levelRadii;
   }, [config.fontSize, config.nodeSize, config.labelPadding, config.baseLevelDistance, config.levelDistanceIncrement]);
   
@@ -1114,16 +1191,11 @@ const RadialTidyTree: React.FC = () => {
     // Apply custom node distribution
     distributeNodes(root);
     
-    // Create the SVG element
+    // Create the SVG element with a simple viewBox
     const svg = d3.create("svg")
       .attr("width", dimensions.width)
       .attr("height", dimensions.height)
-      .attr("viewBox", [
-        -dimensions.width / 2, 
-        -dimensions.height / 2, 
-        dimensions.width, 
-        dimensions.height
-      ])
+      .attr("viewBox", [0, 0, dimensions.width, dimensions.height])
       .attr("style", `max-width: 100%; font: ${config.fontSize}px sans-serif;`)
       .attr("class", isDarkMode ? "dark-theme" : "light-theme");
     
@@ -1314,94 +1386,58 @@ const RadialTidyTree: React.FC = () => {
     // Add circles for nodes
     node.append("circle")
       .attr("fill", (d) => {
-        if (d.depth === 0) return "#a855f7"; // Root - Purple
-        if (d.data.data && d.data.data.field_id !== undefined) return "#facc15"; // Field - Yellow
-        if (d.children) return "#38bdf8"; // Category - Blue
-        return "#999"; // Other - Gray
+        if (d.depth === 0) return "#4f46e5"; // Root - Indigo
+        if (d.data.data && d.data.data.field_id !== undefined) return isDarkMode ? "#F5E100" : "#E6D300"; // Field - Yellow (dark/light)
+        if (d.children) return isDarkMode ? "#00F583" : "#00D975"; // Category - Green (dark/light)
+        return isDarkMode ? "#69635C" : "#d8dbe2"; // Other - Gray (dark/light)
       })
       .attr("r", config.nodeSize)
       .attr("class", "node-circle")
       .on("mouseover", function(event, d) {
         const parentElement = this.parentNode;
         
-        if (d && d.children && d.depth > 0) {
-          d3.select(this)
+        // Apply to all nodes, not just category nodes with children
+        d3.select(this)
+          .transition()
+          .duration(200)
+          .attr("r", config.nodeSize * 1.2) // Increase size by 1.2x
+          .attr("fill", "#4f46e5"); // Indigo color
+          
+        if (parentElement) {
+          d3.select(parentElement as Element)
+            .select("text")
             .transition()
             .duration(200)
-            .attr("r", config.nodeSize * 1.5)
-            .attr("fill-opacity", 0.8);
-            
-          if (parentElement) {
-            d3.select(parentElement as Element)
-              .select("text")
-              .transition()
-              .duration(200)
-              .attr("font-weight", "bold")
-              .attr("fill", isDarkMode ? "#fff" : "#000");
-          }
+            .attr("font-weight", "bold")
+            .attr("fill", "#4f46e5"); // Indigo color
         }
       })
       .on("mouseout", function(event, d) {
         const parentElement = this.parentNode;
         
-        if (d && d.children && d.depth > 0) {
-          d3.select(this)
+        // Apply to all nodes, not just category nodes with children
+        d3.select(this)
+          .transition()
+          .duration(200)
+          .attr("r", config.nodeSize)
+          .attr("fill", d => {
+            if (d.depth === 0) return "#4f46e5"; // Root - Indigo
+            if (d.data.data && d.data.data.field_id !== undefined) return isDarkMode ? "#F5E100" : "#E6D300"; // Field - Yellow (dark/light)
+            if (d.children) return isDarkMode ? "#00F583" : "#00D975"; // Category - Green (dark/light)
+            return isDarkMode ? "#69635C" : "#d8dbe2"; // Other - Gray (dark/light)
+          });
+          
+        if (parentElement) {
+          d3.select(parentElement as Element)
+            .select("text")
             .transition()
             .duration(200)
-            .attr("r", config.nodeSize)
-            .attr("fill-opacity", 1);
-            
-          if (parentElement) {
-            d3.select(parentElement as Element)
-              .select("text")
-              .transition()
-              .duration(200)
-              .attr("font-weight", "normal")
-              .attr("fill", null);
-          }
+            .attr("font-weight", "normal")
+            .attr("fill", isDarkMode ? "white" : "black");
         }
       });
     
-    // Add expansion indicators
-    node.filter((d) => Boolean(d.children) && typeof d.depth === 'number' && d.depth > 0)
-      .append("circle")
-      .attr("cx", 0)
-      .attr("cy", 0)
-      .attr("r", config.nodeSize / 2)
-      .attr("fill", (d) => {
-        const path = getNodePath(d);
-        return expandedBranches.has(path) ? "#22c55e" : "white"; // Green if expanded, white if collapsed
-      })
-      .attr("class", "expand-indicator")
-      .attr("stroke", "#38bdf8")
-      .attr("stroke-width", 1);
-    
-    // Add plus/minus symbols
-    node.filter((d) => Boolean(d.children) && typeof d.depth === 'number' && d.depth > 0)
-      .append("svg")
-      .attr("width", config.nodeSize * 2)
-      .attr("height", config.nodeSize * 2)
-      .attr("x", -config.nodeSize)
-      .attr("y", -config.nodeSize)
-      .attr("viewBox", "0 0 24 24")
-      .html((d) => {
-        const path = getNodePath(d);
-        const isExpanded = expandedBranches.has(path);
-        
-        // Use SVG path data for Minus or Plus icons
-        if (isExpanded) {
-          // MinusCircle icon path data
-          return '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m3-7a9 9 0 1 0 0 18a9 9 0 0 0 0-18z"></path>';
-        } else {
-          // PlusCircle icon path data
-          return '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v6m3-3H9m3-10a9 9 0 1 0 0 18a9 9 0 0 0 0-18z"></path>';
-        }
-      })
-      .attr("fill", "none")
-      .attr("stroke", "#000")
-      .attr("stroke-width", "2")
-      .attr("stroke-linecap", "round")
-      .attr("stroke-linejoin", "round");
+    // No expansion indicators or plus/minus symbols - keeping parent nodes simple
     
     // Add text labels with improved positioning
     if (config.showLabels) {
@@ -1442,9 +1478,9 @@ const RadialTidyTree: React.FC = () => {
         })
         .attr("font-size", `${config.fontSize}pt`)
         .text((d) => d.data.name)
-        .attr("stroke", isDarkMode ? "#222" : "white")
-        .attr("stroke-width", 3)
-        .attr("paint-order", "stroke")
+        .attr("stroke", isDarkMode ? null : "white")
+        .attr("stroke-width", isDarkMode ? null : 3)
+        .attr("paint-order", isDarkMode ? null : "stroke")
         .attr("fill", isDarkMode ? "white" : "black")
         .attr("class", (d) => {
           const depth = d.depth || 0;
@@ -1466,7 +1502,7 @@ const RadialTidyTree: React.FC = () => {
       return ancestors;
     };
     
-    // Add highlight effects
+    // Add highlight effects with stroke on hover
     node.on("mouseover", (event, d) => {
       // Only process if not currently dragging
       if (event.defaultPrevented) return;
@@ -1481,6 +1517,8 @@ const RadialTidyTree: React.FC = () => {
         .duration(200)
         .attr("fill", "#4f46e5") // Indigo color
         .attr("r", config.nodeSize * 1.2);
+        
+      // No need to add strokes to expand indicators
       
       rootContainer.selectAll("text")
         .filter((p: any) => ancestors.includes(p))
@@ -1530,10 +1568,10 @@ const RadialTidyTree: React.FC = () => {
         .transition()
         .duration(200)
         .attr("fill", (p: any) => {
-          if (p && p.depth === 0) return "#a855f7"; // Root - Purple
-          if (p && p.data && p.data.data && p.data.data.field_id !== undefined) return "#facc15"; // Field - Yellow
-          if (p && p.children) return "#38bdf8"; // Category - Blue
-          return "#999"; // Other - Gray
+          if (p && p.depth === 0) return "#4f46e5"; // Root - Indigo
+          if (p && p.data && p.data.data && p.data.data.field_id !== undefined) return isDarkMode ? "#F5E100" : "#E6D300"; // Field - Yellow (dark/light)
+          if (p && p.children) return isDarkMode ? "#00F583" : "#00D975"; // Category - Green (dark/light)
+          return isDarkMode ? "#69635C" : "#d8dbe2"; // Other - Gray (dark/light)
         })
         .attr("r", config.nodeSize);
       
@@ -1647,38 +1685,39 @@ const RadialTidyTree: React.FC = () => {
   }, [config.fontSize]);
 
   return (
-    <div
-      ref={containerRef}
-      className="w-full" // Remove h-full to let the explicit height control
-      style={{
-        position: 'relative',
-        minHeight: '500px',
-        // Remove fixed height
-        width: '100%', // Explicitly set width to 100%
-        margin: '0 auto',
-        overflow: 'hidden'
-      }}
-      onClick={handleContainerClick}
-    >
-      {/* Loading indicator */}
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-gray-800/80 z-50">
-          <div className="text-lg font-medium">Loading UK Biobank data...</div>
-        </div>
-      )}
-      
-      {/* Error message */}
-      {error && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 dark:bg-gray-800/90 z-50 p-4">
-          <div className="text-lg font-medium text-red-500 mb-2">Error loading data</div>
-          <div className="text-sm text-gray-700 dark:text-gray-300 mb-4">{error}</div>
-        </div>
-      )}
-      
+    <div className="relative w-full h-full">
+      <div
+        ref={containerRef}
+        className="w-full" // Remove h-full to let the explicit height control
+        style={{
+          position: 'relative',
+          minHeight: '500px',
+          // Remove fixed height
+          width: '100%', // Explicitly set width to 100%
+          margin: '0 auto',
+          overflow: 'hidden'
+        }}
+        onClick={handleContainerClick}
+      >
+        {/* Loading indicator */}
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-gray-800/80 z-50">
+            <div className="text-lg font-medium">Loading UK Biobank data...</div>
+          </div>
+        )}
+        
+        {/* Error message */}
+        {error && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 dark:bg-gray-800/90 z-50 p-4">
+            <div className="text-lg font-medium text-red-500 mb-2">Error loading data</div>
+            <div className="text-sm text-gray-700 dark:text-gray-300 mb-4">{error}</div>
+          </div>
+        )}
+      </div>
       
       {/* Tree Buttons */}
       <div className="absolute top-2 right-2 z-50 p-2 bg-transparent dark:bg-transparent rounded shadow-sm">
-        <TreeButtons 
+        <TreeButtons
           onExport={exportSVG}
           onViewAll={handleViewAll}
         />

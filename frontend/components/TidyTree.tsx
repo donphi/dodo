@@ -495,10 +495,10 @@ export default function TidyTree() {
     nodeGroup.append("circle")
       .attr("fill", d => {
         // Determine node type
-        if (d.depth === 0) return "#a855f7"; // Root - Purple
-        if (d.data.data) return "#facc15"; // Field - Yellow
-        if (d.children) return "#38bdf8"; // Category - Blue
-        return "#999"; // Other - Gray
+        if (d.depth === 0) return "#4f46e5"; // Root - Indigo
+        if (d.data.data) return isDarkMode ? "#F5E100" : "#E6D300"; // Field - Yellow (dark/light)
+        if (d.children) return isDarkMode ? "#00F583" : "#00D975"; // Category - Green (dark/light)
+        return isDarkMode ? "#69635C" : "#d8dbe2"; // Other - Gray (dark/light)
       })
       .attr("r", nodeSize)
       .attr("class", "node-circle")
@@ -508,21 +508,20 @@ export default function TidyTree() {
         const parentElement = this.parentNode as Element;
         const d = d3.select(parentElement).datum() as any;
         
-        if (d && d.children && d.depth > 0) {
-          d3.select(this)
-            .transition()
-            .duration(200)
-            .attr("r", nodeSize * 1.5)
-            .attr("fill-opacity", 0.8);
-            
-          // Highlight the node text
-          d3.select(parentElement)
-            .select("text")
-            .transition()
-            .duration(200)
-            .attr("font-weight", "bold")
-            .attr("fill", "#000");
-        }
+        // Apply to all nodes, not just category nodes with children
+        d3.select(this)
+          .transition()
+          .duration(200)
+          .attr("r", nodeSize * 1.2) // Increase size by 1.2x
+          .attr("fill", "#4f46e5"); // Indigo color to match path highlighting
+          
+        // Highlight the node text
+        d3.select(parentElement)
+          .select("text")
+          .transition()
+          .duration(200)
+          .attr("font-weight", "bold")
+          .attr("fill", "#4f46e5"); // Indigo color to match path highlighting
       })
       .on("mouseout", function() {
         // Restore original size
@@ -530,48 +529,27 @@ export default function TidyTree() {
         const parentElement = this.parentNode as Element;
         const d = d3.select(parentElement).datum() as any;
         
-        if (d && d.children && d.depth > 0) {
-          d3.select(this)
-            .transition()
-            .duration(200)
-            .attr("r", nodeSize)
-            .attr("fill-opacity", 1);
-            
-          // Restore text
-          d3.select(parentElement)
-            .select("text")
-            .transition()
-            .duration(200)
-            .attr("font-weight", "normal")
-            .attr("fill", null);
-        }
+        // Apply to all nodes, not just category nodes with children
+        d3.select(this)
+          .transition()
+          .duration(200)
+          .attr("r", nodeSize)
+          .attr("fill", d => {
+            if (d.depth === 0) return "#4f46e5"; // Root - Indigo
+            if (d.data.data) return isDarkMode ? "#F5E100" : "#E6D300"; // Field - Yellow (dark/light)
+            if (d.children) return isDarkMode ? "#00F583" : "#00D975"; // Category - Green (dark/light)
+            return isDarkMode ? "#69635C" : "#d8dbe2"; // Other - Gray (dark/light)
+          });
+          
+        // Restore text
+        d3.select(parentElement)
+          .select("text")
+          .transition()
+          .duration(200)
+          .attr("font-weight", "normal")
+          .attr("fill", isDarkMode ? "white" : "black");
       });
     
-    // Add a visual indicator for expandable/collapsible nodes
-    nodeGroup.filter(d => Boolean(d.children) && typeof d.depth === 'number' && d.depth > 0)
-      .append("circle")
-      .attr("cx", 0)
-      .attr("cy", 0)
-      .attr("r", nodeSize / 2)
-      .attr("fill", d => {
-        const path = getNodePath(d);
-        return expandedBranches.has(path) ? "#22c55e" : "white"; // Green if expanded, white if collapsed
-      })
-      .attr("class", "expand-indicator")
-      .attr("stroke", "#38bdf8")
-      .attr("stroke-width", 1);
-    
-    // Add plus/minus symbol to indicate expandable state
-    nodeGroup.filter(d => Boolean(d.children) && typeof d.depth === 'number' && d.depth > 0)
-      .append("text")
-      .attr("text-anchor", "middle")
-      .attr("dy", "0.3em")
-      .attr("font-size", nodeSize * 0.8)
-      .attr("fill", "#000")
-      .text(d => {
-        const path = getNodePath(d);
-        return expandedBranches.has(path) ? "-" : "+";
-      });
 
     // Function to get all ancestors of a node
     const getAncestors = (node: any): any[] => {
@@ -597,7 +575,7 @@ export default function TidyTree() {
         .filter(p => ancestors.includes(p))
         .transition()
         .duration(200)
-        .attr("fill", "#4f46e5") // Indigo color
+        .attr("fill", "#4f46e5") // Indigo color - ensure consistent color
         .attr("r", nodeSize * 1.2);
       
       // Highlight the text labels for ancestors
@@ -649,15 +627,15 @@ export default function TidyTree() {
         .attr("stroke-width", linkWidth * 2);
     })
     .on("mouseout", (event, d) => {
-      // Restore original colors
+      // Restore original colors for ALL elements
       svg.selectAll(".node-circle")
         .transition()
         .duration(200)
         .attr("fill", (p: any) => {
-          if (p && p.depth === 0) return "#a855f7"; // Root - Purple
-          if (p && p.data && p.data.data) return "#facc15"; // Field - Yellow
-          if (p && p.children) return "#38bdf8"; // Category - Blue
-          return "#999"; // Other - Gray
+          if (p && p.depth === 0) return "#4f46e5"; // Root - Indigo
+          if (p && p.data && p.data.data) return isDarkMode ? "#F5E100" : "#E6D300"; // Field - Yellow (dark/light)
+          if (p && p.children) return isDarkMode ? "#00F583" : "#00D975"; // Category - Green (dark/light)
+          return isDarkMode ? "#69635C" : "#d8dbe2"; // Other - Gray (dark/light)
         })
         .attr("r", nodeSize);
       
@@ -898,39 +876,41 @@ export default function TidyTree() {
   };
 
   return (
-    <div
-      ref={containerRef}
-      className="w-full h-full"
-      style={{
-        position: 'relative',
-        minHeight: '500px',
-        height: `${treeHeight}px`,
-        maxHeight: `${treeHeight}px`,
-        overflow: 'auto',
-        transition: 'height 0.3s ease-in-out' // Smooth transition when height changes
-      }}
-      onClick={handleContainerClick}
-    >
-      {/* Loading and error states */}
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-gray-800/80 z-50">
-          <div className="text-lg font-medium">Loading UK Biobank data...</div>
-        </div>
-      )}
-      
-      {error && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 dark:bg-gray-800/90 z-50 p-4">
-          <div className="text-lg font-medium text-red-500 mb-2">Error loading data</div>
-          <div className="text-sm text-gray-700 dark:text-gray-300 mb-4">{error}</div>
-          <div className="text-sm text-gray-600 dark:text-gray-400 max-w-md text-center">
-            Make sure the JSON file exists at /graph-data/uk_biobank_features.json
-            or update the path in the component.
+    <div className="relative w-full h-full">
+      <div
+        ref={containerRef}
+        className="w-full h-full"
+        style={{
+          position: 'relative',
+          minHeight: '500px',
+          height: `${treeHeight}px`,
+          maxHeight: `${treeHeight}px`,
+          overflow: 'auto',
+          transition: 'height 0.3s ease-in-out' // Smooth transition when height changes
+        }}
+        onClick={handleContainerClick}
+      >
+        {/* Loading and error states */}
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-gray-800/80 z-50">
+            <div className="text-lg font-medium">Loading UK Biobank data...</div>
           </div>
-        </div>
-      )}
+        )}
+        
+        {error && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 dark:bg-gray-800/90 z-50 p-4">
+            <div className="text-lg font-medium text-red-500 mb-2">Error loading data</div>
+            <div className="text-sm text-gray-700 dark:text-gray-300 mb-4">{error}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400 max-w-md text-center">
+              Make sure the JSON file exists at /graph-data/uk_biobank_features.json
+              or update the path in the component.
+            </div>
+          </div>
+        )}
+      </div>
       
       {/* TidyTree Buttons - Using our custom TidyTreeButtons component */}
-      <div className="absolute top-2 right-2 z-10 p-2 bg-transparent dark:bg-transparent rounded shadow-sm">
+      <div className="absolute top-2 right-2 z-50 p-2 bg-transparent dark:bg-transparent rounded shadow-sm">
         <TidyTreeButtons onExport={exportSVG} />
       </div>
       
