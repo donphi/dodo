@@ -512,7 +512,7 @@ export default function TidyTree() {
         d3.select(this)
           .transition()
           .duration(200)
-          .attr("r", nodeSize * 1.2) // Increase size by 1.2x
+          .attr("r", nodeSize * 1.8) // Increase size by 1.2x
           .attr("fill", "#4f46e5"); // Indigo color to match path highlighting
           
         // Highlight the node text
@@ -578,7 +578,7 @@ export default function TidyTree() {
         .transition()
         .duration(200)
         .attr("fill", "#4f46e5") // Indigo color - ensure consistent color
-        .attr("r", nodeSize * 1.2);
+        .attr("r", nodeSize * 1.8);
       
       // Highlight the text labels for ancestors
       svg.selectAll("text")
@@ -605,7 +605,7 @@ export default function TidyTree() {
         .transition()
         .duration(200)
         .attr("fill", "#4f46e5") // Indigo color
-        .attr("r", nodeSize * 1.2);
+        .attr("r", nodeSize * 1.8);
       
       // Highlight the text labels for descendants
       svg.selectAll("text")

@@ -334,7 +334,7 @@ const RadialTidyTree: React.FC = () => {
     const containerHeight = dimensions.height;
     
     // Add padding (10% on each side)
-    const padding = 0.2;
+    const padding = 0.2; // Reverted back to original value
     const paddedWidth = bounds.width * (1 + padding);
     const paddedHeight = bounds.height * (1 + padding);
     
@@ -343,19 +343,19 @@ const RadialTidyTree: React.FC = () => {
     const scaleY = containerHeight / paddedHeight;
     const scale = Math.min(scaleX, scaleY);
     
-    // Calculate center of the bounds
-    const centerX = bounds.x + bounds.width / 2;
-    const centerY = bounds.y + bounds.height / 2;
-    
+    // Use (0,0) as the target center point for the radial layout's origin
+    const targetCenterX = 0;
+    const targetCenterY = 0;
+
     // Apply the transform with transition
     svg.transition()
       .duration(750)
       .call(
         zoomRef.current.transform,
         d3.zoomIdentity
-          .translate(containerWidth / 2, containerHeight / 2)
-          .scale(scale)
-          .translate(-centerX, -centerY)
+          .translate(containerWidth / 2, containerHeight / 2) // Move origin to SVG center
+          .scale(scale)                                      // Scale around SVG center
+          .translate(-targetCenterX, -targetCenterY)         // Move the layout's origin (0,0) to the SVG center
       );
   }, [dimensions]);
   
@@ -1220,7 +1220,7 @@ const RadialTidyTree: React.FC = () => {
     const hierarchy = d3.hierarchy(filteredData);
     
     // Sort nodes for consistent rendering
-    hierarchy.sort((a, b) => d3.ascending(a.data.name, b.data.name));
+    hierarchy.sort((a: d3.HierarchyNode<TreeNodeData>, b: d3.HierarchyNode<TreeNodeData>) => d3.ascending(a.data.name, b.data.name));
     
     // Calculate optimal radii for each level
     const maxAvailableRadius = Math.min(dimensions.width, dimensions.height) * 0.9;
@@ -1229,15 +1229,16 @@ const RadialTidyTree: React.FC = () => {
     // Create tree layout
     const tree = d3.tree<TreeNodeData>()
       .size([2 * Math.PI, 1])
-      .separation((a, b) => {
+      .separation((a: d3.HierarchyPointNode<TreeNodeData>, b: d3.HierarchyPointNode<TreeNodeData>) => {
+        // Use HierarchyPointNode for separation as it deals with layout positions
         return (a.parent === b.parent ? 1 : 2) / (a.depth || 1);
       });
     
     // Apply tree layout
-    const root = tree(hierarchy);
+    const root = tree(hierarchy); // root is d3.HierarchyPointNode<TreeNodeData>
     
     // Apply calculated radii to nodes
-    root.each(node => {
+    root.each((node: d3.HierarchyPointNode<TreeNodeData>) => {
       const depth = node.depth || 0;
       node.y = levelRadii.get(depth) || 0;
     });
@@ -1263,9 +1264,9 @@ const RadialTidyTree: React.FC = () => {
     // Set up proper D3 zoom behavior directly on the SVG
     const zoom = d3.zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.05, 10])
-      .on("zoom", (event) => {
+      .on("zoom", (event: d3.D3ZoomEvent<SVGSVGElement, unknown>) => {
         if (gRef.current) {
-          d3.select(gRef.current).attr("transform", event.transform);
+          d3.select(gRef.current).attr("transform", event.transform.toString()); // Use toString() for safety
           // Store current transform
           currentTransformRef.current = event.transform;
         }
@@ -1276,13 +1277,13 @@ const RadialTidyTree: React.FC = () => {
     // Initialize SVG with zoom
     svg.call(zoom as any)
       .on("dblclick.zoom", null)
-      .on("contextmenu", event => event.preventDefault());
+      .on("contextmenu", (event: MouseEvent) => event.preventDefault());
 
       // Replace the double-click handler section (around line 687-706)
       // with this code that properly handles double-click
 
       // Replace with our custom double-click handler
-      svg.on("dblclick", (event) => {
+      svg.on("dblclick", (event: MouseEvent) => {
         // Prevent double-click from being handled by other listeners
         event.preventDefault();
         event.stopPropagation();
@@ -1312,15 +1313,17 @@ const RadialTidyTree: React.FC = () => {
       .attr("stroke-opacity", config.linkOpacity)
       .attr("stroke-width", config.linkWidth)
       .selectAll("path")
-      .data(root.links())
+      .data(root.links()) // root.links() provides HierarchyLink<TreeNodeData>[]
       .join("path")
         .attr("class", "link")
-        .attr("d", (d) => {
-          // Source & target in polar coordinates
-          const sa = d.source.x ?? 0;
-          const sr = d.source.y ?? 0;
-          const ta = d.target.x ?? 0;
-          const tr = d.target.y ?? 0;
+        .attr("d", (d: d3.HierarchyLink<TreeNodeData>) => {
+          // Source & target are HierarchyPointNode<TreeNodeData>
+          const sourceNode = d.source as d3.HierarchyPointNode<TreeNodeData>;
+          const targetNode = d.target as d3.HierarchyPointNode<TreeNodeData>;
+          const sa = sourceNode.x ?? 0;
+          const sr = sourceNode.y ?? 0;
+          const ta = targetNode.x ?? 0;
+          const tr = targetNode.y ?? 0;
 
           // Convert to Cartesian coordinates
           const [sx, sy] = polarToCartesian(sa, sr);
@@ -1341,27 +1344,27 @@ const RadialTidyTree: React.FC = () => {
     
     // Create node groups
     const node = rootContainer.append("g")
-      .selectAll("g")
+      .selectAll<SVGGElement, d3.HierarchyPointNode<TreeNodeData>>("g") // Specify types for selection
       .data(root.descendants())
       .join("g")
-        .attr("class", (d) => {
+        .attr("class", (d: d3.HierarchyPointNode<TreeNodeData>) => {
           const isCategory = d.children && d.depth > 0;
           const isField = d.data && d.data.data && Object.keys(d.data.data || {}).length > 0;
           return `node ${isCategory ? 'category-node' : ''} ${isField ? 'field-node' : ''}`;
         })
-        .attr("transform", (d) => {
+        .attr("transform", (d: d3.HierarchyPointNode<TreeNodeData>) => {
           const x = d.x || 0;
           const y = d.y || 0;
           return `rotate(${(x * 180 / Math.PI - 90)}) translate(${y},0)`;
         })
-        .style("cursor", (d) =>
+        .style("cursor", (d: d3.HierarchyPointNode<TreeNodeData>) =>
           (d.children && d.depth > 0) || (d.data && d.data.data && Object.keys(d.data.data || {}).length > 0) ? "pointer" : "default")
-        .style("pointer-events", (d) => { 
-          return (d.children && d.depth > 0) || (d.data && d.data.data && Object.keys(d.data.data || {}).length > 0) ? "auto" : "none"; 
+        .style("pointer-events", (d: d3.HierarchyPointNode<TreeNodeData>) => {
+          return (d.children && d.depth > 0) || (d.data && d.data.data && Object.keys(d.data.data || {}).length > 0) ? "auto" : "none";
         })
-        .on("click", (event, d) => {
+        .on("click", (event: MouseEvent, d: d3.HierarchyPointNode<TreeNodeData>) => {
           event.stopPropagation(); // Prevent event bubbling
-          
+
           // Skip root node
           if (d.depth === 0) return;
           
@@ -1370,7 +1373,7 @@ const RadialTidyTree: React.FC = () => {
           
           // Toggle expansion for category nodes
           if (!isFieldNode) {
-            setExpandedBranches(prev => {
+            setExpandedBranches((prev: Set<string>) => {
               const next = new Set(prev);
               if (next.has(path)) {
                 next.delete(path);
@@ -1422,7 +1425,7 @@ const RadialTidyTree: React.FC = () => {
     
     // Add circles for nodes
     node.append("circle")
-      .attr("fill", (d) => {
+      .attr("fill", (d: d3.HierarchyPointNode<TreeNodeData>) => {
         if (d.depth === 0) return "#4f46e5"; // Root - Indigo
         if (d.data.data && d.data.data.field_id !== undefined) return isDarkMode ? "#F5E100" : "#E6D300"; // Field - Yellow (dark/light)
         if (d.children) return isDarkMode ? "#00F583" : "#00D975"; // Category - Green (dark/light)
@@ -1430,11 +1433,11 @@ const RadialTidyTree: React.FC = () => {
       })
       .attr("r", config.nodeSize)
       .attr("class", "node-circle")
-      .on("mouseover", function(event, d) {
-        const parentElement = this.parentNode;
-        
+      .on("mouseover", function(this: SVGCircleElement, event: MouseEvent, d: d3.HierarchyPointNode<TreeNodeData>) { // Type 'this'
+        const parentElement = this.parentNode as Element | null;
+
         // Apply to all nodes, not just category nodes with children
-        d3.select(this)
+        d3.select(this) // 'this' is now correctly typed
           .transition()
           .duration(200)
           .attr("r", config.nodeSize * 1.2) // Increase size by 1.2x
@@ -1449,11 +1452,11 @@ const RadialTidyTree: React.FC = () => {
             .attr("fill", "#4f46e5"); // Indigo color
         }
       })
-      .on("mouseout", function(event, d) {
-        const parentElement = this.parentNode;
-        
+      .on("mouseout", function(this: SVGCircleElement, event: MouseEvent, d: d3.HierarchyPointNode<TreeNodeData>) { // Type 'this'
+        const parentElement = this.parentNode as Element | null;
+
         // Apply to all nodes, not just category nodes with children
-        d3.select(this)
+        d3.select(this) // 'this' is now correctly typed
           .transition()
           .duration(200)
           .attr("r", config.nodeSize)
@@ -1482,10 +1485,10 @@ const RadialTidyTree: React.FC = () => {
     if (config.showLabels) {
       node.append("text")
         .attr("dy", "0.31em")
-        .attr("x", (d) => {
+        .attr("x", (d: d3.HierarchyPointNode<TreeNodeData>) => {
           const angle = d.x || 0;
           const depth = d.depth || 0;
-          
+
           // Increase label padding for outer rings to reduce overlap
           const basePadding = config.labelPadding + config.nodeSize;
           let offset = basePadding;
@@ -1507,29 +1510,29 @@ const RadialTidyTree: React.FC = () => {
           
           return angle < Math.PI === !d.children ? offset : -offset;
         })
-        .attr("text-anchor", (d) => {
+        .attr("text-anchor", (d: d3.HierarchyPointNode<TreeNodeData>) => {
           const angle = d.x || 0;
           return angle < Math.PI === !d.children ? "start" : "end";
         })
-        .attr("transform", (d) => {
+        .attr("transform", (d: d3.HierarchyPointNode<TreeNodeData>) => {
           const angle = d.x || 0;
           return angle >= Math.PI ? "rotate(180)" : null;
         })
         .attr("font-size", `${config.fontSize}pt`)
-        .text((d) => d.data.name)
+        .text((d: d3.HierarchyPointNode<TreeNodeData>) => d.data.name)
         .attr("stroke", isDarkMode ? null : "white")
         .attr("stroke-width", isDarkMode ? null : 3)
         .attr("paint-order", isDarkMode ? null : "stroke")
         .attr("fill", isDarkMode ? "white" : "black")
-        .attr("class", (d) => {
+        .attr("class", (d: d3.HierarchyPointNode<TreeNodeData>) => {
           const depth = d.depth || 0;
           return `node-label depth-${depth}`;
         })
         .style("pointer-events", "all")
-        .append("title")
-        .text((d) => d.data.name);
+        .append("title") // Title element for native browser tooltips
+        .text((d: d3.HierarchyPointNode<TreeNodeData>) => d.data.name);
     }
-    
+
     // Helper to get node ancestors
     const getAncestors = (node: d3.HierarchyNode<TreeNodeData>): d3.HierarchyNode<TreeNodeData>[] => {
       const ancestors: d3.HierarchyNode<TreeNodeData>[] = [];
@@ -1542,33 +1545,36 @@ const RadialTidyTree: React.FC = () => {
     };
     
     // Add highlight effects with stroke on hover
-    node.on("mouseover", (event, d) => {
+    node.on("mouseover", (event: MouseEvent, d: d3.HierarchyPointNode<TreeNodeData>) => {
       // Only process if not currently dragging
       if (event.defaultPrevented) return;
-      
+
       const ancestors = getAncestors(d);
       const descendants = d.descendants();
       
       // Highlight ancestor nodes and path
-      rootContainer.selectAll(".node-circle")
-        .filter((p: any) => ancestors.includes(p))
+      rootContainer.selectAll<SVGCircleElement, d3.HierarchyPointNode<TreeNodeData>>(".node-circle")
+        .filter((p: d3.HierarchyPointNode<TreeNodeData>) => ancestors.includes(p))
         .transition()
         .duration(200)
         .attr("fill", "#4f46e5") // Indigo color
-        .attr("r", config.nodeSize * 1.2);
+        .attr("r", config.nodeSize * 1.8);
         
       // No need to add strokes to expand indicators
-      
-      rootContainer.selectAll("text")
-        .filter((p: any) => ancestors.includes(p))
+
+      rootContainer.selectAll<SVGTextElement, d3.HierarchyPointNode<TreeNodeData>>("text")
+        .filter((p: d3.HierarchyPointNode<TreeNodeData>) => ancestors.includes(p))
         .transition()
         .duration(200)
         .attr("fill", "#4f46e5")
         .attr("font-weight", "bold");
       
-      rootContainer.selectAll("path.link")
-        .filter(function(p: any) {
-          return p.source && p.target && ancestors.includes(p.source) && ancestors.includes(p.target);
+      rootContainer.selectAll<SVGPathElement, d3.HierarchyLink<TreeNodeData>>("path.link")
+        .filter((p: d3.HierarchyLink<TreeNodeData>) => {
+          // Ensure source and target are HierarchyPointNode before checking includes
+          const sourceNode = p.source as d3.HierarchyPointNode<TreeNodeData>;
+          const targetNode = p.target as d3.HierarchyPointNode<TreeNodeData>;
+          return ancestors.includes(sourceNode) && ancestors.includes(targetNode);
         })
         .transition()
         .duration(200)
@@ -1576,25 +1582,26 @@ const RadialTidyTree: React.FC = () => {
         .attr("stroke-width", config.linkWidth * 2);
       
       // Highlight descendant nodes and paths
-      rootContainer.selectAll(".node-circle")
-        .filter((p: any) => descendants.includes(p) && p !== d)
+      rootContainer.selectAll<SVGCircleElement, d3.HierarchyPointNode<TreeNodeData>>(".node-circle")
+        .filter((p: d3.HierarchyPointNode<TreeNodeData>) => descendants.includes(p) && p !== d)
         .transition()
         .duration(200)
         .attr("fill", "#4f46e5")
-        .attr("r", config.nodeSize * 1.2);
+        .attr("r", config.nodeSize * 1.8);
       
-      rootContainer.selectAll("text")
-        .filter((p: any) => descendants.includes(p) && p !== d)
+      rootContainer.selectAll<SVGTextElement, d3.HierarchyPointNode<TreeNodeData>>("text")
+        .filter((p: d3.HierarchyPointNode<TreeNodeData>) => descendants.includes(p) && p !== d)
         .transition()
         .duration(200)
         .attr("fill", "#4f46e5")
         .attr("font-weight", "bold");
       
-      rootContainer.selectAll("path.link")
-        .filter(function(p: any) {
-          return p.source && p.target &&
-                ((p.source === d && descendants.includes(p.target as any)) ||
-                  (descendants.includes(p.source as any) && descendants.includes(p.target as any)));
+      rootContainer.selectAll<SVGPathElement, d3.HierarchyLink<TreeNodeData>>("path.link")
+        .filter((p: d3.HierarchyLink<TreeNodeData>) => {
+          const sourceNode = p.source as d3.HierarchyPointNode<TreeNodeData>;
+          const targetNode = p.target as d3.HierarchyPointNode<TreeNodeData>;
+          return (sourceNode === d && descendants.includes(targetNode)) ||
+                 (descendants.includes(sourceNode) && descendants.includes(targetNode));
         })
         .transition()
         .duration(200)
@@ -1603,24 +1610,24 @@ const RadialTidyTree: React.FC = () => {
     })
     .on("mouseout", () => {
       // Restore original styling
-      rootContainer.selectAll(".node-circle")
+      rootContainer.selectAll<SVGCircleElement, d3.HierarchyPointNode<TreeNodeData>>(".node-circle")
         .transition()
         .duration(200)
-        .attr("fill", (p: any) => {
-          if (p && p.depth === 0) return "#4f46e5"; // Root - Indigo
-          if (p && p.data && p.data.data && p.data.data.field_id !== undefined) return isDarkMode ? "#F5E100" : "#E6D300"; // Field - Yellow (dark/light)
-          if (p && p.children) return isDarkMode ? "#00F583" : "#00D975"; // Category - Green (dark/light)
+        .attr("fill", (p: d3.HierarchyPointNode<TreeNodeData>) => {
+          if (p.depth === 0) return "#4f46e5"; // Root - Indigo
+          if (p.data.data && p.data.data.field_id !== undefined) return isDarkMode ? "#F5E100" : "#E6D300"; // Field - Yellow (dark/light)
+          if (p.children) return isDarkMode ? "#00F583" : "#00D975"; // Category - Green (dark/light)
           return isDarkMode ? "#69635C" : "#d8dbe2"; // Other - Gray (dark/light)
         })
         .attr("r", config.nodeSize);
-      
-      rootContainer.selectAll("text")
+
+      rootContainer.selectAll<SVGTextElement, unknown>("text") // Use unknown for data type if not needed
         .transition()
         .duration(200)
         .attr("fill", isDarkMode ? "white" : "black")
         .attr("font-weight", "normal");
-      
-      rootContainer.selectAll("path.link")
+
+      rootContainer.selectAll<SVGPathElement, unknown>("path.link") // Use unknown for data type if not needed
         .transition()
         .duration(200)
         .attr("stroke", isDarkMode ? "#666" : "#555")
@@ -1629,19 +1636,19 @@ const RadialTidyTree: React.FC = () => {
     
     // Improve cursor behavior for better panning feedback
     svg.style("cursor", "grab")
-      .on("mousedown.cursor", function(event) { 
+      .on("mousedown.cursor", function(event: MouseEvent) {
         // Only change cursor if it's a primary mouse button (left click)
         if (event.button === 0) {
-          d3.select(this).style("cursor", "grabbing");
+          d3.select(this as SVGSVGElement).style("cursor", "grabbing");
         }
       })
-      .on("mouseup.cursor", function() { 
-        d3.select(this).style("cursor", "grab"); 
+      .on("mouseup.cursor", function() {
+        d3.select(this as SVGSVGElement).style("cursor", "grab");
       })
       .on("mouseleave.cursor", function() {
-        d3.select(this).style("cursor", "grab");
+        d3.select(this as SVGSVGElement).style("cursor", "grab");
       });
-    
+
     // Append to container and store references
     const currentContainer = containerRef.current;
     let currentSvgNode: SVGSVGElement | null = null;
@@ -1658,6 +1665,29 @@ const RadialTidyTree: React.FC = () => {
         currentSvgNode = svgNode;
       }
     }
+
+    // Restore the saved transform after SVG creation and zoom setup
+    if (gRef.current && zoomRef.current) {
+      // Check if savedTransform is not the initial identity transform
+      // Apply saved transform if it exists and is not identity, otherwise apply a default centered view
+      if (savedTransform && (savedTransform.k !== 1 || savedTransform.x !== 0 || savedTransform.y !== 0)) {
+         svg.call(zoomRef.current.transform, savedTransform);
+         // Ensure the ref is updated if we applied the saved one
+         currentTransformRef.current = savedTransform;
+      } else {
+        // Apply a default centered view on initial load or if transform was identity
+        const bounds = gRef.current.getBBox();
+        const parentWidth = dimensions.width;
+        const parentHeight = dimensions.height;
+        const scale = Math.min(parentWidth / (bounds.width || 1), parentHeight / (bounds.height || 1)) * 0.8; // 80% scale
+        const translateX = parentWidth / 2 - (bounds.x + bounds.width / 2) * scale;
+        const translateY = parentHeight / 2 - (bounds.y + bounds.height / 2) * scale;
+        const initialTransform = d3.zoomIdentity.translate(translateX, translateY).scale(scale);
+
+        svg.call(zoomRef.current.transform, initialTransform);
+        currentTransformRef.current = initialTransform; // Store the calculated initial transform
+      }
+    }
     
     // Cleanup function
     return () => {
@@ -1666,8 +1696,8 @@ const RadialTidyTree: React.FC = () => {
       }
     };
   }, [
-    data, 
-    dimensions, 
+    data,
+    dimensions,
     loading, 
     error, 
     expandedBranches, 
@@ -1751,7 +1781,7 @@ const RadialTidyTree: React.FC = () => {
       </div>
       
       {/* Tree Buttons */}
-      <div className="absolute top-2 right-2 z-50 p-2 bg-transparent dark:bg-transparent rounded shadow-sm">
+      <div className="absolute top-2 right-2 z-40 p-2 bg-transparent dark:bg-transparent rounded shadow-sm">
         <TreeButtons
           onExport={exportSVG}
           onViewAll={handleViewAll}
@@ -1769,7 +1799,7 @@ const RadialTidyTree: React.FC = () => {
             maxWidth: '300px',
             transform: 'translate(0, -50%)'
           }}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e: React.MouseEvent) => e.stopPropagation()} // Type the event 'e'
         >
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-bold text-sm">{tooltipData.name}</h3>
