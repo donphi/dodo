@@ -21,7 +21,7 @@ export default function Document() {
                     property="og:description"
                     content="Dodo is your experimental playground for exploring the UK Biobank dataset. Interact with diverse phenotype views, answer data science questions, and shape the future of Biobankly."
                 />
-                <meta property="og:image" content="https://biobankly.com/og-image.png" />
+                <meta property="og:image" content="https://dodo.biobankly.com/og-image.png" />
                 <meta property="og:image:width" content="1200" />
                 <meta property="og:image:height" content="630" />
                 <meta property="og:image:alt" content="Biobankly logo and platform visualization" />
@@ -40,7 +40,7 @@ export default function Document() {
                     name="twitter:description"
                     content="Dodo is your experimental playground for exploring the UK Biobank dataset. Interact with diverse phenotype views, answer data science questions, and shape the future of Biobankly."
                 />
-                <meta name="twitter:image" content="https://biobankly.com/og-image.png" />
+                <meta name="twitter:image" content="https://dodo.biobankly.com/og-image.png" />
                 <meta name="twitter:image:alt" content="Biobankly platform visualization" />
 
                 {/* Minimal PWA metadata */}
@@ -84,3 +84,5 @@ export default function Document() {
         </Html>
     );
 }
+
+{/* Deployment cache bust: OG image fix */}
