@@ -534,7 +534,9 @@ export default function TidyTree() {
           .transition()
           .duration(200)
           .attr("r", nodeSize)
-          .attr("fill", d => {
+          .attr("fill", function(datum: unknown) {
+            // Type assertion to convert the unknown datum to our expected type
+            const d = datum as TreeNode;
             if (d.depth === 0) return "#4f46e5"; // Root - Indigo
             if (d.data.data) return isDarkMode ? "#F5E100" : "#E6D300"; // Field - Yellow (dark/light)
             if (d.children) return isDarkMode ? "#00F583" : "#00D975"; // Category - Green (dark/light)
