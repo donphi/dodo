@@ -102,12 +102,7 @@ const ContactForm: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Show feedback dialog with success status initially
-      // This ensures users get immediate feedback even if email sending takes time
-      setFeedbackStatus('success');
-      setShowFeedback(true);
-      
-      // Store contact form data in Supabase
+      // First, store contact form data in Supabase
       const { error } = await supabase
         .from('contact_submissions')
         .insert([
@@ -124,9 +119,15 @@ const ContactForm: React.FC = () => {
       if (error) {
         console.error('Database insertion error:', error);
         setFeedbackStatus('error');
+        setErrors({
+          general: 'An error occurred while saving your information. Please try again or contact us directly.'
+        });
+        setShowFeedback(true);
         throw error;
       }
 
+      let emailSent = false;
+      
       try {
         // Send email notification using Supabase Edge Functions
         const { error: emailError } = await supabase.functions.invoke('send-contact-email', {
@@ -141,28 +142,35 @@ const ContactForm: React.FC = () => {
 
         if (emailError) {
           console.error('Email sending failed:', emailError);
-          // Update feedback status to error if email sending fails
           setFeedbackStatus('error');
           setErrors({
             general: 'Your information was saved, but we encountered an issue sending the email notification. Our team will still receive your message.'
           });
+        } else {
+          // Email was sent successfully
+          emailSent = true;
+          setFeedbackStatus('success');
         }
       } catch (emailError) {
         console.error('Email function error:', emailError);
-        // Update feedback status to error if email sending fails
         setFeedbackStatus('error');
         setErrors({
           general: 'Your information was saved, but we encountered an issue sending the email notification. Our team will still receive your message.'
         });
       }
       
-      // Reset form on success
-      setFirstName('');
-      setLastName('');
-      setEmail('');
-      setPhone('');
-      setMessage('');
-      setAgreed(false);
+      // Show feedback dialog after email sending attempt
+      setShowFeedback(true);
+      
+      // Only reset form if everything was successful
+      if (emailSent) {
+        setFirstName('');
+        setLastName('');
+        setEmail('');
+        setPhone('');
+        setMessage('');
+        setAgreed(false);
+      }
       
     } catch (error) {
       console.error('Form submission error:', error);
@@ -387,7 +395,10 @@ const ContactForm: React.FC = () => {
       {showFeedback && (
         <FeedbackDialog
           status={feedbackStatus}
-          onClose={() => setShowFeedback(false)}
+          onClose={() => {
+            setShowFeedback(false);
+            setIsSubmitting(false); // Ensure isSubmitting is reset when dialog is closed
+          }}
         />
       )}
     </>

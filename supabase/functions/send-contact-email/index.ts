@@ -47,12 +47,26 @@ serve(async (req) => {
 
     // Configure SMTP client
     const client = new SmtpClient()
-    await client.connectTLS({
-      hostname: SMTP_HOST,
-      port: SMTP_PORT,
-      username: SMTP_USERNAME,
-      password: SMTP_PASSWORD,
-    })
+    
+    // Log connection attempt for debugging
+    console.log(`Attempting to connect to SMTP server: ${SMTP_HOST}:${SMTP_PORT}`)
+    
+    try {
+      await client.connectTLS({
+        hostname: SMTP_HOST,
+        port: SMTP_PORT,
+        username: SMTP_USERNAME,
+        password: SMTP_PASSWORD,
+        // Add specific settings for Office 365
+        tls: {
+          rejectUnauthorized: false // Sometimes needed for Office 365
+        }
+      })
+      console.log("SMTP connection successful")
+    } catch (smtpError) {
+      console.error("SMTP connection error:", smtpError)
+      throw new Error(`Failed to connect to SMTP server: ${smtpError.message}`)
+    }
 
     // Format email content
     const emailSubject = `New Contact Form Submission from ${firstName} ${lastName}`
