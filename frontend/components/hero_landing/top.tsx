@@ -1,5 +1,6 @@
 import { ChevronRightIcon } from '@heroicons/react/20/solid'
 import { useEffect, useState } from 'react'
+import React from 'react'
 import Link from 'next/link'
 
 export default function Example() {
