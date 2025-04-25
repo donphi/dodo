@@ -23,7 +23,7 @@ const features = [
   },
 ]
 
-export default function Example(): JSX.Element {
+export default function Example(): React.ReactNode {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Check for dark mode on component mount and when theme changes
