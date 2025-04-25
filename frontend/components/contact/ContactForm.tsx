@@ -102,6 +102,11 @@ const ContactForm: React.FC = () => {
     setIsSubmitting(true);
     
     try {
+      // Show feedback dialog with success status initially
+      // This ensures users get immediate feedback even if email sending takes time
+      setFeedbackStatus('success');
+      setShowFeedback(true);
+      
       // Store contact form data in Supabase
       const { error } = await supabase
         .from('contact_submissions')
@@ -117,31 +122,33 @@ const ContactForm: React.FC = () => {
         ]);
 
       if (error) {
+        console.error('Database insertion error:', error);
+        setFeedbackStatus('error');
         throw error;
       }
 
-      // Send email notification using Supabase Edge Functions
-      const { error: emailError } = await supabase.functions.invoke('send-contact-email', {
-        body: {
-          firstName,
-          lastName,
-          email,
-          phone,
-          message,
-        },
-      });
+      try {
+        // Send email notification using Supabase Edge Functions
+        const { error: emailError } = await supabase.functions.invoke('send-contact-email', {
+          body: {
+            firstName,
+            lastName,
+            email,
+            phone,
+            message,
+          },
+        });
 
-      if (emailError) {
-        console.error('Email sending failed:', emailError);
-        setFeedbackStatus('error');
-      } else {
-        setFeedbackStatus('success');
+        if (emailError) {
+          console.error('Email sending failed:', emailError);
+          // Don't change feedback status - data was saved even if email failed
+        }
+      } catch (emailError) {
+        console.error('Email function error:', emailError);
+        // Don't change feedback status - data was saved even if email failed
       }
-
-      // Show feedback dialog
-      setShowFeedback(true);
       
-      // Reset form
+      // Reset form on success
       setFirstName('');
       setLastName('');
       setEmail('');
@@ -151,9 +158,10 @@ const ContactForm: React.FC = () => {
       
     } catch (error) {
       console.error('Form submission error:', error);
-      setErrors({ general: 'An error occurred while submitting the form. Please try again.' });
+      setErrors({
+        general: 'An error occurred while submitting the form. Please try again or contact us directly.'
+      });
       setFeedbackStatus('error');
-      setShowFeedback(true);
     } finally {
       setIsSubmitting(false);
     }

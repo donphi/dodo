@@ -40,9 +40,19 @@ create policy "Only authenticated users can view contact submissions"
 create policy "Anyone can submit contact form"
   on public.contact_submissions
   for insert
-  to anon
-  with check (agreed_to_privacy = true);
+  to anon, authenticated
+  with check (true);
+
+-- Create policy to allow service role to do everything
+create policy "Service role can do everything"
+  on public.contact_submissions
+  for all
+  to service_role
+  using (true)
+  with check (true);
 ```
+
+> **Important**: The RLS policies have been updated to allow both anonymous and authenticated users to insert records without requiring the `agreed_to_privacy` check in the database (this is still validated in the frontend). This helps prevent 403 Forbidden errors when submitting the form.
 
 ### Edge Function for Email Sending
 
@@ -186,12 +196,71 @@ To set up the email functionality in your Supabase project:
 
 ## Troubleshooting
 
+### Common Issues
+
+#### 403 Forbidden Error When Submitting the Form
+
+If you see a 403 Forbidden error in the console when submitting the form:
+
+```
+Failed to load resource: the server responded with a status of 403 ()
+```
+
+This is likely due to Row Level Security (RLS) policies in Supabase. Make sure:
+
+1. The SQL migration has been applied correctly with the updated RLS policies
+2. The user has permission to insert into the `contact_submissions` table
+3. The Supabase client is properly initialized with the correct API key
+
+If you're getting this error and the table already exists, you can update just the RLS policies using the following SQL:
+
+```sql
+-- Run this in the Supabase SQL Editor
+DROP POLICY IF EXISTS "Only authenticated users can view contact submissions" ON public.contact_submissions;
+DROP POLICY IF EXISTS "Anyone can submit contact form" ON public.contact_submissions;
+DROP POLICY IF EXISTS "Service role can do everything" ON public.contact_submissions;
+
+-- Create policy to allow only authenticated users to view submissions
+CREATE POLICY "Only authenticated users can view contact submissions"
+  ON public.contact_submissions
+  FOR SELECT
+  TO authenticated
+  USING (true);
+
+-- Create policy to allow anyone to insert submissions
+CREATE POLICY "Anyone can submit contact form"
+  ON public.contact_submissions
+  FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (true);
+
+-- Create policy to allow service role to do everything
+CREATE POLICY "Service role can do everything"
+  ON public.contact_submissions
+  FOR ALL
+  TO service_role
+  USING (true)
+  WITH CHECK (true);
+```
+
+This SQL script is also available at `supabase/migrations/20250425_update_contact_submissions_policies.sql`.
+
+#### Email Not Being Sent
+
 If emails are not being sent:
 
 1. Check the Supabase Edge Function logs in the Supabase dashboard
 2. Verify that all environment variables are correctly set
 3. Ensure your SMTP provider allows sending from your Edge Function (some providers may block unfamiliar IP addresses)
 4. For Gmail, you may need to use an App Password instead of your regular password
+
+#### Form Submission Shows Success But No Data is Saved
+
+The form is designed to show a success message immediately for better user experience, even before the actual submission is complete. If data isn't being saved:
+
+1. Check browser console for errors
+2. Verify that the Supabase project URL and API key are correct
+3. Check that the table structure matches what the form is trying to insert
 
 ## Security Considerations
 

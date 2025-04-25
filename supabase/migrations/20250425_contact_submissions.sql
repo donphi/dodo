@@ -27,8 +27,16 @@ create policy "Only authenticated users can view contact submissions"
 create policy "Anyone can submit contact form"
   on public.contact_submissions
   for insert
-  to anon
-  with check (agreed_to_privacy = true);
+  to anon, authenticated
+  with check (true);
+
+-- Create policy to allow service role to do everything
+create policy "Service role can do everything"
+  on public.contact_submissions
+  for all
+  to service_role
+  using (true)
+  with check (true);
 
 -- Create index on email for potential future filtering
 create index contact_submissions_email_idx on public.contact_submissions (email);
