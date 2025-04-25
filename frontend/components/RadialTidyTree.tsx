@@ -79,13 +79,6 @@ const RadialTidyTree: React.FC = () => {
   const [tooltipData, setTooltipData] = useState<TooltipData | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<TooltipPosition>({ x: 0, y: 0 });
   
-  // Track current translation for panning
-  const [translateX, setTranslateX] = useState<number>(0);
-  const [translateY, setTranslateY] = useState<number>(0);
-  
-  // Track current zoom scale
-  const [zoomScale, setZoomScale] = useState<number>(1);
-  
   // Track which branches are expanded
   const [expandedBranches, setExpandedBranches] = useState<Set<string>>(new Set<string>());
   const [expandedBranchesInitialized, setExpandedBranchesInitialized] = useState<boolean>(false);
@@ -256,57 +249,115 @@ const RadialTidyTree: React.FC = () => {
     };
   }, []);
 
+  const updateTheme = useCallback((isDark: boolean): void => {
+    if (!svgRef.current) return;
+    
+    // Update SVG class without recreating it
+    const svg = d3.select(svgRef.current);
+    svg.attr("class", isDark ? "dark-theme" : "light-theme");
+    
+    // Update node colors
+    svg.selectAll(".node-circle")
+      .attr("fill", function(d: any) {
+        if (d.depth === 0) return "#4f46e5"; // Root - Indigo
+        if (d.data.data && d.data.data.field_id !== undefined) return isDark ? "#F5E100" : "#E6D300"; // Field - Yellow
+        if (d.children) return isDark ? "#00F583" : "#00D975"; // Category - Green
+        return isDark ? "#69635C" : "#d8dbe2"; // Other - Gray
+      });
+    
+    // Update text color
+    svg.selectAll("text")
+      .attr("fill", isDark ? "white" : "black")
+      .attr("stroke", isDark ? null : "white")
+      .attr("stroke-width", isDark ? null : 3)
+      .attr("paint-order", isDark ? null : "stroke");
+    
+    // Update links
+    svg.selectAll("path.link")
+      .attr("stroke", isDark ? "#666" : "#555");
+  }, []);
+  
+  // Then modify your dark mode effect to use this function instead of rebuilding the SVG
+  useEffect(() => {
+    const checkDarkMode = (): void => {
+      const isDark = document.documentElement.classList.contains('dark');
+      setIsDarkMode(isDark);
+      
+      // If SVG exists, update its theme
+      if (svgRef.current) {
+        updateTheme(isDark);
+      }
+    };
+    
+    // Initial check
+    checkDarkMode();
+    
+    // Set up observer for theme changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          checkDarkMode();
+        }
+      });
+    });
+    
+    observer.observe(document.documentElement, { attributes: true });
+    
+    return () => observer.disconnect();
+  }, [updateTheme]);
+
+
   // Zoom reference
   // Reference for zoom behavior to be persistent across renders
   const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   
   // Reference to store the g element for direct transformation
   const gRef = useRef<SVGGElement | null>(null);
-
-  // Enhanced zoom functionality - properly centers the view and ensures the entire tree is visible
+  // Store value
+  const currentTransformRef = useRef<d3.ZoomTransform>(d3.zoomIdentity);
+  // Improved zoom functionality that fits the entire visualization
   const handleViewAll = useCallback((): void => {
-    if (!svgRef.current || !zoomRef.current || !containerRef.current) return;
+    if (!svgRef.current || !zoomRef.current || !gRef.current) return;
     
+    // Get SVG and container elements
     const svg = d3.select(svgRef.current);
+    const g = d3.select(gRef.current);
     
-    // Find all nodes to determine the maximum radius needed
-    const allNodes = svg.selectAll(".node").data();
-    if (!allNodes.length) return;
+    // Reset the transform to identity to measure the true bounds
+    g.attr("transform", "");
     
-    // Calculate the maximum radius used in the tree
-    let maxRadius = 0;
-    allNodes.forEach((node: any) => {
-      if (node.y > maxRadius) {
-        maxRadius = node.y;
-      }
-    });
+    // Get the bounding box of all content in the g element
+    const bounds = gRef.current.getBBox();
     
-    // Add some padding to ensure labels are visible
-    maxRadius += 100;
-    
-    // Calculate the scale needed to fit the entire tree
+    // Calculate the scale and translation needed to fit the entire content
     const containerWidth = dimensions.width;
     const containerHeight = dimensions.height;
     
-    // Always use the smaller dimension for scaling to ensure the visualization fits
-    const minDimension = Math.min(containerWidth, containerHeight);
-    const scale = (minDimension / 2) / maxRadius * 0.9;
+    // Add padding (10% on each side)
+    const padding = 0.2;
+    const paddedWidth = bounds.width * (1 + padding);
+    const paddedHeight = bounds.height * (1 + padding);
     
-    // Reset to initial state with proper scale
+    // Calculate scale to fit the entire content with padding
+    const scaleX = containerWidth / paddedWidth;
+    const scaleY = containerHeight / paddedHeight;
+    const scale = Math.min(scaleX, scaleY);
+    
+    // Calculate center of the bounds
+    const centerX = bounds.x + bounds.width / 2;
+    const centerY = bounds.y + bounds.height / 2;
+    
+    // Apply the transform with transition
     svg.transition()
       .duration(750)
       .call(
         zoomRef.current.transform,
         d3.zoomIdentity
+          .translate(containerWidth / 2, containerHeight / 2)
           .scale(scale)
-      )
-      .on("end", () => {
-        // Update React state after transition completes
-        setTranslateX(0);
-        setTranslateY(0);
-        setZoomScale(scale);
-      });
-  }, [dimensions, setTranslateX, setTranslateY, setZoomScale]);
+          .translate(-centerX, -centerY)
+      );
+  }, [dimensions]);
   
   // New expand/collapse all functionality
   const handleToggleExpandAll = useCallback((): void => {
@@ -1150,6 +1201,9 @@ const RadialTidyTree: React.FC = () => {
   useEffect(() => {
     if (!data || loading || error) return;
     
+    // Capture current transform before removing old SVG
+    const savedTransform = currentTransformRef.current;
+    
     // Clear existing SVG
     if (containerRef.current) {
       const existingSvg = containerRef.current.querySelector('svg');
@@ -1208,65 +1262,48 @@ const RadialTidyTree: React.FC = () => {
     
     // Set up proper D3 zoom behavior directly on the SVG
     const zoom = d3.zoom<SVGSVGElement, unknown>()
-      .scaleExtent([0.05, 20]) // Allow zoom range from 5% to 2000%
+      .scaleExtent([0.05, 10])
       .on("zoom", (event) => {
-        // Only apply transform to the g element without updating state during active panning
         if (gRef.current) {
           d3.select(gRef.current).attr("transform", event.transform);
-        }
-      })
-      .on("end", (event) => {
-        // Update state only when zoom/pan interaction ends
-        if (event.sourceEvent) { // Only update if triggered by user interaction, not programmatically
-          setTranslateX(event.transform.x);
-          setTranslateY(event.transform.y);
-          setZoomScale(event.transform.k);
+          // Store current transform
+          currentTransformRef.current = event.transform;
         }
       });
 
-    // Store zoom in ref for reuse in handleViewAll
     zoomRef.current = zoom;
 
-    // Apply zoom to SVG with the current transform
+    // Initialize SVG with zoom
     svg.call(zoom as any)
-      .on("dblclick.zoom", null) // Disable built-in double-click zoom
-      .on("contextmenu", event => event.preventDefault())
-      .call(
-        (zoom.transform as any),
-        d3.zoomIdentity
-          .translate(translateX, translateY)
-          .scale(zoomScale)
-      );
-      
-    // Replace with our custom double-click handler
-    svg.on("dblclick", (event) => {
-      // Prevent double-click from being handled by other listeners
-      event.preventDefault();
-      event.stopPropagation();
-      
-      svg.transition()
-        .duration(750)
-        .call((zoom.transform as any), d3.zoomIdentity);
+      .on("dblclick.zoom", null)
+      .on("contextmenu", event => event.preventDefault());
+
+      // Replace the double-click handler section (around line 687-706)
+      // with this code that properly handles double-click
+
+      // Replace with our custom double-click handler
+      svg.on("dblclick", (event) => {
+        // Prevent double-click from being handled by other listeners
+        event.preventDefault();
+        event.stopPropagation();
         
-      setTranslateX(0);
-      setTranslateY(0);
-      setZoomScale(1);
-    });
-      
-    // Double-click to reset zoom and center view on root node
-    svg.on("dblclick.zoom", (event) => {
-      // Prevent double-click from being handled by other listeners
-      event.preventDefault();
-      event.stopPropagation();
-      
-      svg.transition()
-        .duration(750)
-        .call((zoom.transform as any), d3.zoomIdentity);
+        // Calculate the center of the SVG
+        const centerX = dimensions.width / 2;
+        const centerY = dimensions.height / 2;
         
-      setTranslateX(0);
-      setTranslateY(0);
-      setZoomScale(1);
-    });
+        // Reset to identity transform with proper scaling from center
+        svg.transition()
+          .duration(750)
+          .call(
+            (zoom.transform as any),
+            d3.zoomIdentity
+              .translate(centerX, centerY)  // Center the visualization
+              .scale(1)                     // Reset scale to 1
+          );
+      });
+
+    // Disable built-in double-click zoom
+    svg.on("dblclick.zoom", null);
     
     // Add links between nodes
     rootContainer.append("g")
@@ -1420,7 +1457,7 @@ const RadialTidyTree: React.FC = () => {
           .transition()
           .duration(200)
           .attr("r", config.nodeSize)
-          .attr("fill", d => {
+          .attr("fill", (d: d3.HierarchyNode<TreeNodeData>) => {
             if (d.depth === 0) return "#4f46e5"; // Root - Indigo
             if (d.data.data && d.data.data.field_id !== undefined) return isDarkMode ? "#F5E100" : "#E6D300"; // Field - Yellow (dark/light)
             if (d.children) return isDarkMode ? "#00F583" : "#00D975"; // Category - Green (dark/light)
@@ -1629,14 +1666,10 @@ const RadialTidyTree: React.FC = () => {
   }, [
     data, 
     dimensions, 
-    isDarkMode, 
     loading, 
     error, 
     expandedBranches, 
-    config, 
-    translateX, 
-    translateY,
-    zoomScale,
+    config,
     filterData,
     calculateLevelRadii,
     distributeNodes,
