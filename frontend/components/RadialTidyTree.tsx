@@ -1679,10 +1679,10 @@ const RadialTidyTree: React.FC = () => {
         const bounds = gRef.current.getBBox();
         const parentWidth = dimensions.width;
         const parentHeight = dimensions.height;
-        const scale = Math.min(parentWidth / (bounds.width || 1), parentHeight / (bounds.height || 1)) * 0.8; // 80% scale
-        const translateX = parentWidth / 2 - (bounds.x + bounds.width / 2) * scale;
-        const translateY = parentHeight / 2 - (bounds.y + bounds.height / 2) * scale;
-        const initialTransform = d3.zoomIdentity.translate(translateX, translateY).scale(scale);
+        // No scale calculation - always use scale of 1.0
+        const translateX = parentWidth / 2 - (bounds.x + bounds.width / 2);
+        const translateY = parentHeight / 2 - (bounds.y + bounds.height / 2);
+        const initialTransform = d3.zoomIdentity.translate(translateX, translateY);
 
         svg.call(zoomRef.current.transform, initialTransform);
         currentTransformRef.current = initialTransform; // Store the calculated initial transform
