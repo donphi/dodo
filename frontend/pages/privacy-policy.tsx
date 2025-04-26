@@ -6,19 +6,19 @@ import BackButton from '../components/back_button';
 
 const privacyMarkdown = `
 **Effective Date:** April 18, 2025  
-**Last Updated:** April 18, 2025  
+**Last Updated:** April 26, 2025  
 
 ## Introduction 🧬
 Welcome to **Dodo (DD)** by **Biobankly**! We are committed to protecting your privacy and ensuring the security of your data. This Privacy Policy explains what information Biobankly (referred to as "we" or "us") collects, how we use and store it, and your rights regarding your information. Biobankly is a UK-based service providing visualization, statistics, and analysis tools, and we comply with the EU/UK General Data Protection Regulation (GDPR), the California Consumer Privacy Act (CCPA), and other applicable global privacy laws.
 
-We do not collect any personal health or genetic data through our app, and we strive to only process the minimal data necessary to operate our service in a privacy-preserving way. By using **DD**, an application under the Biobankly platform, you acknowledge that you have read and understood this Privacy Policy. If you do not agree with our practices, please do not use the service.
+We do not collect any personal health or genetic data through our app, and we strive to only process the minimal data necessary to operate our service in a privacy-preserving way. By using **DD**, an independent application by Biobankly LTD, you acknowledge that you have read and understood this Privacy Policy. If you do not agree with our practices, please do not use the service.
 
 ---
 
 ## Data We Collect and Use
 
 ### 1. No Personal Health Information
-DD, does not collect or store any personal health or genetic data. It operates independently from biobank repositories. There is no access to individual-level health information or biobank participant data.
+DD does not collect or store any personal health or genetic data. It operates independently from biobank repositories. There is no access to individual-level health information or biobank participant data.
 
 ### 2. Personal Data You Provide
 The only personal data collected is necessary for **account login via Supabase OAuth**, using GitHub or Gmail as identity providers. We may receive:
@@ -126,7 +126,7 @@ We may update this policy. Significant changes will be announced in-app or via e
 **Email**: [privacy@biobankly.com](mailto:privacy@biobankly.com)  
 **Address**: Biobankly LTD, 128 City Road, London, EC1V 2NX, United Kingdom
 
-We take privacy seriously and are here to support your rights and protect your trust. 
+We take privacy seriously and are here to support your rights and protect your trust.
 
 ---
 `;
