@@ -58,7 +58,7 @@ serve(async (req) => {
         username: SMTP_USERNAME,
         password: SMTP_PASSWORD,
         // Add specific settings for Office 365
-        tls: {
+        ssl: {
           rejectUnauthorized: false // Sometimes needed for Office 365
         }
       })
