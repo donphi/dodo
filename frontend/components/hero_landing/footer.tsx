@@ -20,7 +20,7 @@ const social = [
   },
   {
     name: 'GitHub',
-    href: '#',
+    href: 'https://github.com/biobankly',
     icon: (props: React.ComponentProps<'svg'>) => (
       <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
         <title>GitHub</title>

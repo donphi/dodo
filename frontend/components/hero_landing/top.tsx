@@ -58,9 +58,50 @@ export default function Example() {
             >
               Launch Dodo
             </Link>
-            <Link href="/login" className="text-sm/6 font-semibold text-gray-900 dark:text-white">
+            <button
+              onClick={() => {
+                const faqElement = document.getElementById('faq');
+                if (faqElement) {
+                  // Get the target position (centered in the viewport)
+                  const windowHeight = window.innerHeight;
+                  const faqHeight = faqElement.getBoundingClientRect().height;
+                  // Calculate offset to center the FAQ in the viewport
+                  const offset = (windowHeight - faqHeight) / 2;
+                  const targetPosition = faqElement.getBoundingClientRect().top + window.pageYOffset - offset;
+                  const startPosition = window.pageYOffset;
+                  const distance = targetPosition - startPosition;
+                  const duration = 1000; // ms
+                  let start: number | null = null;
+                  
+                  // Easing function: easeInOutCubic
+                  const easeInOutCubic = (t: number): number => {
+                    return t < 0.5
+                      ? 4 * t * t * t
+                      : 1 - Math.pow(-2 * t + 2, 3) / 2;
+                  };
+                  
+                  // Animation function
+                  function animation(currentTime: number) {
+                    if (start === null) start = currentTime;
+                    const timeElapsed = currentTime - start;
+                    const progress = Math.min(timeElapsed / duration, 1);
+                    const easeProgress = easeInOutCubic(progress);
+                    
+                    window.scrollTo(0, startPosition + distance * easeProgress);
+                    
+                    if (timeElapsed < duration) {
+                      requestAnimationFrame(animation);
+                    }
+                  }
+                  
+                  // Start animation
+                  requestAnimationFrame(animation);
+                }
+              }}
+              className="text-sm/6 font-semibold text-gray-900 dark:text-white"
+            >
               Learn more <span aria-hidden="true">→</span>
-            </Link>
+            </button>
           </div>
         </div>
         <div className="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">
