@@ -11,6 +11,7 @@ import { useTheme, Theme } from '../../context/ThemeContext'
 import { useAuth } from '../../hooks/useAuth'
 import { useRouter } from 'next/router'
 import VisualizationHeader from '../VisualizationHeader'
+import DeleteAccountDialog from '../delete'
 
 // Dynamically import the graph components with SSR disabled
 const ForceGraph3DComponent = dynamic(() => import('../ForceGraph3D'), { ssr: false })
@@ -49,6 +50,7 @@ export default function Dashboard() {
   const userInitials = getUserInitials(userName);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [viewMode, setViewMode] = useState<'2d' | '3d' | 'tidy' | 'radial'>('tidy');
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   
   // Toggle between views
   const toggleView = () => {
@@ -177,11 +179,7 @@ export default function Dashboard() {
                               </button>
                             ) : item.name === 'Delete Account' ? (
                               <button
-                                onClick={() => {
-                                  if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-                                    deleteAccount();
-                                  }
-                                }}
+                                onClick={() => setShowDeleteDialog(true)}
                                 className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 data-[focus]:bg-gray-100 dark:data-[focus]:bg-gray-700 data-[focus]:outline-none transition-colors"
                               >
                                 {item.name}
@@ -242,11 +240,7 @@ export default function Dashboard() {
                         <DisclosureButton
                           key={item.name}
                           as="button"
-                          onClick={() => {
-                            if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-                              deleteAccount();
-                            }
-                          }}
+                          onClick={() => setShowDeleteDialog(true)}
                           className="block w-full text-right px-4 py-2 text-base font-medium text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-red-800 dark:hover:text-red-300 transition-colors"
                         >
                           {item.name}
@@ -304,6 +298,14 @@ export default function Dashboard() {
           <Footer />
         </div>
       </div>
+
+      {/* Delete Account Dialog */}
+      {showDeleteDialog && (
+        <DeleteAccountDialog
+          isOpen={showDeleteDialog}
+          onClose={() => setShowDeleteDialog(false)}
+        />
+      )}
     </>
   )
 }

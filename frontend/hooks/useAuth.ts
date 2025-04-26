@@ -184,7 +184,29 @@ export function useAuth() {
         throw new Error('No authenticated user found');
       }
       
-      // First delete the user's profile
+      // Delete all user sessions
+      const { error: sessionsError } = await supabase
+        .from('user_sessions')
+        .delete()
+        .eq('user_id', user.id);
+        
+      if (sessionsError) {
+        console.error('Error deleting user sessions:', sessionsError);
+        // Continue with deletion even if sessions deletion fails
+      }
+      
+      // Delete any survey responses if they exist
+      const { error: surveyError } = await supabase
+        .from('survey_responses')
+        .delete()
+        .eq('user_id', user.id);
+        
+      if (surveyError) {
+        console.error('Error deleting survey responses:', surveyError);
+        // Continue with deletion even if survey deletion fails
+      }
+      
+      // Delete the user's profile
       const { error: profileError } = await supabase
         .from('profiles')
         .delete()
@@ -192,7 +214,10 @@ export function useAuth() {
         
       if (profileError) throw profileError;
       
-      // Then delete the user's auth record using our Next.js API route
+      // Delete any other user-related data here
+      // ...
+      
+      // Finally delete the user's auth record using our Next.js API route
       try {
         const response = await fetch('/api/delete-user', {
           method: 'POST',
@@ -208,9 +233,7 @@ export function useAuth() {
         }
       } catch (apiError: any) {
         console.error('Error calling delete-user API:', apiError);
-        // During development, the API might not be available
-        // In production, this should be properly handled
-        console.warn('Account deletion may be incomplete. Please contact support if issues persist.');
+        throw new Error('Failed to delete user account. Please try again or contact support.');
       }
       
       // Sign out after deletion
@@ -219,6 +242,7 @@ export function useAuth() {
     } catch (err: any) {
       console.error('Error deleting account:', err);
       setError(err.message);
+      throw err; // Re-throw to allow the component to handle the error
     } finally {
       setLoading(false);
     }

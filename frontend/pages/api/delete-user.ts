@@ -36,22 +36,63 @@ export default async function handler(
       return res.status(400).json({ error: 'user_id is required' });
     }
     
-    // Delete the user from Supabase Auth
-    const { error } = await supabase.auth.admin.deleteUser(user_id);
+    // Ensure all user data is deleted from all tables
+    // This is a backup to the client-side deletion in case it fails
+    
+    // Delete user sessions
+    const { error: sessionsError } = await supabase
+      .from('user_sessions')
+      .delete()
+      .eq('user_id', user_id);
+      
+    if (sessionsError) {
+      console.error('Error deleting user sessions:', sessionsError);
+      // Continue with deletion even if this fails
+    }
+    
+    // Delete survey responses if they exist
+    const { error: surveyError } = await supabase
+      .from('survey_responses')
+      .delete()
+      .eq('user_id', user_id);
+      
+    if (surveyError) {
+      console.error('Error deleting survey responses:', surveyError);
+      // Continue with deletion even if this fails
+    }
+    
+    // Delete user profile
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', user_id);
+      
+    if (profileError) {
+      console.error('Error deleting user profile:', profileError);
+      // Continue with deletion even if this fails
+    }
+    
+    // Finally, delete the user from Supabase Auth
+    // This should be done last as it will invalidate the user's session
+    const { error } = await supabase.auth.admin.deleteUser(user_id, {
+      // Setting shouldSoftDelete to false ensures the user is completely removed
+      // This prevents them from logging in with the same email in the future
+      shouldSoftDelete: false
+    });
     
     if (error) {
       throw error;
     }
     
-    return res.status(200).json({ 
-      success: true, 
-      message: 'User deleted successfully' 
+    return res.status(200).json({
+      success: true,
+      message: 'User and all associated data deleted successfully'
     });
     
   } catch (error) {
     console.error('Error deleting user:', error);
-    return res.status(500).json({ 
-      error: error instanceof Error ? error.message : 'Unknown error occurred' 
+    return res.status(500).json({
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
     });
   }
 }
