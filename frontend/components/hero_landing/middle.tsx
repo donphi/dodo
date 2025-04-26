@@ -77,7 +77,7 @@ export default function Example(): React.ReactNode {
               <div className="-m-1.5 rounded-xl bg-gray-900/5 dark:bg-white/5 p-1.5 ring-1 ring-inset ring-gray-900/10 dark:ring-white/10 lg:-m-3 lg:rounded-2xl lg:p-3">
                 <img
                   alt="Product screenshot"
-                  src={isDarkMode ? "/middle_dark_s.png" : "/middle_light_s.png"}
+                  src={isDarkMode ? "/middle_dark.png" : "/middle_light.png"}
                   width={2345}
                   height={1416}
                   className="w-[48rem] max-w-none rounded-md shadow-xl ring-1 ring-gray-900/10 dark:ring-white/10 sm:w-[57rem] transition-colors"
