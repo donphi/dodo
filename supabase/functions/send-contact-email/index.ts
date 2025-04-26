@@ -1,5 +1,4 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { SmtpClient } from 'https://deno.land/x/smtp@v0.7.0/mod.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -18,24 +17,35 @@ serve(async (req) => {
   }
 
   try {
-    // Get environment variables
-    const SMTP_HOST = Deno.env.get('SMTP_HOST') || ''
-    const SMTP_PORT = parseInt(Deno.env.get('SMTP_PORT') || '587')
-    const SMTP_USERNAME = Deno.env.get('SMTP_USERNAME') || ''
-    const SMTP_PASSWORD = Deno.env.get('SMTP_PASSWORD') || ''
+    // Get Resend API key from environment variables
+    const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || ''
     const EMAIL_FROM = Deno.env.get('EMAIL_FROM') || ''
     const EMAIL_TO = Deno.env.get('EMAIL_TO') || ''
 
     // Validate environment variables
-    if (!SMTP_HOST || !SMTP_USERNAME || !SMTP_PASSWORD || !EMAIL_FROM || !EMAIL_TO) {
+    if (!RESEND_API_KEY || !EMAIL_FROM || !EMAIL_TO) {
+      console.error('Missing required environment variables:', {
+        hasResendApiKey: Boolean(RESEND_API_KEY),
+        hasEmailFrom: Boolean(EMAIL_FROM),
+        hasEmailTo: Boolean(EMAIL_TO)
+      })
       throw new Error('Missing required environment variables for email sending')
     }
 
     // Parse request body
     const { firstName, lastName, email, phone, message } = await req.json()
 
+    // Log received data for debugging (excluding sensitive information)
+    console.log('Received contact form submission:', {
+      name: `${firstName} ${lastName}`,
+      hasEmail: Boolean(email),
+      hasPhone: Boolean(phone),
+      messageLength: message?.length || 0
+    })
+
     // Validate required fields
     if (!firstName || !lastName || !email || !message) {
+      console.error('Missing required fields in form submission')
       return new Response(
         JSON.stringify({ error: 'Missing required fields' }),
         { 
@@ -43,29 +53,6 @@ serve(async (req) => {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       )
-    }
-
-    // Configure SMTP client
-    const client = new SmtpClient()
-    
-    // Log connection attempt for debugging
-    console.log(`Attempting to connect to SMTP server: ${SMTP_HOST}:${SMTP_PORT}`)
-    
-    try {
-      await client.connectSSL({
-        hostname: SMTP_HOST,
-        port: SMTP_PORT,
-        username: SMTP_USERNAME,
-        password: SMTP_PASSWORD,
-        // Add specific settings for Office 365
-        ssl: {
-          rejectUnauthorized: false // Sometimes needed for Office 365
-        }
-      })
-      console.log("SMTP connection successful")
-    } catch (smtpError) {
-      console.error("SMTP connection error:", smtpError)
-      throw new Error(`Failed to connect to SMTP server: ${smtpError.message}`)
     }
 
     // Format email content
@@ -81,15 +68,43 @@ serve(async (req) => {
       ${message}
     `
 
-    // Send email
-    await client.send({
-      from: EMAIL_FROM,
-      to: EMAIL_TO,
-      subject: emailSubject,
-      content: emailBody,
+    // Create HTML version of the email for better formatting
+    const emailHtml = `
+      <h2>New Contact Form Submission</h2>
+      <p><strong>Name:</strong> ${firstName} ${lastName}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+      <h3>Message:</h3>
+      <p>${message.replace(/\n/g, '<br>')}</p>
+    `
+
+    console.log('Sending email via Resend API')
+
+    // Send email using Resend API
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: EMAIL_FROM,
+        to: EMAIL_TO,
+        subject: emailSubject,
+        text: emailBody,
+        html: emailHtml,
+        reply_to: email // Set reply-to as the submitter's email for easy responses
+      })
     })
 
-    await client.close()
+    const responseData = await response.json()
+    
+    if (!response.ok) {
+      console.error('Resend API error:', responseData)
+      throw new Error(`Failed to send email via Resend: ${JSON.stringify(responseData)}`)
+    }
+
+    console.log('Email sent successfully via Resend:', responseData)
 
     return new Response(
       JSON.stringify({ success: true }),
