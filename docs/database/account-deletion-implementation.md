@@ -87,9 +87,7 @@ await supabase.from('survey_responses').delete().eq('user_id', user_id);
 await supabase.from('profiles').delete().eq('id', user_id);
 
 // Delete auth record
-await supabase.auth.admin.deleteUser(user_id, {
-  shouldSoftDelete: false
-});
+await supabase.auth.admin.deleteUser(user_id, false);
 ```
 
 ### 4. Supabase Function (`functions/delete-user.ts`)

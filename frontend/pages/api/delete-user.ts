@@ -74,11 +74,9 @@ export default async function handler(
     
     // Finally, delete the user from Supabase Auth
     // This should be done last as it will invalidate the user's session
-    const { error } = await supabase.auth.admin.deleteUser(user_id, {
-      // Setting shouldSoftDelete to false ensures the user is completely removed
-      // This prevents them from logging in with the same email in the future
-      shouldSoftDelete: false
-    });
+    // Passing false as the second parameter ensures the user is completely removed (not soft-deleted)
+    // This prevents them from logging in with the same email in the future
+    const { error } = await supabase.auth.admin.deleteUser(user_id, false);
     
     if (error) {
       throw error;
