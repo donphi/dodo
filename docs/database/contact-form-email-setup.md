@@ -81,7 +81,10 @@ const corsHeaders = {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response('ok', { 
+      status: 200,
+      headers: corsHeaders 
+    })
   }
 
   try {
@@ -114,12 +117,26 @@ serve(async (req) => {
 
     // Configure SMTP client
     const client = new SmtpClient()
-    await client.connectTLS({
-      hostname: SMTP_HOST,
-      port: SMTP_PORT,
-      username: SMTP_USERNAME,
-      password: SMTP_PASSWORD,
-    })
+    
+    // Log connection attempt for debugging
+    console.log(`Attempting to connect to SMTP server: ${SMTP_HOST}:${SMTP_PORT}`)
+    
+    try {
+      await client.connectTLS({
+        hostname: SMTP_HOST,
+        port: SMTP_PORT,
+        username: SMTP_USERNAME,
+        password: SMTP_PASSWORD,
+        // Add specific settings for Office 365
+        tls: {
+          rejectUnauthorized: false // Sometimes needed for Office 365
+        }
+      })
+      console.log("SMTP connection successful")
+    } catch (smtpError) {
+      console.error("SMTP connection error:", smtpError)
+      throw new Error(`Failed to connect to SMTP server: ${smtpError.message}`)
+    }
 
     // Format email content
     const emailSubject = `New Contact Form Submission from ${firstName} ${lastName}`
@@ -181,7 +198,7 @@ To set up the email functionality in your Supabase project:
 2. **Set up environment variables**:
    - In the Supabase dashboard, go to Settings > API > Edge Functions
    - Add the following environment variables:
-     - `SMTP_HOST`: Your SMTP server hostname (e.g., `smtp.gmail.com`)
+     - `SMTP_HOST`: Your SMTP server hostname (e.g., `smtp.gmail.com` or `smtp.office365.com`)
      - `SMTP_PORT`: Your SMTP server port (typically `587` for TLS)
      - `SMTP_USERNAME`: Your SMTP username/email
      - `SMTP_PASSWORD`: Your SMTP password or app password
@@ -267,9 +284,27 @@ This is a common issue with Supabase Edge Functions. Make sure:
    }
    ```
 
-2. The Edge Function properly handles OPTIONS requests (preflight requests)
+2. The Edge Function properly handles OPTIONS requests (preflight requests) with a 200 status code:
+   ```typescript
+   if (req.method === 'OPTIONS') {
+     return new Response('ok', { 
+       status: 200,
+       headers: corsHeaders 
+     })
+   }
+   ```
+
 3. The Edge Function is deployed with the latest changes
 4. You're using the correct project URL and API key
+
+#### Form Submission Shows "Sending..." But Never Completes
+
+If the form submission button shows "Sending..." and never completes:
+
+1. Check browser console for errors
+2. Verify that the Supabase Edge Function is properly deployed and accessible
+3. Check that the SMTP settings in the Edge Function are correct
+4. Try closing and reopening the feedback dialog if it appears
 
 #### Email Not Being Sent
 
@@ -279,15 +314,17 @@ If emails are not being sent:
 2. Verify that all environment variables are correctly set
 3. Ensure your SMTP provider allows sending from your Edge Function (some providers may block unfamiliar IP addresses)
 4. For Gmail, you may need to use an App Password instead of your regular password
-5. Some email providers may block emails sent from Supabase Edge Functions due to security policies
+5. For Office 365, you may need to use specific TLS settings and an app password
+6. Some email providers may block emails sent from Supabase Edge Functions due to security policies
 
 #### Form Submission Shows Success But No Data is Saved
 
-The form is designed to show a success message immediately for better user experience, even before the actual submission is complete. If data isn't being saved:
+The form is now designed to show a success message only after both the database insertion and email sending have been attempted. If data isn't being saved:
 
 1. Check browser console for errors
 2. Verify that the Supabase project URL and API key are correct
 3. Check that the table structure matches what the form is trying to insert
+4. Verify that the RLS policies allow the current user to insert data
 
 ## Security Considerations
 

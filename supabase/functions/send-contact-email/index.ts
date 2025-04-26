@@ -52,7 +52,7 @@ serve(async (req) => {
     console.log(`Attempting to connect to SMTP server: ${SMTP_HOST}:${SMTP_PORT}`)
     
     try {
-      await client.connectTLS({
+      await client.connectSSL({
         hostname: SMTP_HOST,
         port: SMTP_PORT,
         username: SMTP_USERNAME,
