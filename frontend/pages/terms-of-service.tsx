@@ -72,7 +72,7 @@ DD might link to external resources (e.g., GitHub or Gmail OAuth pages). We do n
 ---
 
 ## 5. Privacy
-Your privacy is important to us. Please review our **Privacy Policy** (available on [biobankly.com](https://biobankly.com)) for details on how we collect, use, and protect your information. By using the Service, you agree to our Privacy Policy. If there is any conflict between the Privacy Policy and these Terms regarding personal data, the Privacy Policy will govern.
+Your privacy is important to us. Please review our **Privacy Policy** (available on [dodo.biobankly.com](https://dodo.biobankly.com/privacy-policy)) for details on how we collect, use, and protect your information. By using the Service, you agree to our Privacy Policy. If there is any conflict between the Privacy Policy and these Terms regarding personal data, the Privacy Policy will govern.
 
 ---
 
