@@ -7,9 +7,6 @@ export default function Document() {
                 {/* Viewport settings - critical for responsive design */}
                 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-                {/* Preload favicon */}
-                <link rel="preload" href="/favicon.png" as="image" type="image/png" />
-
                 {/* Basic Favicon */}
                 <link rel="icon" href="/favicon.png" />
 
