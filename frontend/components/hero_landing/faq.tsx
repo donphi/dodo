@@ -77,7 +77,7 @@ const faqs: FAQItem[] = [
   },
   {
     "question": "What is Biobankly?",
-    "answer": makeLinksClickable("Biobankly is a secure platform built for approved data scientists and healthcare professionals. It connects users to multiple biobank repositories and simplifies complex datasets using AI, smart interfaces, and clean design methods to make advanced research more efficient and insightful. Access is limited to users who already have approval to access biobank data. The platform has not yet launched, but you can sign up for notifications at https://biobankly.com.")
+    "answer": makeLinksClickable("Biobankly is a secure platform built for approved data scientists and healthcare professionals. It connects users to multiple biobank repositories and simplifies complex datasets using AI, smart interfaces, and clean design methods to make advanced research more efficient and insightful. Access is limited to users who already have approval to access biobank data. The platform has not yet launched, but you can sign up for notifications at https://biobankly.com .")
   },
   {
     "question": "Why are Dodo and Biobankly separate platforms?",
@@ -89,7 +89,7 @@ const faqs: FAQItem[] = [
   },
   {
     "question": "Where does the data come from?",
-    "answer": makeLinksClickable("Dodo uses publicly available data provided by biobank developers, including schema files and documentation. This requires deep understanding and careful work to structure and visualise the data properly. In Biobankly, data is pulled in real-time from multiple approved sources, but no raw data is stored, it is analysed and then deleted, in line with the data handling policies of most biobank repositories. You can read our privacy policy and terms and conditions at either dodo.biobankly.com or biobankly.com. For example, we currently use schema files from the UK Biobank, available at https://biobank.ndph.ox.ac.uk/ukb/download.cgi.")
+    "answer": makeLinksClickable("Dodo uses publicly available data provided by biobank developers, including schema files and documentation. This requires deep understanding and careful work to structure and visualise the data properly. In Biobankly, data is pulled in real-time from multiple approved sources, but no raw data is stored, it is analysed and then deleted, in line with the data handling policies of most biobank repositories. You can read our privacy policy and terms and conditions at either https://dodo.biobankly.com/privacy-policy or https://dodo.biobankly.com/terms-of-service For example, we currently use schema files from the UK Biobank, available at https://biobank.ndph.ox.ac.uk/ukb/download.cgi .")
   },
   {
     "question": "Where can I find more information about biobanks?",

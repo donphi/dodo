@@ -3,7 +3,7 @@ import React from 'react';
 const links = [
   { name: 'Launch Dodo', href: '/login' },
   { name: 'Contact', href: '/contact-us' },
-  { name: 'Terms & Conditions', href: '/terms-of-service' },
+  { name: 'Terms of Service', href: '/terms-of-service' },
   { name: 'Privacy Policy', href: '/privacy-policy' },
 ];
 
